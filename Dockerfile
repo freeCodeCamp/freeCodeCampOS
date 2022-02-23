@@ -50,20 +50,6 @@ RUN npm config set prefix '~/.npm-global'
 RUN sudo mkdir -p ${HOMEDIR}/curriculum
 WORKDIR ${HOMEDIR}/curriculum
 
-# Install marked globally for node
-RUN sudo npm install live-server -g
-
-# Copy necessary files
-COPY --chown=camper .devcontainer/ .devcontainer/
-COPY --chown=camper .git/ .git/
-COPY --chown=camper .freeCodeCamp/ .freeCodeCamp/
-COPY --chown=camper .gitignore .gitignore
-
-# Append terminal to .output.log
-# TODO: Potentially handled via extension to just directly source the `/tooling/.bashrc` file
-# RUN cat .freeCodeCamp/tooling/.bashrc >| ~/.bashrc
-
-# Copy curriculum content to project directory
-COPY --chown=camper .vscode/ .vscode/
-COPY --chown=camper curriculum/ ./
+# Copy necessary files to project directory
+COPY --chown=camper ./ ./
 

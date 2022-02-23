@@ -1,51 +1,79 @@
-// This might not be necessary for every course, but is needed for the preview window to interact with the test environment
-const root = require("child_process").execSync("npm root -g").toString().trim();
-const liveServer = require(`${root}/live-server`);
+const express = require("express");
 const runTests = require("./test");
 const { readEnv, updateEnv } = require("./env");
 
-const options = {
-  port: 8080,
-  // root: "/workspace/external-project/.freeCodeCamp/output",
-  file: "output/index.html",
-  mount: [["/", "output"]],
-  open: false,
-  middleware: [testM],
-};
+const { WebSocketServer } = require("ws");
+const runLesson = require("./lesson");
+const { updateTests } = require("./client-socks");
+const hotReload = require("./hot-reload");
 
-liveServer.start(options);
+const app = express();
 
-function testM(req, res, next) {
-  console.log(req.url, req.method);
-  routes[req.method]?.[req.url]?.(req, res, next);
-  next();
-}
+// Send './output/' as static
+app.use(express.static("./output"));
+app.use(express.static("./node_modules/marked"));
 
-const routes = {
-  GET: {
-    "/run-tests": handleRunTests,
-    "/reset-project": handleResetProject,
-    "/go-to-next-lesson": handleGoToNextLesson,
-    "/go-to-previous-lesson": handleGoToPreviousLesson,
-  },
-  POST: {},
-};
-
-function handleRunTests(req, res, next) {
+function handleRunTests(ws, data) {
   const { CURRENT_PROJECT, CURRENT_LESSON } = readEnv();
-  runTests(CURRENT_PROJECT, Number(CURRENT_LESSON));
+  runTests(ws, CURRENT_PROJECT, Number(CURRENT_LESSON));
 }
 
-function handleResetProject(req, res, next) {}
+function handleResetProject(ws, data) {}
 
-function handleGoToNextLesson(req, res, next) {
-  const { CURRENT_LESSON } = readEnv();
+function handleGoToNextLesson(ws, data) {
+  const { CURRENT_LESSON, CURRENT_PROJECT } = readEnv();
   const nextLesson = Number(CURRENT_LESSON) + 1;
   updateEnv({ CURRENT_LESSON: nextLesson });
+  runLesson(ws, CURRENT_PROJECT, nextLesson);
+  updateTests(ws, "");
 }
 
-function handleGoToPreviousLesson(req, res, next) {
-  const { CURRENT_LESSON } = readEnv();
+function handleGoToPreviousLesson(ws, data) {
+  const { CURRENT_LESSON, CURRENT_PROJECT } = readEnv();
   const prevLesson = Number(CURRENT_LESSON) - 1;
   updateEnv({ CURRENT_LESSON: prevLesson });
+  runLesson(ws, CURRENT_PROJECT, prevLesson);
+  updateTests(ws, "");
+}
+
+function handleConnect(ws) {
+  const { CURRENT_PROJECT, CURRENT_LESSON } = readEnv();
+  runLesson(ws, CURRENT_PROJECT, CURRENT_LESSON);
+}
+
+const server = app.listen(8080, () => {
+  console.log("Listening on port 8080");
+});
+
+const handle = {
+  connect: (ws, data) => {
+    handleConnect(ws);
+  },
+  "run-tests": handleRunTests,
+  "reset-project": handleResetProject,
+  "go-to-next-lesson": handleGoToNextLesson,
+  "go-to-previous-lesson": handleGoToPreviousLesson,
+};
+
+const wss = new WebSocketServer({ server });
+
+wss.on("connection", function connection(ws) {
+  hotReload(ws);
+  ws.on("message", function message(data) {
+    const parsedData = parseBuffer(data);
+    handle[parsedData.event]?.(ws, parsedData);
+  });
+  sock("connect", { message: "Server says 'Hello!'" });
+
+  function sock(type, data = {}) {
+    ws.send(parse({ event: type, data }));
+  }
+});
+
+function parse(obj) {
+  return JSON.stringify(obj);
+}
+
+function parseBuffer(buf) {
+  return JSON.parse(buf.toString());
 }

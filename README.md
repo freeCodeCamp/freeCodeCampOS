@@ -4,10 +4,7 @@ Shaun is having fun testing a minimal way to run courses locally.
 
 ## Shaun's TODO:
 
-- [ ] Refactor tooling/file names and structure to something that makes sense
 - [ ] Add workflow for translations to Crowdin
-- [x] Fix `package.json` issue with script `$PWD` in `.bashrc`
-- [x] `Go to Next Lesson` button?
 - [ ] Enable seed parsing for resetting
 - Feature Flags:
   - [ ] Always use seed on next lesson
@@ -37,13 +34,11 @@ Shaun is having fun testing a minimal way to run courses locally.
 
 1. Ensure you have the Gitpod extension. _Otherwise [click here](https://gitpod.io/#https://github.com/ShaunSHamilton/external-project)_
 2. Once Gitpod opens, ensure it is done doing its stuffs
-3. `source .freeCodeCamp/tooling/.bashrc` likely will not work. So, manually run this.
-4. Open Command Palette, run `freeCodeCamp: Develop Course`
+3. Open Command Palette, run `freeCodeCamp: Develop Course`
 
 **Notes**
 
-- When doing the course, ensure you are in the `curriculum/` directory
-- The preview window is forced to refresh quite often - it might look like it is flickering
+- When doing the course, ensure you are in the root directory
 
 ### Locally
 
@@ -123,7 +118,6 @@ code .
 - `### --tests--` - Tests for lesson _(required)_
 - `### --seed--` - Seed for lesson _(optional)_
 - `#### --cmd--` - Command for lesson seed (Camper will see) _(optional)_
-- `#### --cmd-hidden--` - Command for lesson seed (Hidden from Camper) _(optional)_
 - `#### --"<string>"--` - File name and seed heading _(optional)_
 
 ### Example

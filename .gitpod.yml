@@ -2,7 +2,7 @@ image: gitpod/workspace-full
 
 # Commands to start on workspace startup
 tasks:
-  - init: cd .freeCodeCamp && npm run ensure-tools
+  - init: cd .freeCodeCamp && cp sample.env .env && npm ci
     command: code --install-extension ../.devcontainer/freeCodeCamp.freecodecamp-dark-vscode-theme-0.1.0.vsix && exit
 
 ports:

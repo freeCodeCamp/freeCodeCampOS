@@ -3,21 +3,16 @@
   "author": "freeCodeCamp",
   "description": "Template used for freeCodeCamp projects with the freeCodeCamp Courses VSCode extension",
   "scripts": {
-    "watcher": "node ./tooling/hot-reload.js",
-    "live-server": "live-server --port=8080 --entry-file='output/index.html' --no-browser",
-    "ensure-env": "cp sample.env .env",
-    "dev:watcher": "export ACTOR=dev || set ACTOR=dev && npm run watcher",
-    "dev:live-server": "export ACTOR=dev || set ACTOR=dev && node tooling/server.js",
-    "dev:npm": "npm install live-server -g",
-    "ensure-tools": "npm run dev:npm",
+    "start": "node ./tooling/server.js",
     "build": "node ./tooling/git/build.js"
   },
   "dependencies": {
     "chai": "^4.3.4",
     "chokidar": "^3.5.2",
-    "jsdom": "^19.0.0",
+    "express": "^4.17.3",
     "marked": "^4.0.9",
-    "prismjs": "^1.26.0"
+    "prismjs": "^1.26.0",
+    "ws": "^8.5.0"
   },
   "repository": {
     "type": "git",

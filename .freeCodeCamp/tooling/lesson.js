@@ -7,19 +7,19 @@ const {
   isForceFlag,
 } = require("./parser");
 const { LOCALE } = require("./t");
-const { updateDescription, updateProjectHeading } = require("./testerizer");
+const { updateDescription, updateProjectHeading } = require("./client-socks");
 const { PATH, readEnv } = require("./env");
 const { seedLesson } = require("./seed");
 
-async function runLesson(project, lessonNumber) {
+async function runLesson(ws, project, lessonNumber) {
   const locale = LOCALE === "undefined" ? "english" : LOCALE ?? "english";
-  const answerFile = `${PATH}/tooling/locales/${locale}/${project}.md`;
-  const lesson = getLessonFromFile(answerFile, lessonNumber);
+  const projectFile = `${PATH}/tooling/locales/${locale}/${project}.md`;
+  const lesson = getLessonFromFile(projectFile, lessonNumber);
   const description = getLessonDescription(lesson);
 
-  const projectHeading = await getProjectTitle(answerFile);
-  updateProjectHeading(projectHeading, lessonNumber);
-  updateDescription(description);
+  const projectHeading = await getProjectTitle(projectFile);
+  updateProjectHeading(ws, projectHeading, lessonNumber);
+  updateDescription(ws, description);
 
   const { SEED_EVERY_LESSON } = readEnv();
   const seed = getLessonSeed(lesson);
