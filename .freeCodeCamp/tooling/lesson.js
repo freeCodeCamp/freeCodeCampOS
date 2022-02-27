@@ -29,7 +29,7 @@ async function runLesson(ws, project, lessonNumber) {
     (SEED_EVERY_LESSON === "true" && !isForce) ||
     (SEED_EVERY_LESSON !== "true" && isForce)
   ) {
-    await seedLesson(seed);
+    await seedLesson(ws, project, lessonNumber);
   }
 }
 
