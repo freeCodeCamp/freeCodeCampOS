@@ -22,8 +22,6 @@ RUN adduser ${USERNAME} sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> \
   /etc/sudoers
 
-USER ${USERNAME}
-
 ### Gitpod user ###
 # '-l': see https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
 RUN sudo useradd -l -u 33333 -G sudo -md /home/gitpod -s /bin/bash -p gitpod gitpod \
@@ -31,10 +29,11 @@ RUN sudo useradd -l -u 33333 -G sudo -md /home/gitpod -s /bin/bash -p gitpod git
     && sudo sed -i.bkp -e 's/%sudo\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%sudo ALL=NOPASSWD:ALL/g' /etc/sudoers
 
 # Install packages for projects - Docker for testing
-RUN sudo apt-get install -y curl git bash-completion man-db docker
+RUN sudo apt-get install -y curl git bash-completion man-db docker build-essential
 
 # Install Rust for this project
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Install Node LTS
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
@@ -46,10 +45,8 @@ WORKDIR ${HOMEDIR}
 RUN mkdir ~/.npm-global
 RUN npm config set prefix '~/.npm-global'
 
-# Configure project directory to match course name
-RUN sudo mkdir -p ${HOMEDIR}/curriculum
+# Configure course-specific environment
+RUN mkdir curriculum
+COPY ./ ./curriculum/
 WORKDIR ${HOMEDIR}/curriculum
-
-# Copy necessary files to project directory
-COPY --chown=camper ./ ./
 

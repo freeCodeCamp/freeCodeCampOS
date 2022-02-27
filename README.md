@@ -79,22 +79,9 @@ mkdir course
 cd course
 ```
 
-2. Download/Install `freeCodeCamp Courses` extension in VSCode.
+2. `Ctrl + Shift + P` -> `freeCodeCam: Create New Course`
 
-```bash
-wget https://github.com/ShaunSHamilton/courses-plus/raw/main/freecodecamp-courses-patch.vsix
-code --install-extension freecodecamp-courses-patch.vsix
-```
-
-3. Open VSCode
-
-```bash
-code .
-```
-
-4 `Ctrl + Shift + P` -> `freeCodeCam: Develop New Course`
-
-5. Follow development steps in [Creating a Course](#creating-a-course)
+3. Follow development steps in [Creating a Course](#creating-a-course)
 
 ## Creating a Course (_In Progress_)
 
@@ -164,6 +151,7 @@ echo "All seed is run in order"
 
 ### Notables
 
+- It is very easy to change the course to use multiple markdown files as lessons (e.g. https://github.com/freeCodeCamp/euler-rust)
 - Below is the template for the course README
 
 ---

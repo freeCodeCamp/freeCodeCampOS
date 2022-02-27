@@ -3,19 +3,31 @@
   "scripts": {
     "develop-course": "cp sample.env .env && source ./tooling/.bashrc && npm ci && npm run start",
     "run-course": "npm run start",
-    "test": ""
-  },
-  "preview": {
-    "open": true,
-    "url": "http://localhost:8080",
-    "timeout": 2000
-  },
-  "terminals": [
-    {
-      "name": "Rust",
-      "directory": ".",
-      "show": true,
-      "message": "'Use me to run your code'"
+    "test": {
+      "functionName": "handleMessage",
+      "arguments": [
+        {
+          "message": "Hello World!",
+          "type": "info"
+        }
+      ]
     }
-  ]
+  },
+  "workspace": {
+    "previews": [
+      {
+        "open": true,
+        "url": "http://localhost:8080",
+        "timeout": 2000
+      }
+    ],
+    "terminals": [
+      {
+        "name": "Rust",
+        "directory": ".",
+        "show": true,
+        "message": "'Use me to run your code'"
+      }
+    ]
+  }
 }
