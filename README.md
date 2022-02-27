@@ -1,24 +1,14 @@
 # freeCodeCamp - External Project Template
 
-Shaun is having fun testing a minimal way to run courses locally.
-
 ## Shaun's TODO:
 
 - [ ] Add workflow for translations to Crowdin
 - [ ] Enable seed parsing for resetting
 - Feature Flags:
-  - [ ] Always use seed on next lesson
+  - [x] Always use seed on next lesson
   - [ ] Use Git build for seed on production
   - [x] Run tests on watch
 - [ ] Enable use of Git build on production
-
-## Main Features
-
-- Dockerised setup for consistency
-- Familiar Markdown syntax for lessons
-- Quick and simple Gitpod setup for testing/developing
-- Testing can be done with **any** valid Nodejs
-- _freeCodeCamp-stylised_ preview for instruction delivery
 
 ### Feature Flags
 
