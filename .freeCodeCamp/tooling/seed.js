@@ -7,7 +7,6 @@ const {
 } = require("./parser");
 const { LOCALE } = require("./t");
 const { PATH } = require("./env");
-const { seedLesson } = require("./seed");
 const fs = require("fs/promises");
 const util = require("util");
 const execute = util.promisify(require("child_process").exec);
@@ -16,7 +15,7 @@ async function seedLesson(ws, project, lessonNumber) {
   // TODO: Use ws to display loader whilst seeding
   const locale = LOCALE === "undefined" ? "english" : LOCALE ?? "english";
   const projectFile = `${PATH}/tooling/locales/${locale}/${project}.md`;
-  const lesson = getLessonFromFile(projectFile, lessonNumber);
+  const lesson = getLessonFromFile(projectFile, Number(lessonNumber));
   const seed = getLessonSeed(lesson);
 
   const commands = getCommands(seed);

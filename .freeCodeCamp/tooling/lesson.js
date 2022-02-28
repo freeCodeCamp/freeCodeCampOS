@@ -14,11 +14,11 @@ const { seedLesson } = require("./seed");
 async function runLesson(ws, project, lessonNumber) {
   const locale = LOCALE === "undefined" ? "english" : LOCALE ?? "english";
   const projectFile = `${PATH}/tooling/locales/${locale}/${project}.md`;
-  const lesson = getLessonFromFile(projectFile, lessonNumber);
+  const lesson = getLessonFromFile(projectFile, Number(lessonNumber));
   const description = getLessonDescription(lesson);
 
-  const projectHeading = await getProjectTitle(projectFile);
-  updateProjectHeading(ws, projectHeading, lessonNumber);
+  const { projectTopic, currentProject } = await getProjectTitle(projectFile);
+  updateProjectHeading(ws, { projectTopic, currentProject, lessonNumber });
   updateDescription(ws, description);
 
   const { SEED_EVERY_LESSON } = readEnv();
