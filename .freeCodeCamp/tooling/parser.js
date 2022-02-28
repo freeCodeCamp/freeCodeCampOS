@@ -23,7 +23,8 @@ async function getProjectTitle(file) {
     });
   });
   readable.close();
-  return firstLine.replace("# ", "");
+  const proj = firstLine.replace("# ", "").split(" - ");
+  return { projectTopic: proj[0], currentProject: proj[1] };
 }
 
 /**

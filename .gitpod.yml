@@ -11,4 +11,4 @@ ports:
 
 vscode:
   extensions:
-    - https://github.com/ShaunSHamilton/courses-plus/raw/main/freecodecamp-courses-patch.vsix
+    - https://github.com/freeCodeCamp/freecodecamp-courses/raw/main/freecodecamp-courses-patch.vsix

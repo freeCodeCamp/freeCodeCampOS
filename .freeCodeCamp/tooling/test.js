@@ -3,10 +3,7 @@ const fs = require("fs");
 const assert = require("chai").assert;
 const __helpers = require("./test-utils");
 
-const {
-  getLessonHintsAndTests,
-  getLessonFromDirectory,
-} = require("./parser.js");
+const { getLessonHintsAndTests, getLessonFromFile } = require("./parser.js");
 
 const { t, LOCALE } = require("./t");
 const { updateEnv, PATH } = require("./env.js");
@@ -17,8 +14,8 @@ async function runTests(ws, project, lessonNumber) {
   const locale = LOCALE === "undefined" ? "english" : LOCALE;
   toggleLoaderAnimation(ws);
   try {
-    const projectDir = `${PATH}/tooling/locales/${locale}/${project}`;
-    const lesson = getLessonFromDirectory(projectDir, lessonNumber);
+    const projectFile = `${PATH}/tooling/locales/${locale}/${project}.md`;
+    const lesson = getLessonFromFile(projectFile, lessonNumber);
     const hintsAndTestsArr = getLessonHintsAndTests(lesson);
 
     const testPromises = hintsAndTestsArr.map(async ([hint, test]) => {

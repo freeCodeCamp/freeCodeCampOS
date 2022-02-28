@@ -9,9 +9,8 @@ const hotReload = require("./hot-reload");
 
 const app = express();
 
-// Send './output/' as static
-app.use(express.static("./output"));
-app.use(express.static("./node_modules/marked"));
+app.use(express.static("./dist"));
+// app.use(express.static("./assets"));
 
 function handleRunTests(ws, data) {
   const { CURRENT_PROJECT, CURRENT_LESSON } = readEnv();
@@ -61,6 +60,7 @@ wss.on("connection", function connection(ws) {
   hotReload(ws);
   ws.on("message", function message(data) {
     const parsedData = parseBuffer(data);
+    console.log(parsedData);
     handle[parsedData.event]?.(ws, parsedData);
   });
   sock("connect", { message: "Server says 'Hello!'" });
