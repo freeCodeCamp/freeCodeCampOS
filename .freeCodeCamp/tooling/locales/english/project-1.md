@@ -22,6 +22,22 @@ const files = await __helpers.getDirectory(".");
 assert.include(files ?? "", "calculator");
 ```
 
+This test always passes, as an example.
+
+```js
+assert(true);
+assert.equal(1, "1");
+assert.strictEqual(1, 1);
+assert.include("foobar", "bar");
+```
+
+This test takes 2 seconds to complete.
+
+```js
+await new Promise((resolve) => setTimeout(resolve, 2000));
+assert(true);
+```
+
 ### --seed--
 
 #### --cmd--

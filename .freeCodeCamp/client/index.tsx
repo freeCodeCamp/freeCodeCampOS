@@ -2,30 +2,15 @@ import { render } from "react-dom";
 import { useEffect, useState, StrictMode } from "react";
 import "./assets/prism.css";
 import "./styles.css";
-import { marked } from "marked";
-import * as Prism from "./assets/prism.js";
 import Project from "./templates/project";
 import IntegratedProject from "./templates/integrated-project";
-import { Events } from "./types/index";
-
-marked.setOptions({
-  highlight: (code, lang: keyof typeof Prism["languages"]) => {
-    if (Prism.languages[lang]) {
-      return Prism.highlight(code, Prism.languages[lang], lang);
-    } else {
-      return code;
-    }
-  },
-});
-
-function parseMarkdown(markdown: string) {
-  return marked.parse(markdown, { gfm: true });
-}
+import { Events, TestType } from "./types/index";
+import { parseMarkdown } from "./utils";
 
 let INTEGRATED_PROJECT = false;
-try {
-  INTEGRATED_PROJECT = !!process?.env?.INTEGRATED_PROJECT;
-} catch (e) {}
+// try {
+//   INTEGRATED_PROJECT = !!process?.env?.INTEGRATED_PROJECT;
+// } catch (e) {}
 
 const socket = new WebSocket("ws://localhost:8080");
 const App = () => {
@@ -33,7 +18,9 @@ const App = () => {
   const [project, setProject] = useState("");
   const [lessonNumber, setLessonNumber] = useState(1);
   const [description, setDescription] = useState("");
-  const [tests, setTests] = useState("");
+  const [tests, setTests] = useState<TestType[]>([]);
+  const [hints, setHints] = useState("");
+  const [cons, setCons] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -55,7 +42,10 @@ const App = () => {
 
   const handle = {
     "toggle-loader-animation": toggleLoaderAnimation,
+    "update-test": updateTest,
     "update-tests": updateTests,
+    "update-hints": updateHints,
+    "update-console": updateConsole,
     "update-description": updateDescription,
     "update-project-heading": updateProjectHeading,
     "reset-tests": resetTests,
@@ -83,12 +73,21 @@ const App = () => {
     setDescription(parseMarkdown(description));
   }
 
-  function updateTests({ tests }: { tests: string }) {
-    setTests(parseMarkdown(tests));
+  function updateTests({ tests }: { tests: TestType[] }) {
+    setTests(tests);
+  }
+  function updateTest({ test }: { test: TestType }) {
+    setTests((ts) => ts.map((t) => (t.testId === test.testId ? test : t)));
+  }
+  function updateHints({ hints }: { hints: string }) {
+    setHints(parseMarkdown(hints));
+  }
+  function updateConsole({ cons }: { cons: string }) {
+    setCons(parseMarkdown("```bash\n".concat(cons).concat("\n```")));
   }
 
   function resetTests() {
-    setTests("");
+    setTests([]);
   }
 
   function toggleLoaderAnimation() {
@@ -110,19 +109,33 @@ const App = () => {
   return (
     <>
       {INTEGRATED_PROJECT ? (
-        <IntegratedProject />
+        <IntegratedProject
+          {...{
+            runTests,
+            description,
+            topic,
+            project,
+            tests,
+            cons,
+            isLoading,
+          }}
+        />
       ) : (
         <Project
-          runTests={runTests}
-          resetProject={resetProject}
-          goToNextLesson={goToNextLesson}
-          goToPreviousLesson={goToPreviousLesson}
-          isLoading={isLoading}
-          project={project}
-          topic={topic}
-          lessonNumber={lessonNumber}
-          description={description}
-          tests={tests}
+          {...{
+            runTests,
+            resetProject,
+            goToNextLesson,
+            goToPreviousLesson,
+            isLoading,
+            project,
+            topic,
+            lessonNumber,
+            description,
+            tests,
+            hints,
+            cons,
+          }}
         />
       )}
     </>

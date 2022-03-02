@@ -5,18 +5,29 @@ function toggleLoaderAnimation(ws) {
 function updateTests(ws, tests) {
   ws.send(parse({ event: "update-tests", data: { tests } }));
 }
+function updateTest(ws, test) {
+  ws.send(parse({ event: "update-test", data: { test } }));
+}
 
 function updateDescription(ws, description) {
   ws.send(parse({ event: "update-description", data: { description } }));
 }
 
-function updateProjectHeading(ws, projectHeading, lessonNumber) {
+function updateProjectHeading(ws, projectHeading) {
   ws.send(
     parse({
       event: "update-project-heading",
-      data: { projectHeading, lessonNumber },
+      data: projectHeading,
     })
   );
+}
+
+function updateHints(ws, hints) {
+  ws.send(parse({ event: "update-hints", data: { hints } }));
+}
+
+function updateConsole(ws, cons) {
+  ws.send(parse({ event: "update-console", data: { cons } }));
 }
 
 function parse(obj) {
@@ -26,6 +37,9 @@ function parse(obj) {
 module.exports = {
   toggleLoaderAnimation,
   updateTests,
+  updateTest,
   updateDescription,
   updateProjectHeading,
+  updateHints,
+  updateConsole,
 };

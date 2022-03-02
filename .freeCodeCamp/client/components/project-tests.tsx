@@ -1,19 +1,35 @@
+import { useState } from "react";
+import { TestType } from "../types";
+import Test from "./test";
+
 interface ProjectTestsProps {
-  tests: string;
+  tests: TestType[];
 }
 
 const ProjectTests = ({ tests }: ProjectTestsProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded((prev) => !prev);
+  };
+
   return (
-    <>
-      <h2>Tests</h2>
-      <details>
-        <summary>Click for Hints</summary>
-        <section
-          id="tests"
-          dangerouslySetInnerHTML={{ __html: tests }}
-        ></section>
-      </details>
-    </>
+    <details onClick={toggleExpand}>
+      <summary>{isExpanded ? "Collapse" : "Expand"} Tests</summary>
+      <ul>
+        {tests.map(({ testText, passed, isLoading, testId }, i) => (
+          <Test
+            key={i}
+            {...{
+              testText,
+              passed,
+              isLoading,
+              testId,
+            }}
+          />
+        ))}
+      </ul>
+    </details>
   );
 };
 

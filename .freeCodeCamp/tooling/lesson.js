@@ -2,12 +2,17 @@
 const {
   getLessonFromFile,
   getLessonDescription,
+  getLessonHintsAndTests,
   getProjectTitle,
   getLessonSeed,
   isForceFlag,
 } = require("./parser");
 const { LOCALE } = require("./t");
-const { updateDescription, updateProjectHeading } = require("./client-socks");
+const {
+  updateDescription,
+  updateProjectHeading,
+  updateTests,
+} = require("./client-socks");
 const { PATH, readEnv } = require("./env");
 const { seedLesson } = require("./seed");
 
@@ -16,6 +21,19 @@ async function runLesson(ws, project, lessonNumber) {
   const projectFile = `${PATH}/tooling/locales/${locale}/${project}.md`;
   const lesson = getLessonFromFile(projectFile, Number(lessonNumber));
   const description = getLessonDescription(lesson);
+
+  if (false) {
+    const hintsAndTestsArr = getLessonHintsAndTests(lesson);
+    updateTests(
+      ws,
+      hintsAndTestsArr.reduce((acc, curr, i) => {
+        return [
+          ...acc,
+          { passed: false, testText: curr[0], testId: i, isLoading: false },
+        ];
+      }, [])
+    );
+  }
 
   const { projectTopic, currentProject } = await getProjectTitle(projectFile);
   updateProjectHeading(ws, { projectTopic, currentProject, lessonNumber });
