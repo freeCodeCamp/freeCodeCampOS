@@ -4,13 +4,10 @@ interface DescriptionProps {
 
 const Description = ({ description }: DescriptionProps) => {
   return (
-    <>
-      <h2>Description</h2>
-      <section
-        id="description"
-        dangerouslySetInnerHTML={{ __html: description }}
-      ></section>
-    </>
+    <section
+      id="description"
+      dangerouslySetInnerHTML={{ __html: description }}
+    ></section>
   );
 };
 

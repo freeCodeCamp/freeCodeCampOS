@@ -18,7 +18,7 @@
 - `TEST_POLLING_RATE` - how often to refresh for changes in `ms`
 - `LOCALE` - one of `/tooling/locales/conf.js` - defaults to `english`
 
-## How To Run the Course
+## How To Run A Course
 
 ### In Gitpod!
 
@@ -32,33 +32,23 @@
 
 ### Locally
 
-1. Create an empty directory:
+1. Create an empty directory and open VSCode:
 
 ```bash
 mkdir course
 cd course
+code .
 ```
 
 2. Download/Install `freeCodeCamp Courses` extension in VSCode.
 
-```bash
-wget https://github.com/ShaunSHamilton/courses-plus/raw/main/freecodecamp-courses-patch.vsix
-code --install-extension freecodecamp-courses-patch.vsix
-```
+3. `Ctrl + Shift + P` and select `freeCodeCamp: Open Course`
 
-3. Open VSCode
+4. Choose the course you want to run
 
-```bash
-code .
-```
+5. `Ctrl + Shift + P` and select `Remote-Containers: Rebuild and Reopen in Container`
 
-4. `Ctrl + Shift + P` and select `freeCodeCamp: Open Course`
-
-5. Choose the course you want to run
-
-6. `Ctrl + Shift + P` and select `Remote-Containers: Rebuild and Reopen in Container`
-
-7. `Ctrl + Shift + P` and select `freeCodeCamp: Run Course`
+6. `Ctrl + Shift + P` and select `freeCodeCamp: Run Course`
 
 ## Ideal Dev Setup
 
@@ -67,6 +57,7 @@ code .
 ```bash
 mkdir course
 cd course
+code .
 ```
 
 2. `Ctrl + Shift + P` -> `freeCodeCam: Create New Course`

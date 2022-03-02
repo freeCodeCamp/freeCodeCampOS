@@ -4,7 +4,7 @@ const { readEnv, updateEnv } = require("./env");
 
 const { WebSocketServer } = require("ws");
 const runLesson = require("./lesson");
-const { updateTests } = require("./client-socks");
+const { updateTests, updateHints } = require("./client-socks");
 const hotReload = require("./hot-reload");
 
 const app = express();
@@ -18,13 +18,15 @@ function handleRunTests(ws, data) {
 }
 
 function handleResetProject(ws, data) {}
+function handleResetLesson(ws, data) {}
 
 function handleGoToNextLesson(ws, data) {
   const { CURRENT_LESSON, CURRENT_PROJECT } = readEnv();
   const nextLesson = Number(CURRENT_LESSON) + 1;
   updateEnv({ CURRENT_LESSON: nextLesson });
   runLesson(ws, CURRENT_PROJECT, nextLesson);
-  updateTests(ws, "");
+  updateHints(ws, "");
+  updateTests(ws, []);
 }
 
 function handleGoToPreviousLesson(ws, data) {
@@ -32,7 +34,8 @@ function handleGoToPreviousLesson(ws, data) {
   const prevLesson = Number(CURRENT_LESSON) - 1;
   updateEnv({ CURRENT_LESSON: prevLesson });
   runLesson(ws, CURRENT_PROJECT, prevLesson);
-  updateTests(ws, "");
+  updateTests(ws, []);
+  updateHints(ws, "");
 }
 
 function handleConnect(ws) {
@@ -60,7 +63,6 @@ wss.on("connection", function connection(ws) {
   hotReload(ws);
   ws.on("message", function message(data) {
     const parsedData = parseBuffer(data);
-    console.log(parsedData);
     handle[parsedData.event]?.(ws, parsedData);
   });
   sock("connect", { message: "Server says 'Hello!'" });

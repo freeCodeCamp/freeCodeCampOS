@@ -44,10 +44,6 @@
   }
 }
 
-h2 {
-  font-size: 1.4rem;
-}
-
 #description {
   margin: 0 auto;
   width: 80%;
@@ -55,9 +51,15 @@ h2 {
 }
 
 details {
-  margin: 0 auto;
+  margin: 20px auto;
   width: 80%;
   text-align: left;
+}
+
+details > section {
+  max-width: 100%;
+  max-height: 200px;
+  overflow: auto;
 }
 
 #tests > ul > li {
