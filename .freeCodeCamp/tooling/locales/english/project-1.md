@@ -1,25 +1,23 @@
-# Rust - CLI Calculator
+# JavaScript - Project 1
 
 ## 1
 
 ### --description--
 
-To start a new Rust project, you can use the Rust build system and package manager - Cargo.
-
-Run the following command to create a new project named `calculator`:
+Create a new directory named `src` with:
 
 ```bash
-cargo new calculator
+mkdir src
 ```
 
 ### --tests--
 
-You can use the `cargo new calculator` command to create the project.
+You should use the `mkdir src` command to create a new directory.
 
 ```js
 const files = await __helpers.getDirectory(".");
 // console.log("Test 1: ", files);
-assert.include(files ?? "", "calculator");
+assert.include(files ?? "", "src");
 ```
 
 This test always passes, as an example.
@@ -31,10 +29,10 @@ assert.strictEqual(1, 1);
 assert.include("foobar", "bar");
 ```
 
-This test takes 2 seconds to complete.
+This test takes 4 seconds to complete.
 
 ```js
-await new Promise((resolve) => setTimeout(resolve, 2000));
+await new Promise((resolve) => setTimeout(resolve, 4000));
 assert(true);
 ```
 
@@ -50,18 +48,16 @@ echo "Tom should be able to see this, if he looks quick enough"
 
 ### --description--
 
-You have just created a new Rust project within the `calculator/` directory.
-
-Change directory into `calculator/`.
+Change into the `src` directory.
 
 ### --test--
 
-You should use `cd calculator` to change into the directory.
+You should use `cd src` to change into the directory.
 
 ```js
 const cwd = await __helpers.getCWD();
 // console.log("Test 2: ", cwd);
-assert.include(cwd, "calculator");
+assert.include(cwd, "src");
 ```
 
 ### --seed--
@@ -69,115 +65,112 @@ assert.include(cwd, "calculator");
 #### --cmd--
 
 ```bash
-cargo new calculator
+mkdir src
 ```
 
 ## 3
 
 ### --description--
 
-Use Cargo to run your code:
-
-```bash
-cargo run
-```
+Within `src`, create a file named `index.js`.
 
 ### --tests--
 
-You should be within the `calculator/` directory.
+You should be within the `src/` directory.
 
 ```js
 const cwd = await __helpers.getCWD();
 // console.log("Test 3: ", cwd);
-assert.include(cwd, "calculator");
+assert.include(cwd, "src");
 ```
 
-You should run your code using the `cargo run` command.
+You can use `touch index.js` to create a file.
 
 ```js
-const terminalOutput = await __helpers.getTerminalOutput();
-// console.log("Test 4: ", terminalOutput);
-assert.match(terminalOutput, /Hello, world!/);
+const files = await __helpers.getDirectory(".");
+// console.log("Test 3: ", files);
+assert.include(files ?? "", "index.js");
 ```
 
 ## 4
 
 ### --description--
 
-Within the `src/main.rs` file, use the `let` keyword to add a variable named `firstName` and assign it a value of your first name within double quotes.
+Within `src/index.js`, add the following code:
 
-_Run your code, if you want_
+```js
+const TOM = "TOMTOM";
+```
 
 ### --tests--
 
-You should declare a variable `firstName`.
+You should declare a variable `TOM` using `const`.
 
 ```js
-const code = await __helpers.getFile("calculator/src/main.rs");
+const code = await __helpers.getFile("src/index.js");
 console.log("Test 5: ", code);
-assert.match(code, /let\s+firstName\s*=\s*\"\w+\"\s*/);
+assert.match(code, /const\s+TOM/);
 ```
 
-You should follow the compiler's advice to add a semi-colon at the end.
+### --seed--
 
-```js
-const code = await __helpers.getFile("calculator/src/main.rs");
-console.log("Test 5.2: ", code);
-assert.match(code, /let\s+firstName\s*=\s*\"\w+\"\s*;/);
+#### --cmd--
+
+```bash
+touch src/index.js
 ```
 
 ## 5
 
 ### --description--
 
-Run your code to see what the compiler has to say.
+Add code to print the `TOM` variable to the console.
 
 ### --tests--
 
-You should run `cargo run`.
+You should add `console.log(TOM)` to the `src/index.js` file.
 
 ```js
-const lastCommand = await __helpers.getLastCommand();
-console.log("Test 6: ", lastCommand);
-assert.include(lastCommand, "cargo run");
+const stdout = await __helpers.getCommandOutput("node src/index.js");
+// console.log("Test 6: ", stdout);
+assert.include(stdout, "TOMTOM");
 ```
 
 ### --seed--
 
-#### --"calculator/src/main.rs"--
+#### --"src/index.js"--
 
 ```rust
-fn main() {
-  let firstName = "Tommm";
-  println!("Hello, world!");
-}
+const TOM = "TOMTOM";
+
 ```
 
 ## 6
 
 ### --description--
 
-Follow the compiler's advice to convert the variable name into _snake_case_.
+Run your code using:
+
+```bash
+node src/index.js
+```
 
 ### --tests--
 
-You should have a variable `first_name`.
+You should run your code using `node src/index.js`.
 
 ```js
-const code = await __helpers.getFile("calculator/src/main.rs");
-console.log("Test 7: ", code);
-assert.match(code, /let\s+first_name\s*=\s*\"\w+\"\s*/);
+const lastCommand = await __helpers.getLastCommand();
+// console.log("Test 7: ", lastCommand);
+assert.include(lastCommand, "node src/index.js");
 ```
 
-### --seed--
+`"TOMTOM"` should be printed to the console.
 
-#### --"calculator/src/main.rs"--
-
-```rust
-fn main() {
-  let firstName = "Tommm";
-  println!("Hello, world!");
-}
+```js
+const termOutput = await __helpers.getTerminalOutput();
+// console.log("Test 8: ", termOutput);
+assert.include(termOutput, "TOMTOM");
 ```
 
 ## 7
@@ -191,25 +184,14 @@ Well done! You are likely one of the first people to use _ShaunOS_.
 Something to always fail. Did you know emojis are supported? 🤔
 
 ```js
-assert(true);
+assert(false);
 ```
 
-This test takes a while so you can see the loader :smiley:
+This test takes a while so you can see the loader 😄
 
 ```js
-const p = await new Promise((resolve) => setTimeout(resolve, 2000));
+const p = await new Promise((resolve) => setTimeout(resolve, 4000));
 assert(p === true);
-```
-
-### --seed--
-
-#### --"calculator/src/main.rs"--
-
-```rust
-fn main() {
-  let first_name = "Tommm";
-  println!("Hello, world!");
-}
 ```
 
 ## 8
