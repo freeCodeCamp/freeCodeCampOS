@@ -28,16 +28,22 @@ RUN sudo useradd -l -u 33333 -G sudo -md /home/gitpod -s /bin/bash -p gitpod git
     # passwordless sudo for users in the 'sudo' group
     && sudo sed -i.bkp -e 's/%sudo\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%sudo ALL=NOPASSWD:ALL/g' /etc/sudoers
 
-# Install packages for projects - Docker for testing
-RUN sudo apt-get install -y curl git bash-completion man-db docker build-essential
+# Install packages used in all projects - Docker for testing
+RUN sudo apt install -y curl git bash-completion man-db docker 
 
-# Install Rust for this project
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
+# Other packages you may need for your project, add them to the above command
+#build-essential
+#postgresql
+#postgresql-contrib
+#nano
+
+# Uncomment to install Rust for this project
+# RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+# ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Install Node LTS
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-RUN sudo apt-get install -y nodejs
+RUN sudo apt install -y nodejs
 
 # /usr/lib/node_modules is owned by root, so this creates a folder ${USERNAME} 
 # can use for npm install --global
