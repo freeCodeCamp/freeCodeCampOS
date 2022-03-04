@@ -1,11 +1,12 @@
 FROM ubuntu
 
 ARG USERNAME=camper
-ARG HOMEDIR=/home/$USERNAME
+ARG REPO_NAME=external-project
+ARG HOMEDIR=/workspace/$REPO_NAME
 
 ENV TZ="America/New_York"
 
-RUN apt update && apt install -y sudo
+RUN apt-get update && apt-get install -y sudo
 
 # Unminimize Ubuntu to restore man pages
 RUN yes | unminimize
@@ -22,18 +23,8 @@ RUN adduser ${USERNAME} sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> \
   /etc/sudoers
 
-### Gitpod user ###
-# '-l': see https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
-RUN sudo useradd -l -u 33333 -G sudo -md /home/gitpod -s /bin/bash -p gitpod gitpod \
-    # passwordless sudo for users in the 'sudo' group
-    && sudo sed -i.bkp -e 's/%sudo\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%sudo ALL=NOPASSWD:ALL/g' /etc/sudoers
-
-# Install packages for projects - Docker for testing
-RUN sudo apt-get install -y curl git bash-completion man-db docker build-essential
-
-# Install Rust for this project
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
+# Install packages for projects
+RUN sudo apt-get install -y curl git bash-completion man-db
 
 # Install Node LTS
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
@@ -46,7 +37,18 @@ RUN mkdir ~/.npm-global
 RUN npm config set prefix '~/.npm-global'
 
 # Configure course-specific environment
-RUN mkdir curriculum
-COPY ./ ./curriculum/
-WORKDIR ${HOMEDIR}/curriculum
+COPY . .
+WORKDIR ${HOMEDIR}
 
+
+
+# Other Tools
+
+## Rust
+# RUN sudo apt-get install build-essential
+# RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+# ENV PATH="/root/.cargo/bin:${PATH}"
+
+## Python
+
+## SQL
