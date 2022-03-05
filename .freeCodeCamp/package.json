@@ -33,7 +33,7 @@
     "@types/react": "17.0.39",
     "@types/react-dom": "17.0.13",
     "babel-loader": "8.2.3",
-    "css-loader": "6.6.0",
+    "css-loader": "6.7.0",
     "html-webpack-plugin": "5.5.0",
     "style-loader": "3.3.1",
     "ts-loader": "9.2.7",
