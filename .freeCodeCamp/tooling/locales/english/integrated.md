@@ -105,12 +105,4 @@ await new Promise((resolve) => setTimeout(resolve, 2000));
 assert(true);
 ```
 
-### --seed--
-
-#### --cmd--
-
-```bash
-echo "Tom should be able to see this, if he looks quick enough"
-```
-
 ## 2

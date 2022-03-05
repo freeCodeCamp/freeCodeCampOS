@@ -5,7 +5,7 @@
     "freeCodeCamp.freecodecamp-dark-vscode-theme"
   ],
   "forwardPorts": [3000],
-  "workspaceFolder": "/home/camper/curriculum",
+  "workspaceFolder": "/workspace/external-project",
   "dockerFile": "../.freeCodeCamp/Dockerfile",
   "context": ".."
 }
