@@ -11,7 +11,7 @@
     "./client"
   ],
   "dependencies": {
-    "chai": "4.3.4",
+    "chai": "4.3.6",
     "chokidar": "3.5.2",
     "express": "4.17.3",
     "marked": "4.0.9",
