@@ -4,8 +4,11 @@
   "description": "Template used for freeCodeCamp projects with the freeCodeCamp Courses VSCode extension",
   "scripts": {
     "start": "npm run build:client && node ./tooling/server.js",
+    "develop": "npm run develop:client & npm run develop:server",
     "build:git": "node ./tooling/git/build.js",
-    "build:client": "webpack"
+    "build:client": "webpack",
+    "develop:client": "webpack --watch --mode development",
+    "develop:server": "nodemon --watch ./dist/ ./tooling/server.js"
   },
   "workspaces": [
     "./client"
@@ -35,10 +38,12 @@
     "babel-loader": "8.2.3",
     "css-loader": "6.7.1",
     "html-webpack-plugin": "5.5.0",
+    "nodemon": "^2.0.15",
     "style-loader": "3.3.1",
     "ts-loader": "9.2.8",
     "typescript": "4.6.2",
-    "webpack-cli": "4.9.2"
+    "webpack-cli": "4.9.2",
+    "webpack-dev-server": "^4.7.4"
   },
   "browserslist": [
     ">0.2%",

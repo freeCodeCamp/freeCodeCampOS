@@ -5,7 +5,13 @@ module.exports = {
   entry: "./client/index.tsx",
   devtool: "inline-source-map",
   mode: process.env.NODE_ENV || "development",
-  devServer: { contentBase: path.join(__dirname, "client") },
+  devServer: {
+    static: {
+      directory: path.join(__dirname, "client", "assets"),
+    },
+    compress: true,
+    port: 9000,
+  },
   module: {
     rules: [
       {
