@@ -12,11 +12,12 @@
 
 ### Feature Flags
 
-- `RUN_TESTS_ON_WATCH` - whether or not to run the tests on every input/save/change - defaults to `false`
 - `CURRENT_PROJECT` - must match `/tooling/locales/en/<project_name>.md` filename
+- `INTEGRATED_PROJECT` - boolean to indicate if project is _Integrated_ or _Practice_
 - `LAST_KNOWN_LESSON_WITH_HASH` - legacy, but left in case we want a Git-saving workflow
-- `TEST_POLLING_RATE` - how often to refresh for changes in `ms`
 - `LOCALE` - one of `/tooling/locales/conf.js` - defaults to `english`
+- `RUN_TESTS_ON_WATCH` - whether or not to run the tests on every input/save/change - defaults to `false`
+- `TEST_POLLING_RATE` - how often to refresh for changes in `ms`
 
 ## How To Run A Course
 
@@ -24,7 +25,7 @@
 
 1. Ensure you have the Gitpod extension. _Otherwise [click here](https://gitpod.io/#https://github.com/ShaunSHamilton/external-project)_
 2. Once Gitpod opens, ensure it is done doing its stuffs
-3. Open Command Palette, run `freeCodeCamp: Develop Course`
+3. Open Command Palette, run `freeCodeCamp: Run Course`
 
 **Notes**
 

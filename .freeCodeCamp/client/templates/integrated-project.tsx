@@ -1,12 +1,11 @@
 import Description from "../components/description";
-import Loader from "../components/loader";
 import Header from "../components/header";
 import Heading from "../components/heading";
-import IntegratedProjectTests from "../components/integrated-project-tests";
-import Console from "../components/console";
 import { F, TestType } from "../types";
 import "./integrated-project.css";
 import Ruler from "../components/ruler";
+import IntegratedProjectControls from "../components/integrated-project-controls";
+import IntegratedProjectOutput from "../components/integrated-project-output";
 
 interface IntegratedProjectProps {
   runTests: F<void, void>;
@@ -31,14 +30,18 @@ const IntegratedProject = ({
     <>
       <Header />
       <Heading topic={topic} project={project} />
+
+      <Ruler />
+
       <Description description={description} />
+
       <Ruler />
-      <IntegratedProjectTests tests={tests} />
+
+      <IntegratedProjectControls {...{ runTests }} />
+
       <Ruler />
-      {isLoading ? <Loader /> : <Console cons={cons} />}
-      <footer>
-        <button onClick={() => runTests()}>Run Tests</button>
-      </footer>
+
+      <IntegratedProjectOutput {...{ isLoading, tests, cons }} />
     </>
   );
 };
