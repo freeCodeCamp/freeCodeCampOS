@@ -34,28 +34,6 @@ header {
   background-color: var(--dark-2);
   display: flex;
 }
-header > button {
-  width: 20%;
-  margin: 0 auto;
-  height: 100%;
-  background-image: linear-gradient(var(--light-yellow), var(--dark-yellow));
-  border-width: 3px;
-  border-color: var(--dark-yellow);
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--dark-1);
-  cursor: pointer;
-}
-@media (max-width: 1000px) {
-  header > button {
-    font-size: 1rem;
-  }
-}
-@media (max-width: 400px) {
-  header > button {
-    font-size: 0.8rem;
-  }
-}
 
 #logo {
   width: 350px;

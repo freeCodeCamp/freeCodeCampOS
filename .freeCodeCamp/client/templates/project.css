@@ -1,3 +1,26 @@
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav > button {
+  background-color: var(--dark-3);
+  color: rgb(230, 230, 230);
+  font-size: 1.8rem;
+  font-weight: bold;
+  width: 50px;
+  height: 100%;
+  padding: 0.5rem;
+  cursor: pointer;
+  outline: none;
+  margin: 0 1rem;
+}
+nav > button:hover {
+  background-color: var(--light-blue);
+  color: var(--dark-3);
+}
+
 #project-heading {
   font-size: 1.5rem;
 }
@@ -50,32 +73,21 @@
   text-align: left;
 }
 
-details {
-  margin: 20px auto;
+#description > pre {
+  background-color: black !important;
+  padding: 1rem;
+}
+
+.project-controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
   width: 80%;
-  text-align: left;
+  margin: 1rem auto;
+  padding: 1rem;
 }
-
-details > section {
-  max-width: 100%;
-  max-height: 200px;
-  overflow: auto;
-}
-
-#tests > ul > li {
-  text-align: left;
-  text-decoration: none;
-  list-style: none;
-}
-
-footer {
-  margin-top: 20px;
-  width: 100%;
-  height: 55px;
-  /* background-color: var(--dark-2); */
-}
-footer > button {
-  width: 80%;
+.project-controls > button {
+  width: 30%;
   margin: 0 auto;
   height: 100%;
   background-image: linear-gradient(var(--light-yellow), var(--dark-yellow));
@@ -85,9 +97,51 @@ footer > button {
   font-weight: bold;
   color: var(--dark-1);
   cursor: pointer;
-  margin-top: 20px;
+  padding: 0.5rem;
 }
-footer > button:hover {
+.project-controls > button:hover {
   background-image: none;
   background-color: var(--light-yellow);
+}
+
+.project-output {
+  max-width: 95%;
+  margin: 1rem;
+  overflow-x: hidden;
+}
+.project-output > ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 0;
+}
+.project-output > ul > li {
+  list-style: none;
+}
+.output-btn {
+  background-color: var(--dark-3);
+  color: var(--light-1);
+  font-size: 1.5rem;
+}
+.output-btn:hover {
+  background-color: var(--light-blue);
+  color: var(--dark-3);
+  cursor: pointer;
+}
+.output-btn:disabled {
+  background-color: var(--light-blue);
+  color: var(--dark-3);
+  cursor: default;
+}
+
+.project-output-content {
+  background-color: black;
+  color: white;
+  width: 100%;
+  height: 90%;
+  padding: 1rem 2rem;
+  margin-top: 0;
+  text-align: left;
 }

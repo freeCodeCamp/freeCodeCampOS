@@ -1,15 +1,31 @@
+import { F } from "../types";
+
 interface HeadingProps {
   topic: string;
   project: string;
   lessonNumber?: number;
+  goToNextLesson?: F<void, void>;
+  goToPreviousLesson?: F<void, void>;
 }
 
-const Heading = ({ topic, project, lessonNumber }: HeadingProps) => {
+const Heading = ({
+  topic,
+  project,
+  lessonNumber,
+  goToNextLesson,
+  goToPreviousLesson,
+}: HeadingProps) => {
   return (
-    <h1 id="project-heading">
-      {topic} - {project}
-      {lessonNumber && <LessonNumber lessonNumber={lessonNumber} />}
-    </h1>
+    <nav>
+      {goToPreviousLesson && (
+        <button onClick={() => goToPreviousLesson()}>&lt;</button>
+      )}
+      <h1 id="project-heading">
+        {topic} - {project}
+        {lessonNumber && <LessonNumber lessonNumber={lessonNumber} />}
+      </h1>
+      {goToNextLesson && <button onClick={() => goToNextLesson()}>&gt;</button>}
+    </nav>
   );
 };
 

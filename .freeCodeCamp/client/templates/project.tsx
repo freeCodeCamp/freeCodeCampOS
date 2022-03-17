@@ -8,6 +8,8 @@ import "./project.css";
 import { F, TestType } from "../types";
 import Console from "../components/console";
 import Ruler from "../components/ruler";
+import ProjectControls from "../components/project-controls";
+import ProjectOutput from "../components/project-output";
 
 interface ProjectProps {
   runTests: F<void, void>;
@@ -40,26 +42,28 @@ const Project = ({
 }: ProjectProps) => {
   return (
     <>
-      <Header {...{ goToNextLesson, goToPreviousLesson }} />
-      <Heading topic={topic} project={project} lessonNumber={lessonNumber} />
+      <Header />
+      <Heading
+        {...{
+          goToNextLesson,
+          goToPreviousLesson,
+          topic,
+          project,
+          lessonNumber,
+        }}
+      />
+
+      <Ruler />
 
       <Description description={description} />
 
       <Ruler />
 
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <>
-          <ProjectHints hints={hints} />
-          <ProjectTests tests={tests} />
-          <Console cons={cons} />
-        </>
-      )}
-      <footer>
-        <button onClick={() => runTests()}>Run Tests</button>
-        <button onClick={() => resetProject()}>Reset Project</button>
-      </footer>
+      <ProjectControls {...{ runTests, resetProject }} />
+
+      <Ruler />
+
+      <ProjectOutput {...{ isLoading, hints, tests, cons }} />
     </>
   );
 };
