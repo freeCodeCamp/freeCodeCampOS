@@ -1,7 +1,8 @@
 {
   "path": ".freeCodeCamp",
+  "prepare": "cp sample.env .env && source ./tooling/.bashrc && npm ci",
   "scripts": {
-    "develop-course": "cp sample.env .env && source ./tooling/.bashrc && npm ci && npm run develop",
+    "develop-course": "npm run develop",
     "run-course": "npm run start",
     "test": {
       "functionName": "handleMessage",
@@ -18,7 +19,7 @@
       {
         "open": true,
         "url": "http://localhost:8080",
-        "timeout": 4000
+        "showLoader": true
       }
     ],
     "terminals": [
