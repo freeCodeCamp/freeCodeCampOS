@@ -123,3 +123,9 @@ header {
 .hidden {
   display: none;
 }
+
+code {
+  background-color: var(--dark-3);
+  color: var(--light-1);
+  padding: 0.2rem;
+}

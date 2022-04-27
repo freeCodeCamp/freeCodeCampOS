@@ -7,7 +7,7 @@ import IntegratedProject from "./templates/integrated-project";
 import { Events, TestType } from "./types/index";
 import { parseMarkdown } from "./utils";
 
-let INTEGRATED_PROJECT = false;
+let INTEGRATED_PROJECT = true;
 // try {
 //   INTEGRATED_PROJECT = !!process?.env?.INTEGRATED_PROJECT;
 // } catch (e) {}

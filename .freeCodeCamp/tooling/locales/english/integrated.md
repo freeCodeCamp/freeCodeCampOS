@@ -1,4 +1,4 @@
-# Tom - TomTom
+# Web3 - Build a TomTom
 
 ## 1
 
@@ -14,6 +14,7 @@
 - Tom can hear other members speak
 - Tom's screen does not freeze mid-presentation
 - Tom's TomTom takes Tom to Tennessee to temporarily try towing taxis
+- Tom can see `inline-code` and it is `beautiful`
 
 ```rust
 fn main() {
