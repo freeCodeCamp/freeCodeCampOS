@@ -50,7 +50,6 @@ nav {
   display: flex;
   flex-direction: row;
   justify-content: left;
-  width: 100%;
   align-items: center;
   margin-bottom: 0;
 }
@@ -76,10 +75,10 @@ nav {
 .integrated-project-output-content {
   background-color: black;
   color: white;
-  width: 100%;
   height: fit-content;
   min-height: 100px;
   padding: 1rem 2rem;
   margin-top: 0;
   text-align: left;
+  overflow: auto;
 }
