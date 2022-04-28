@@ -2,24 +2,19 @@ import { render } from "react-dom";
 import { useEffect, useState, StrictMode } from "react";
 import "./assets/prism.css";
 import "./styles.css";
-import Project from "./templates/project";
+// import Project from "./templates/project";
 import IntegratedProject from "./templates/integrated-project";
 import { Events, TestType } from "./types/index";
 import { parseMarkdown } from "./utils";
-
-let INTEGRATED_PROJECT = true;
-// try {
-//   INTEGRATED_PROJECT = !!process?.env?.INTEGRATED_PROJECT;
-// } catch (e) {}
 
 const socket = new WebSocket("ws://localhost:8080");
 const App = () => {
   const [topic, setTopic] = useState("");
   const [project, setProject] = useState("");
-  const [lessonNumber, setLessonNumber] = useState(1);
+  // const [lessonNumber, setLessonNumber] = useState(1);
   const [description, setDescription] = useState("");
   const [tests, setTests] = useState<TestType[]>([]);
-  const [hints, setHints] = useState("");
+  // const [hints, setHints] = useState("");
   const [cons, setCons] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -44,7 +39,7 @@ const App = () => {
     "toggle-loader-animation": toggleLoaderAnimation,
     "update-test": updateTest,
     "update-tests": updateTests,
-    "update-hints": updateHints,
+    // "update-hints": updateHints,
     "update-console": updateConsole,
     "update-description": updateDescription,
     "update-project-heading": updateProjectHeading,
@@ -66,7 +61,7 @@ const App = () => {
   }) {
     setTopic(projectTopic);
     setProject(currentProject);
-    setLessonNumber(lessonNumber);
+    // setLessonNumber(lessonNumber);
   }
 
   function updateDescription({ description }: { description: string }) {
@@ -79,9 +74,9 @@ const App = () => {
   function updateTest({ test }: { test: TestType }) {
     setTests((ts) => ts.map((t) => (t.testId === test.testId ? test : t)));
   }
-  function updateHints({ hints }: { hints: string }) {
-    setHints(parseMarkdown(hints));
-  }
+  // function updateHints({ hints }: { hints: string }) {
+  //   setHints(parseMarkdown(hints));
+  // }
   function updateConsole({ cons }: { cons: string }) {
     setCons(parseMarkdown("```bash\n".concat(cons).concat("\n```")));
   }
@@ -97,31 +92,29 @@ const App = () => {
   function runTests() {
     sock(Events.RUN_TESTS);
   }
-  function resetProject() {
-    sock(Events.RESET_PROJECT);
-  }
-  function goToNextLesson() {
-    sock(Events.GO_TO_NEXT_LESSON);
-  }
-  function goToPreviousLesson() {
-    sock(Events.GO_TO_PREVIOUS_LESSON);
-  }
+  // function resetProject() {
+  //   sock(Events.RESET_PROJECT);
+  // }
+  // function goToNextLesson() {
+  //   sock(Events.GO_TO_NEXT_LESSON);
+  // }
+  // function goToPreviousLesson() {
+  //   sock(Events.GO_TO_PREVIOUS_LESSON);
+  // }
   return (
     <>
-      {INTEGRATED_PROJECT ? (
-        <IntegratedProject
-          {...{
-            runTests,
-            description,
-            topic,
-            project,
-            tests,
-            cons,
-            isLoading,
-          }}
-        />
-      ) : (
-        <Project
+      <IntegratedProject
+        {...{
+          runTests,
+          description,
+          topic,
+          project,
+          tests,
+          cons,
+          isLoading,
+        }}
+      />
+      {/* <Project
           {...{
             runTests,
             resetProject,
@@ -136,8 +129,7 @@ const App = () => {
             hints,
             cons,
           }}
-        />
-      )}
+        /> */}
     </>
   );
 };
