@@ -1,8 +1,8 @@
 // This file handles the watching of the /curriculum folder for changes
 // and executing the command to run the tests for the next (current) lesson
-import { readEnv } from "./env";
-import runLesson from "./lesson";
-import runTests from "./test";
+import { readEnv } from "./env.js";
+import runLesson from "./lesson.js";
+import runTests from "./test.js";
 import { watch } from "chokidar";
 const { TEST_POLLING_RATE, RUN_TESTS_ON_WATCH } = await readEnv();
 const curriculumFolder = "../";

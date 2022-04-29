@@ -71,12 +71,14 @@ code .
 
 - You should not need to make any changes other than to the following files:
   - `.freeCodeCamp/tooling/locales/english/project-1.md`
+  - `.freeCodeCamp/sample.env`
+  - `.freeCodeCamp/freecodecamp.conf.json`
   - Edit this `README.md` to include information about the course
 
 ### Adding the Course to the `freeCodeCamp Courses` Extension
 
-1. Go to the [freeCodeCamp/freecodecamp-course repo](https://github.com/freeCodeCamp/freecodecamp-course)
-2. Open a PR adding to the [resources/courses.json](https://github.com/freeCodeCamp/freecodecamp-course/blob/master/resources/courses.json) file.
+1. Go to the [freeCodeCamp/freecodecamp-courses repo](https://github.com/freeCodeCamp/freecodecamp-courses)
+2. Open a PR adding to the [resources/courses.json](https://github.com/freeCodeCamp/freecodecamp-courses/blob/main/resources/courses.json) file.
 
 ## Markdown Syntax
 

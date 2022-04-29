@@ -1,5 +1,6 @@
 // This file contains the parser for the markdown lessons
-import { createReadStream, readFile } from "fs/promises";
+import { readFile } from "fs/promises";
+import { createReadStream } from "fs";
 import { createInterface } from "readline";
 
 const DESCRIPTION_MARKER = "### --description--";
@@ -14,7 +15,7 @@ const FILE_MARKER_REG = '(?<=#### --")[^"]+(?="--)';
  * @returns {Promise<string>} The project name
  */
 export async function getProjectTitle(file) {
-  const readable = await createReadStream(file);
+  const readable = createReadStream(file);
   const reader = createInterface({ input: readable });
   const firstLine = await new Promise((resolve) => {
     reader.on("line", (line) => {
@@ -31,9 +32,9 @@ export async function getProjectTitle(file) {
  * Gets all content within a lesson
  * @param {string} file - The relative path to the english locale file
  * @param {number} lessonNumber - The number of the lesson
- * @returns {string} The content of the lesson
+ * @returns {Promise<string>} The content of the lesson
  */
-export function getLessonFromFile(file, lessonNumber) {
+export async function getLessonFromFile(file, lessonNumber) {
   const fileContent = await readFile(file, "utf8");
   const lesson = fileContent.match(
     new RegExp(`## ${lessonNumber}\n(.*?)\n## ${lessonNumber + 1}`, "s")
@@ -132,34 +133,3 @@ export function isForceFlag(seed) {
 export function extractStringFromCode(code) {
   return code.replace(/.*?```[a-z]+\n(.*?)\n```/s, "$1");
 }
-
-// ----------------
-// MARKED PARSING
-// ----------------
-// import { setOptions, parse } from "marked";
-// import { languages, highlight as _highlight } from "prismjs";
-
-// import "prismjs/components/prism-markup-templating";
-// import "prismjs/components/prism-css";
-// // require("prismjs/components/prism-html");
-// import "prismjs/components/prism-json";
-// import "prismjs/components/prism-javascript";
-// import "prismjs/components/prism-jsx";
-// import "prismjs/components/prism-bash";
-// import "prismjs/components/prism-yaml";
-// import "prismjs/components/prism-toml";
-// import "prismjs/components/prism-rust";
-
-// setOptions({
-//   highlight: (code, lang) => {
-//     if (languages[lang]) {
-//       return _highlight(code, languages[lang], lang);
-//     } else {
-//       return code;
-//     }
-//   },
-// });
-
-// function parseMarkdown(markdown) {
-//   return parse(markdown, { gfm: true });
-// }

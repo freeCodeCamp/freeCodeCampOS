@@ -1,4 +1,14 @@
 {
-  "presets": ["@babel/env", "@babel/react", "@babel/preset-typescript"]
-  // "plugins": ["@babel/plugin-proposal-class-properties"]
+  "presets": ["@babel/env", "@babel/react", "@babel/preset-typescript"],
+  "plugins": [
+    [
+      "prismjs",
+      {
+        "languages": ["rust"],
+        "plugins": ["line-numbers"],
+        "theme": "okaidia",
+        "css": true
+      }
+    ]
+  ]
 }

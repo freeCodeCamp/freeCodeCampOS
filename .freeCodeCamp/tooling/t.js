@@ -1,13 +1,14 @@
-import { readEnv } from "./env";
+import { readEnv } from "./env.js";
 
 export const LOCALE = await readEnv(".meta").LOCALE;
 
-export function t(key, args = {}, forceLangToUse) {
+export async function t(key, args = {}, forceLangToUse) {
   const loc = await readEnv().LOCALE;
   // Get key from ./locales/{locale}/comments.json
   // Read file and parse JSON
-  const locale = forceLangToUse ?? loc === "undefined" ? "english" : loc;
-  const comments = require(`./locales/${locale}/comments.json`);
+  const locale =
+    forceLangToUse ?? loc === "undefined" ? "english" : loc ?? "english";
+  const comments = import(`./locales/${locale}/comments.json`);
 
   // Get value from JSON
   const value = comments[key];

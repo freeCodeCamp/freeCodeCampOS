@@ -1,27 +1,27 @@
 // These are used in the local scope of the `eval` in `runTests`
 import fs from "fs";
 import { assert } from "chai";
-import __helpers from "./test-utils";
+import __helpers from "./test-utils.js";
 
 import { getLessonHintsAndTests, getLessonFromFile } from "./parser.js";
 
-import { t, LOCALE } from "./t";
+import { t, LOCALE } from "./t.js";
 import { updateEnv, PATH } from "./env.js";
-import runLesson from "./lesson";
+import runLesson from "./lesson.js";
 import {
   toggleLoaderAnimation,
   updateTest,
   updateTests,
   updateConsole,
   updateHints,
-} from "./client-socks";
+} from "./client-socks.js";
 
 export default async function runTests(ws, project, lessonNumber) {
-  const locale = LOCALE === "undefined" ? "english" : LOCALE;
+  const locale = LOCALE === "undefined" ? "english" : LOCALE ?? "english";
   toggleLoaderAnimation(ws);
   try {
     const projectFile = `${PATH}/tooling/locales/${locale}/${project}.md`;
-    const lesson = getLessonFromFile(projectFile, lessonNumber);
+    const lesson = await getLessonFromFile(projectFile, lessonNumber);
     const hintsAndTestsArr = getLessonHintsAndTests(lesson);
     updateTests(
       ws,
@@ -57,7 +57,7 @@ export default async function runTests(ws, project, lessonNumber) {
     try {
       const passed = await Promise.all(testPromises);
       if (passed) {
-        console.log(t("lesson-correct", { lessonNumber }));
+        console.log(await t("lesson-correct", { lessonNumber }));
         updateEnv({ CURRENT_LESSON: lessonNumber + 1 });
         runLesson(ws, project, lessonNumber + 1);
         updateHints(ws, "");
@@ -67,7 +67,7 @@ export default async function runTests(ws, project, lessonNumber) {
       updateHints(ws, e);
     }
   } catch (e) {
-    console.log(t("tests-error"));
+    console.log(await t("tests-error"));
     console.log(e);
   } finally {
     toggleLoaderAnimation(ws);

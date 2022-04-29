@@ -1,18 +1,14 @@
-import { join, resolve as _resolve, dirname } from "path";
-import HtmlWebpackPlugin from "html-webpack-plugin";
-import process from "process";
-import path from "path";
-import webpack from "webpack";
-// import { cwd } from "process";
+const path = require("path");
+const Dotenv = require("dotenv-webpack");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-const __dirname = dirname(".freeCodeCamp");
-export default {
+module.exports = {
   entry: "./client/index.tsx",
   devtool: "inline-source-map",
   mode: process.env.NODE_ENV || "development",
   devServer: {
     static: {
-      directory: join(__dirname, "client", "assets"),
+      directory: path.join(__dirname, "client", "assets"),
     },
     compress: true,
     port: 9000,
@@ -41,22 +37,21 @@ export default {
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
-    // fallback: {
-    //   // path: path,
-    //   // process: process,
-    // },
+    fallback: {
+      os: require.resolve("os-browserify/browser"),
+      fs: false,
+      path: require.resolve("path-browserify"),
+      process: require.resolve("process"),
+    },
   },
   output: {
     filename: "bundle.js",
-    path: _resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "dist"),
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: join(__dirname, "client", "index.html"),
+      template: path.join(__dirname, "client", "index.html"),
     }),
-    new webpack.ProvidePlugin({
-      process: "process/browser",
-      Buffer: ["buffer", "Buffer"],
-    }),
+    new Dotenv(),
   ],
 };

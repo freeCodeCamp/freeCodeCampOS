@@ -1,6 +1,6 @@
-import "dotenv/config";
+// import "dotenv/config";
 import { render } from "react-dom";
-import { useEffect, useState, StrictMode, lazy } from "react";
+import { useEffect, useState, StrictMode, lazy, Suspense } from "react";
 import "./assets/prism.css";
 import "./styles.css";
 const IntegratedOrProject = lazy(() => {
@@ -10,6 +10,7 @@ const IntegratedOrProject = lazy(() => {
 });
 import { Events, TestType } from "./types/index";
 import { parseMarkdown } from "./utils";
+import Loader from "./components/loader";
 
 const socket = new WebSocket("ws://localhost:8080");
 const App = () => {
@@ -107,22 +108,24 @@ const App = () => {
   }
   return (
     <>
-      <IntegratedOrProject
-        {...{
-          cons,
-          description,
-          goToNextLesson,
-          goToPreviousLesson,
-          hints,
-          isLoading,
-          lessonNumber,
-          project,
-          resetProject,
-          runTests,
-          tests,
-          topic,
-        }}
-      />
+      <Suspense fallback={<Loader />}>
+        <IntegratedOrProject
+          {...{
+            cons,
+            description,
+            goToNextLesson,
+            goToPreviousLesson,
+            hints,
+            isLoading,
+            lessonNumber,
+            project,
+            resetProject,
+            runTests,
+            tests,
+            topic,
+          }}
+        />
+      </Suspense>
     </>
   );
 };

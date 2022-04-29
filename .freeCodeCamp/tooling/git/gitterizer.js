@@ -1,7 +1,7 @@
 // This file handles the fetching/parsing of the Git status of the project
 import { promisify } from "util";
 import { exec } from "child_process";
-import { readEnv, updateEnv } from "./env";
+import { readEnv, updateEnv } from "./env.js";
 const execute = promisify(exec);
 
 async function getCommitHashByNumber(number) {

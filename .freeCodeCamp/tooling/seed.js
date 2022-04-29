@@ -4,9 +4,9 @@ import {
   getLessonSeed,
   getCommands,
   getFilesWithSeed,
-} from "./parser";
-import { LOCALE } from "./t";
-import { PATH } from "./env";
+} from "./parser.js";
+import { LOCALE } from "./t.js";
+import { PATH } from "./env.js";
 import { readFile, writeFile } from "fs/promises";
 import { promisify } from "util";
 import { exec } from "child_process";
@@ -16,7 +16,7 @@ export default async function seedLesson(ws, project, lessonNumber) {
   // TODO: Use ws to display loader whilst seeding
   const locale = LOCALE === "undefined" ? "english" : LOCALE ?? "english";
   const projectFile = `${PATH}/tooling/locales/${locale}/${project}.md`;
-  const lesson = getLessonFromFile(projectFile, Number(lessonNumber));
+  const lesson = await getLessonFromFile(projectFile, Number(lessonNumber));
   const seed = getLessonSeed(lesson);
 
   const commands = getCommands(seed);

@@ -1,11 +1,11 @@
 import express from "express";
-import runTests from "./test";
-import { readEnv, updateEnv } from "./env";
+import runTests from "./test.js";
+import { readEnv, updateEnv } from "./env.js";
 
 import { WebSocketServer } from "ws";
-import runLesson from "./lesson";
-import { updateTests, updateHints } from "./client-socks";
-import hotReload from "./hot-reload";
+import runLesson from "./lesson.js";
+import { updateTests, updateHints } from "./client-socks.js";
+import hotReload from "./hot-reload.js";
 
 const app = express();
 

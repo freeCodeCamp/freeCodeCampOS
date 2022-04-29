@@ -6,20 +6,20 @@ import {
   getProjectTitle,
   getLessonSeed,
   isForceFlag,
-} from "./parser";
-import { LOCALE } from "./t";
+} from "./parser.js";
+import { LOCALE } from "./t.js";
 import {
   updateDescription,
   updateProjectHeading,
   updateTests,
-} from "./client-socks";
-import { PATH, readEnv } from "./env";
-import { seedLesson } from "./seed";
+} from "./client-socks.js";
+import { PATH, readEnv } from "./env.js";
+import seedLesson from "./seed.js";
 
 async function runLesson(ws, project, lessonNumber) {
   const locale = LOCALE === "undefined" ? "english" : LOCALE ?? "english";
   const projectFile = `${PATH}/tooling/locales/${locale}/${project}.md`;
-  const lesson = getLessonFromFile(projectFile, Number(lessonNumber));
+  const lesson = await getLessonFromFile(projectFile, Number(lessonNumber));
   const description = getLessonDescription(lesson);
 
   const { SEED_EVERY_LESSON, INTEGRATED_PROJECT } = await readEnv();
