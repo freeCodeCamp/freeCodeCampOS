@@ -1,27 +1,26 @@
-const express = require("express");
-const runTests = require("./test");
-const { readEnv, updateEnv } = require("./env");
+import express from "express";
+import runTests from "./test";
+import { readEnv, updateEnv } from "./env";
 
-const { WebSocketServer } = require("ws");
-const runLesson = require("./lesson");
-const { updateTests, updateHints } = require("./client-socks");
-const hotReload = require("./hot-reload");
+import { WebSocketServer } from "ws";
+import runLesson from "./lesson";
+import { updateTests, updateHints } from "./client-socks";
+import hotReload from "./hot-reload";
 
 const app = express();
 
 app.use(express.static("./dist"));
-// app.use(express.static("./assets"));
 
-function handleRunTests(ws, data) {
-  const { CURRENT_PROJECT, CURRENT_LESSON } = readEnv();
+async function handleRunTests(ws, data) {
+  const { CURRENT_PROJECT, CURRENT_LESSON } = await readEnv();
   runTests(ws, CURRENT_PROJECT, Number(CURRENT_LESSON));
 }
 
 function handleResetProject(ws, data) {}
 function handleResetLesson(ws, data) {}
 
-function handleGoToNextLesson(ws, data) {
-  const { CURRENT_LESSON, CURRENT_PROJECT } = readEnv();
+async function handleGoToNextLesson(ws, data) {
+  const { CURRENT_LESSON, CURRENT_PROJECT } = await readEnv();
   const nextLesson = Number(CURRENT_LESSON) + 1;
   updateEnv({ CURRENT_LESSON: nextLesson });
   runLesson(ws, CURRENT_PROJECT, nextLesson);
@@ -29,8 +28,8 @@ function handleGoToNextLesson(ws, data) {
   updateTests(ws, []);
 }
 
-function handleGoToPreviousLesson(ws, data) {
-  const { CURRENT_LESSON, CURRENT_PROJECT } = readEnv();
+async function handleGoToPreviousLesson(ws, data) {
+  const { CURRENT_LESSON, CURRENT_PROJECT } = await readEnv();
   const prevLesson = Number(CURRENT_LESSON) - 1;
   updateEnv({ CURRENT_LESSON: prevLesson });
   runLesson(ws, CURRENT_PROJECT, prevLesson);
@@ -38,8 +37,8 @@ function handleGoToPreviousLesson(ws, data) {
   updateHints(ws, "");
 }
 
-function handleConnect(ws) {
-  const { CURRENT_PROJECT, CURRENT_LESSON } = readEnv();
+async function handleConnect(ws) {
+  const { CURRENT_PROJECT, CURRENT_LESSON } = await readEnv();
   runLesson(ws, CURRENT_PROJECT, CURRENT_LESSON);
 }
 

@@ -1,8 +1,8 @@
-const fs = require("fs");
+import { readFile, writeFile } from "fs/promises";
 
-const PATH = ".";
+export const PATH = ".";
 
-function readEnv() {
+export async function readEnv() {
   let meta = {
     CURRENT_PROJECT: "calculator",
     LOCALE: "english",
@@ -12,7 +12,7 @@ function readEnv() {
     CURRENT_LESSON: "1",
   };
   try {
-    const META = fs.readFileSync(`${PATH}/.env`, "utf8");
+    const META = await readFile(`${PATH}/.env`, "utf8");
     const metaArr = META.split("\n").filter(Boolean);
     const new_meta = metaArr.reduce((meta, line) => {
       const [key, value] = line.split("=");
@@ -25,15 +25,13 @@ function readEnv() {
   return meta;
 }
 
-function updateEnv(obj) {
+export async function updateEnv(obj) {
   // TODO: Maybe not completely overwrite the file?
-  const env = { ...readEnv(), ...obj };
-  fs.writeFileSync(
+  const env = { ...(await readEnv()), ...obj };
+  await writeFile(
     `${PATH}/.env`,
     Object.entries(env).reduce((acc, [key, value]) => {
       return `${acc}\n${key}=${value}`;
     }, "")
   );
 }
-
-module.exports = { readEnv, updateEnv, PATH };

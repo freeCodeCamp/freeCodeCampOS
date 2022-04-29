@@ -1,22 +1,22 @@
 // These are used in the local scope of the `eval` in `runTests`
-const fs = require("fs");
-const assert = require("chai").assert;
-const __helpers = require("./test-utils");
+import fs from "fs";
+import { assert } from "chai";
+import __helpers from "./test-utils";
 
-const { getLessonHintsAndTests, getLessonFromFile } = require("./parser.js");
+import { getLessonHintsAndTests, getLessonFromFile } from "./parser.js";
 
-const { t, LOCALE } = require("./t");
-const { updateEnv, PATH } = require("./env.js");
-const runLesson = require("./lesson");
-const {
+import { t, LOCALE } from "./t";
+import { updateEnv, PATH } from "./env.js";
+import runLesson from "./lesson";
+import {
   toggleLoaderAnimation,
   updateTest,
   updateTests,
   updateConsole,
   updateHints,
-} = require("./client-socks");
+} from "./client-socks";
 
-async function runTests(ws, project, lessonNumber) {
+export default async function runTests(ws, project, lessonNumber) {
   const locale = LOCALE === "undefined" ? "english" : LOCALE;
   toggleLoaderAnimation(ws);
   try {
@@ -73,5 +73,3 @@ async function runTests(ws, project, lessonNumber) {
     toggleLoaderAnimation(ws);
   }
 }
-
-module.exports = runTests;

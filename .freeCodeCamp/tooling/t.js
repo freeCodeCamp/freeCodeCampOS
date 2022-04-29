@@ -1,9 +1,9 @@
-const { readEnv } = require("./env");
+import { readEnv } from "./env";
 
-const LOCALE = readEnv(".meta").LOCALE;
+export const LOCALE = await readEnv(".meta").LOCALE;
 
-function t(key, args = {}, forceLangToUse) {
-  const loc = readEnv().LOCALE;
+export function t(key, args = {}, forceLangToUse) {
+  const loc = await readEnv().LOCALE;
   // Get key from ./locales/{locale}/comments.json
   // Read file and parse JSON
   const locale = forceLangToUse ?? loc === "undefined" ? "english" : loc;
@@ -19,5 +19,3 @@ function t(key, args = {}, forceLangToUse) {
   // Return value
   return result;
 }
-
-module.exports = { t, LOCALE };

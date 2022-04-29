@@ -1,7 +1,8 @@
 // This file handles the fetching/parsing of the Git status of the project
-const util = require("util");
-const execute = util.promisify(require("child_process").exec);
-const { readEnv, updateEnv } = require("./env");
+import { promisify } from "util";
+import { exec } from "child_process";
+import { readEnv, updateEnv } from "./env";
+const execute = promisify(exec);
 
 async function getCommitHashByNumber(number) {
   try {
@@ -14,10 +15,10 @@ async function getCommitHashByNumber(number) {
     const hash = stdout.match(/\w+/)?.[0];
     // This keeps track of the latest known commit in case there are no commits from one lesson to the next
     if (!hash) {
-      const { LAST_KNOWN_LESSON_WITH_HASH } = readEnv();
+      const { LAST_KNOWN_LESSON_WITH_HASH } = await readEnv();
       return getCommitHashByNumber(LAST_KNOWN_LESSON_WITH_HASH);
     }
-    updateEnv({ LAST_KNOWN_LESSON_WITH_HASH: number });
+    await updateEnv({ LAST_KNOWN_LESSON_WITH_HASH: number });
     return hash;
   } catch (e) {
     console.error(e);
@@ -64,7 +65,7 @@ async function setFileSystemToLessonNumber(lessonNumber) {
   }
 }
 
-module.exports = {
+export default {
   getCommitHashByNumber,
   setFileSystemToLessonNumber,
 };

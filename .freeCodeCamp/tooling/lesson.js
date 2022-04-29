@@ -1,20 +1,20 @@
 // This file parses answer files for lesson content
-const {
+import {
   getLessonFromFile,
   getLessonDescription,
   getLessonHintsAndTests,
   getProjectTitle,
   getLessonSeed,
   isForceFlag,
-} = require("./parser");
-const { LOCALE } = require("./t");
-const {
+} from "./parser";
+import { LOCALE } from "./t";
+import {
   updateDescription,
   updateProjectHeading,
   updateTests,
-} = require("./client-socks");
-const { PATH, readEnv } = require("./env");
-const { seedLesson } = require("./seed");
+} from "./client-socks";
+import { PATH, readEnv } from "./env";
+import { seedLesson } from "./seed";
 
 async function runLesson(ws, project, lessonNumber) {
   const locale = LOCALE === "undefined" ? "english" : LOCALE ?? "english";
@@ -22,7 +22,8 @@ async function runLesson(ws, project, lessonNumber) {
   const lesson = getLessonFromFile(projectFile, Number(lessonNumber));
   const description = getLessonDescription(lesson);
 
-  if (false) {
+  const { SEED_EVERY_LESSON, INTEGRATED_PROJECT } = await readEnv();
+  if (INTEGRATED_PROJECT !== "true") {
     const hintsAndTestsArr = getLessonHintsAndTests(lesson);
     updateTests(
       ws,
@@ -39,7 +40,6 @@ async function runLesson(ws, project, lessonNumber) {
   updateProjectHeading(ws, { projectTopic, currentProject, lessonNumber });
   updateDescription(ws, description);
 
-  const { SEED_EVERY_LESSON } = readEnv();
   const seed = getLessonSeed(lesson);
   const isForce = isForceFlag(seed);
   // force flag overrides seed flag
@@ -51,4 +51,4 @@ async function runLesson(ws, project, lessonNumber) {
   }
 }
 
-module.exports = runLesson;
+export default runLesson;

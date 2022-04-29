@@ -1,10 +1,10 @@
 // This file handles the watching of the /curriculum folder for changes
 // and executing the command to run the tests for the next (current) lesson
-const { readEnv } = require("./env");
-const runLesson = require("./lesson");
-const runTests = require("./test");
-const chokidar = require("chokidar");
-const { TEST_POLLING_RATE, RUN_TESTS_ON_WATCH } = readEnv();
+import { readEnv } from "./env";
+import runLesson from "./lesson";
+import runTests from "./test";
+import { watch } from "chokidar";
+const { TEST_POLLING_RATE, RUN_TESTS_ON_WATCH } = await readEnv();
 const curriculumFolder = "../";
 
 function hotReload(ws) {
@@ -12,16 +12,16 @@ function hotReload(ws) {
   let isWait = false;
   let isClearConsole = false;
 
-  chokidar
-    .watch(curriculumFolder, { ignored: ".logs/.temp.log" })
-    .on("all", (event, name) => {
+  watch(curriculumFolder, { ignored: ".logs/.temp.log" }).on(
+    "all",
+    async (event, name) => {
       if (name) {
         if (isWait) return;
         isWait = setTimeout(() => {
           isWait = false;
         }, TEST_POLLING_RATE);
 
-        const { CURRENT_PROJECT, CURRENT_LESSON } = readEnv();
+        const { CURRENT_PROJECT, CURRENT_LESSON } = await readEnv();
         if (isClearConsole) {
           console.clear();
         }
@@ -31,7 +31,8 @@ function hotReload(ws) {
           runTests(ws, CURRENT_PROJECT, Number(CURRENT_LESSON));
         }
       }
-    });
+    }
+  );
 }
 
-module.exports = hotReload;
+export default hotReload;
