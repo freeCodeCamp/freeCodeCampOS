@@ -27,6 +27,7 @@ module.exports = {
                     "javascript",
                     "css",
                     "html",
+                    "json",
                     "markdown",
                     "sql",
                     "rust",
