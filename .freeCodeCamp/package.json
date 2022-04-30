@@ -41,7 +41,7 @@
     "nodemon": "2.0.16",
     "style-loader": "3.3.1",
     "ts-loader": "9.2.8",
-    "typescript": "4.6.3",
+    "typescript": "4.6.4",
     "webpack-cli": "4.9.2",
     "webpack-dev-server": "4.8.1"
   },
