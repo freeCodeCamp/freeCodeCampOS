@@ -7,18 +7,39 @@ module.exports = {
   devtool: "inline-source-map",
   mode: process.env.NODE_ENV || "development",
   devServer: {
-    static: {
-      directory: path.join(__dirname, "client", "assets"),
-    },
     compress: true,
     port: 9000,
   },
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(js|jsx|tsx|ts)$/,
         exclude: /node_modules/,
-        use: ["babel-loader"],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env"],
+            plugins: [
+              [
+                "prismjs",
+                {
+                  languages: [
+                    "javascript",
+                    "css",
+                    "html",
+                    "markdown",
+                    "sql",
+                    "rust",
+                    "typescript",
+                  ],
+                  plugins: [],
+                  theme: "okaidia",
+                  css: true,
+                },
+              ],
+            ],
+          },
+        },
       },
       {
         test: /\.(ts|tsx)$/,

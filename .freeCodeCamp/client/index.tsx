@@ -1,7 +1,5 @@
-// import "dotenv/config";
 import { render } from "react-dom";
 import { useEffect, useState, StrictMode, lazy, Suspense } from "react";
-import "./assets/prism.css";
 import "./styles.css";
 const IntegratedOrProject = lazy(() => {
   return process.env.INTEGRATED_PROJECT === "true"
