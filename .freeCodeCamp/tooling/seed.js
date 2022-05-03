@@ -1,21 +1,22 @@
 // This file handles seeding the lesson contents with the seed in markdown.
-const {
+import {
   getLessonFromFile,
   getLessonSeed,
   getCommands,
   getFilesWithSeed,
-} = require("./parser");
-const { LOCALE } = require("./t");
-const { PATH } = require("./env");
-const fs = require("fs/promises");
-const util = require("util");
-const execute = util.promisify(require("child_process").exec);
+} from "./parser.js";
+import { LOCALE } from "./t.js";
+import { PATH } from "./env.js";
+import { readFile, writeFile } from "fs/promises";
+import { promisify } from "util";
+import { exec } from "child_process";
+const execute = promisify(exec);
 
-async function seedLesson(ws, project, lessonNumber) {
+export default async function seedLesson(ws, project, lessonNumber) {
   // TODO: Use ws to display loader whilst seeding
   const locale = LOCALE === "undefined" ? "english" : LOCALE ?? "english";
   const projectFile = `${PATH}/tooling/locales/${locale}/${project}.md`;
-  const lesson = getLessonFromFile(projectFile, Number(lessonNumber));
+  const lesson = await getLessonFromFile(projectFile, Number(lessonNumber));
   const seed = getLessonSeed(lesson);
 
   const commands = getCommands(seed);
@@ -54,16 +55,12 @@ async function runSeed(filesWithSeed) {
   try {
     for (const [filePath, fileSeed] of filesWithSeed) {
       const filePathWithRoot = `${filePath}`;
-      const file = await fs.readFile(filePathWithRoot, "utf8");
+      const file = await readFile(filePathWithRoot, "utf8");
       const newFile = file.replace(fileSeed, "");
-      await fs.writeFile(filePathWithRoot, newFile);
+      await writeFile(filePathWithRoot, newFile);
     }
   } catch (e) {
     return Promise.reject(e);
   }
   return Promise.resolve();
 }
-
-module.exports = {
-  seedLesson,
-};

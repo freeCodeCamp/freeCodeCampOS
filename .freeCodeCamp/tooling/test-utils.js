@@ -1,12 +1,13 @@
-const fs = require("fs");
-const util = require("util");
-const path = require("path");
-const execute = util.promisify(require("child_process").exec);
+import { readFile, readdir } from "fs/promises";
+import { promisify } from "util";
+import { join } from "path";
+import { exec } from "child_process";
+const execute = promisify(exec);
 
 const ROOT = ".";
 
 async function getDirectory(path) {
-  const files = await fs.promises.readdir(`${ROOT}/${path}`);
+  const files = await readdir(`${ROOT}/${path}`);
   return files;
 }
 
@@ -22,8 +23,8 @@ async function isFileOpen(path) {
 }
 
 async function getTerminalOutput() {
-  const pathToTerminalLogs = path.join(`${ROOT}/.logs/.terminal-out.log`);
-  const terminalLogs = await fs.promises.readFile(pathToTerminalLogs, "utf8");
+  const pathToTerminalLogs = join(`${ROOT}/.logs/.terminal-out.log`);
+  const terminalLogs = await readFile(pathToTerminalLogs, "utf8");
 
   if (!terminalLogs) {
     throw new Error("No terminal logs found");
@@ -50,8 +51,8 @@ async function getCommandOutput(command, path = "") {
  * TODO
  */
 async function getLastCommand(howManyBack = 0) {
-  const pathToBashLogs = path.join(`${ROOT}/.logs/.bash_history.log`);
-  const bashLogs = await fs.promises.readFile(pathToBashLogs, "utf8");
+  const pathToBashLogs = join(`${ROOT}/.logs/.bash_history.log`);
+  const bashLogs = await readFile(pathToBashLogs, "utf8");
 
   if (!bashLogs) {
     throw new Error(`Could not find ${pathToBashLogs}`);
@@ -65,13 +66,13 @@ async function getLastCommand(howManyBack = 0) {
 
 // TODO: Do not return whole file
 async function getCWD() {
-  const pathToCWD = path.join(`${ROOT}/.logs/.cwd.log`);
-  const cwd = await fs.promises.readFile(pathToCWD, "utf8");
+  const pathToCWD = join(`${ROOT}/.logs/.cwd.log`);
+  const cwd = await readFile(pathToCWD, "utf8");
   return cwd;
 }
 
 async function getFile(path) {
-  const file = await fs.promises.readFile(`${ROOT}/${path}`, "utf8");
+  const file = await readFile(`${ROOT}/${path}`, "utf8");
   return file;
 }
 
@@ -85,4 +86,4 @@ const __helpers = {
   getCWD,
 };
 
-module.exports = __helpers;
+export default __helpers;

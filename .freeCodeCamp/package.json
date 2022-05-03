@@ -18,7 +18,7 @@
     "chokidar": "3.5.3",
     "express": "4.18.1",
     "marked": "4.0.14",
-    "prismjs": "1.28.0",
+    "prismjs": "^1.28.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "ws": "8.6.0"
@@ -33,12 +33,18 @@
     "@babel/preset-react": "7.16.7",
     "@babel/preset-typescript": "7.16.7",
     "@types/marked": "4.0.3",
+    "@types/prismjs": "^1.26.0",
     "@types/react": "17.0.44",
     "@types/react-dom": "17.0.16",
     "babel-loader": "8.2.5",
+    "babel-plugin-prismjs": "^2.1.0",
     "css-loader": "6.7.1",
+    "dotenv-webpack": "^7.1.0",
     "html-webpack-plugin": "5.5.0",
     "nodemon": "2.0.16",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
     "style-loader": "3.3.1",
     "ts-loader": "9.3.0",
     "typescript": "4.6.4",
@@ -50,5 +56,6 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "type": "module"
 }
