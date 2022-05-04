@@ -118,9 +118,9 @@ export async function finalise() {
   try {
     await execute("git restore .");
     const { stdout, stderr } = await execute(`git checkout main`);
-    if (stderr) {
-      throw new Error(stderr);
-    }
+    // if (stderr) {
+    //   throw new Error(stderr);
+    // }
   } catch (e) {
     return Promise.reject(e);
   }
