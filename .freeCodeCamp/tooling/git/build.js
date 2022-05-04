@@ -20,15 +20,11 @@ const PROJECT_LIST = ["project-1"];
 for (const project of PROJECT_LIST) {
   await updateEnv({ CURRENT_PROJECT: project });
   try {
+    await deleteBranch(project);
     await buildProject();
   } catch (e) {
     console.error("🔴 Failed to build project: ", project);
-    console.warn("🟠 Deleting created branch...");
-    try {
-      await deleteBranch(project);
-    } catch (e) {
-      console.error("🔴 Failed to delete branch: ", project);
-    }
+    await deleteBranch(project);
     throw new Error(e);
   }
 }
@@ -46,6 +42,7 @@ async function buildProject() {
 
   let lessonNumber = 1;
   let lesson = await getLessonFromFile(FILE, lessonNumber);
+  console.log(lesson);
   while (lesson) {
     const seed = getLessonSeed(lesson);
 
@@ -64,7 +61,6 @@ async function buildProject() {
       // Always commit? Or, skip when seed is empty?
       await commit(lessonNumber);
     } catch (e) {
-      console.error("🔴 Failed to commit lesson: ", lessonNumber);
       throw new Error(e);
     }
     lessonNumber++;
@@ -74,7 +70,6 @@ async function buildProject() {
   try {
     await pushProject();
   } catch (e) {
-    console.error("🔴 Failed to push project");
     throw new Error(e);
   }
 }

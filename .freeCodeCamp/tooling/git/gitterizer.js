@@ -10,6 +10,7 @@ export async function commit(lessonNumber) {
       `git add . && git commit --allow-empty -m "(${lessonNumber})"`
     );
     if (stderr) {
+      console.error("🔴 Failed to commit lesson: ", lessonNumber);
       throw new Error(stderr);
     }
   } catch (e) {
@@ -107,6 +108,7 @@ export async function pushProject() {
       throw new Error(stderr);
     }
   } catch (e) {
+    console.error("🔴 Failed to push project ", CURRENT_PROJECT);
     return Promise.reject(e);
   }
   return Promise.resolve();
@@ -126,6 +128,7 @@ export async function finalise() {
 }
 
 export async function deleteBranch(branch) {
+  console.warn("🟠 Deleting branch ", branch);
   try {
     await finalise();
     const { stdout, stderr } = await execute(`git branch -D ${branch}`);
@@ -133,6 +136,7 @@ export async function deleteBranch(branch) {
       throw new Error(stderr);
     }
   } catch (e) {
+    console.error("🔴 Failed to delete branch: ", project);
     return Promise.reject(e);
   }
   return Promise.resolve();
