@@ -1,16 +1,6 @@
 # freeCodeCamp - External Project Template
 
-## Shaun's TODO:
-
-- [ ] Add workflow for translations to Crowdin
-- [ ] Enable seed parsing for resetting
-- Feature Flags:
-  - [x] Always use seed on next lesson
-  - [ ] Use Git build for seed on production
-  - [x] Run tests on watch
-- [ ] Enable use of Git build on production
-
-### Feature Flags
+## Feature Flags
 
 - `CURRENT_PROJECT` - must match `/tooling/locales/en/<project_name>.md` filename
 - `INTEGRATED_PROJECT` - boolean to indicate if project is _Integrated_ or _Practice_
@@ -73,6 +63,7 @@ code .
   - `.freeCodeCamp/tooling/locales/english/project-1.md`
   - `.freeCodeCamp/sample.env`
   - `.freeCodeCamp/freecodecamp.conf.json`
+  - `.freeCodeCamp/Dockerfile`
   - Edit this `README.md` to include information about the course
 
 ### Adding the Course to the `freeCodeCamp Courses` Extension
