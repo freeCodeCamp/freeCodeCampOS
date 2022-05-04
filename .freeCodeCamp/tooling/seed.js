@@ -35,7 +35,7 @@ export default async function seedLesson(ws, project, lessonNumber) {
  * Runs the given array of commands in order
  * @param {string[]} commands - Array of commands to run
  */
-async function runCommands(commands) {
+export async function runCommands(commands) {
   // Execute the following commands in the shell
   for (const command of commands) {
     const { stdout, stderr } = await execute(command);
@@ -51,7 +51,7 @@ async function runCommands(commands) {
  * Runs the given array of files with seed
  * @param {[string, string][]} filesWithSeed - [[filePath, fileSeed]]
  */
-async function runSeed(filesWithSeed) {
+export async function runSeed(filesWithSeed) {
   try {
     for (const [filePath, fileSeed] of filesWithSeed) {
       const filePathWithRoot = `${filePath}`;

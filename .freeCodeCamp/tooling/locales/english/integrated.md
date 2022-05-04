@@ -105,5 +105,3 @@ Tom's TomTom takes Tom to Tennessee to temporarily try towing taxis
 await new Promise((resolve) => setTimeout(resolve, 2000));
 assert(true);
 ```
-
-## 2

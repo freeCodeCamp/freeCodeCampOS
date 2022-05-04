@@ -193,17 +193,3 @@ This test takes a while so you can see the loader 😄
 const p = await new Promise((resolve) => setTimeout(resolve, 4000));
 assert(p === true);
 ```
-
-## 8
-
-### --description--
-
-Is this necessary?
-
-### --tests--
-
-Hi, I'm a test.
-
-```js
-assert(false);
-```
