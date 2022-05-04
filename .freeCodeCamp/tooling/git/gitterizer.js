@@ -132,6 +132,7 @@ export async function deleteBranch(branch) {
   try {
     await finalise();
     const { stdout, stderr } = await execute(`git branch -D ${branch}`);
+    console.log(stdout);
     if (stderr) {
       throw new Error(stderr);
     }
