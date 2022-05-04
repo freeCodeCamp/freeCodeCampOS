@@ -42,7 +42,12 @@ export default async function runTests(ws, project, lessonNumber) {
           testId: i,
         });
       } catch (e) {
-        updateConsole(ws, JSON.stringify(e, null, 2));
+        const consoleError = `${i + 1}) ${hint}\n\`\`\`json\n${JSON.stringify(
+          e,
+          null,
+          2
+        )}\n\`\`\``;
+        updateConsole(ws, consoleError);
         updateTest(ws, {
           passed: false,
           testText: hint,

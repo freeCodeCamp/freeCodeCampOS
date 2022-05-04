@@ -81,7 +81,7 @@ const App = () => {
     setHints(parseMarkdown(hints));
   }
   function updateConsole({ cons }: { cons: string }) {
-    setCons(parseMarkdown("```bash\n".concat(cons).concat("\n```")));
+    setCons(parseMarkdown(cons));
   }
 
   function resetTests() {
