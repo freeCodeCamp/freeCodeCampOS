@@ -1,14 +1,14 @@
 // This file handles creating the Git curriculum branch
 
-import { PATH, readEnv, updateEnv } from "../env";
+import { PATH, readEnv, updateEnv } from "../env.js";
 import {
   getCommands,
   getFilesWithSeed,
   getLessonFromFile,
   getLessonSeed,
-} from "../parser";
-import { runCommands, runSeed } from "../seed";
-import { commit, initCurrentProjectBranch, pushProject } from "./gitterizer";
+} from "../parser.js";
+import { runCommands, runSeed } from "../seed.js";
+import { commit, initCurrentProjectBranch, pushProject } from "./gitterizer.js";
 
 const PROJECT_LIST = ["project-1"];
 
