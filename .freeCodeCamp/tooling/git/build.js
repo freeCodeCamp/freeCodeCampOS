@@ -42,7 +42,7 @@ async function buildProject() {
 
   let lessonNumber = 1;
   let lesson = await getLessonFromFile(FILE, lessonNumber);
-  console.log(lesson);
+  console.log("🔵 ", lesson);
   while (lesson) {
     const seed = getLessonSeed(lesson);
 
