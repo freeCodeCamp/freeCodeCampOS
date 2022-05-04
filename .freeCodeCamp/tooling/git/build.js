@@ -8,7 +8,12 @@ import {
   getLessonSeed,
 } from "../parser.js";
 import { runCommands, runSeed } from "../seed.js";
-import { commit, initCurrentProjectBranch, pushProject } from "./gitterizer.js";
+import {
+  commit,
+  deleteBranch,
+  initCurrentProjectBranch,
+  pushProject,
+} from "./gitterizer.js";
 
 const PROJECT_LIST = ["project-1"];
 
@@ -18,6 +23,8 @@ for (const project of PROJECT_LIST) {
     await buildProject();
   } catch (e) {
     console.error("🔴 Failed to build project: ", project);
+    console.warn("🟠 Deleting created branch...");
+    deleteBranch(project);
     throw new Error(e);
   }
 }

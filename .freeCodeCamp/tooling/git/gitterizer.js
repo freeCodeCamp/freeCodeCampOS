@@ -114,7 +114,21 @@ export async function pushProject() {
 
 export async function finalise() {
   try {
+    await execute("git restore .");
     const { stdout, stderr } = await execute(`git checkout main`);
+    if (stderr) {
+      throw new Error(stderr);
+    }
+  } catch (e) {
+    return Promise.reject(e);
+  }
+  return Promise.resolve();
+}
+
+export async function deleteBranch(branch) {
+  try {
+    await finalise();
+    const { stdout, stderr } = await execute(`git branch -D ${branch}`);
     if (stderr) {
       throw new Error(stderr);
     }
