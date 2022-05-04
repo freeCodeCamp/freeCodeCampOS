@@ -136,7 +136,7 @@ export async function deleteBranch(branch) {
       throw new Error(stderr);
     }
   } catch (e) {
-    console.error("🔴 Failed to delete branch: ", project);
+    console.error("🔴 Failed to delete branch: ", branch);
     return Promise.reject(e);
   }
   return Promise.resolve();
