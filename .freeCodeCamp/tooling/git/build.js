@@ -24,7 +24,11 @@ for (const project of PROJECT_LIST) {
   } catch (e) {
     console.error("🔴 Failed to build project: ", project);
     console.warn("🟠 Deleting created branch...");
-    deleteBranch(project);
+    try {
+      await deleteBranch(project);
+    } catch (e) {
+      console.error("🔴 Failed to delete branch: ", project);
+    }
     throw new Error(e);
   }
 }
