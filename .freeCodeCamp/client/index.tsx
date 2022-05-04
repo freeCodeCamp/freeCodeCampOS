@@ -81,7 +81,7 @@ const App = () => {
     setHints(parseMarkdown(hints));
   }
   function updateConsole({ cons }: { cons: string }) {
-    setCons(parseMarkdown(cons));
+    setCons((prev) => prev + "\n\n" + parseMarkdown(cons));
   }
 
   function resetTests() {
@@ -93,6 +93,7 @@ const App = () => {
   }
 
   function runTests() {
+    setCons("");
     sock(Events.RUN_TESTS);
   }
   function resetProject() {
