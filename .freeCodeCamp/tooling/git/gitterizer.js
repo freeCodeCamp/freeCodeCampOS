@@ -24,9 +24,10 @@ export async function initCurrentProjectBranch() {
     const { stdout, stderr } = await execute(
       `git checkout -b ${CURRENT_PROJECT}`
     );
-    if (stderr) {
-      throw new Error(stderr);
-    }
+    // SILlY GIT PUTS A BRANCH SWITCH INTO STDERR!!!
+    // if (stderr) {
+    //   throw new Error(stderr);
+    // }
   } catch (e) {
     return Promise.reject(e);
   }

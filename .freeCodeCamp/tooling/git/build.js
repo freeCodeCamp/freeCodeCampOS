@@ -13,13 +13,12 @@ import { commit, initCurrentProjectBranch, pushProject } from "./gitterizer.js";
 const PROJECT_LIST = ["project-1"];
 
 for (const project of PROJECT_LIST) {
+  await updateEnv({ CURRENT_PROJECT: project });
   try {
     await buildProject();
   } catch (e) {
     console.error("🔴 Failed to build project: ", project);
     throw new Error(e);
-  } finally {
-    await updateEnv({ CURRENT_PROJECT: project });
   }
 }
 
