@@ -101,7 +101,7 @@ export async function pushProject() {
   const { CURRENT_PROJECT } = await readEnv();
   try {
     const { stdout, stderr } = await execute(
-      `git push origin ${CURRENT_PROJECT}`
+      `git push origin ${CURRENT_PROJECT} --force`
     );
     if (stderr) {
       throw new Error(stderr);
