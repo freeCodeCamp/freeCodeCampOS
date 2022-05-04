@@ -1,7 +1,7 @@
 {
   "extensions": [
     "dbaeumer.vscode-eslint",
-    "freeCodeCamp.freecodecamp-courses",
+    "freeCodeCamp.freecodecamp-courses@1.3.0",
     "freeCodeCamp.freecodecamp-dark-vscode-theme"
   ],
   "forwardPorts": [3000],
