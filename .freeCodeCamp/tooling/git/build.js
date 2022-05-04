@@ -19,8 +19,8 @@ const PROJECT_LIST = ["project-1"];
 
 for (const project of PROJECT_LIST) {
   await updateEnv({ CURRENT_PROJECT: project });
+  await deleteBranch(project);
   try {
-    await deleteBranch(project);
     await buildProject();
   } catch (e) {
     console.error("🔴 Failed to build project: ", project);

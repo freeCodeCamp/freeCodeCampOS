@@ -104,9 +104,9 @@ export async function pushProject() {
     const { stdout, stderr } = await execute(
       `git push origin ${CURRENT_PROJECT} --force`
     );
-    if (stderr) {
-      throw new Error(stderr);
-    }
+    // if (stderr) {
+    //   throw new Error(stderr);
+    // }
   } catch (e) {
     console.error("🔴 Failed to push project ", CURRENT_PROJECT);
     return Promise.reject(e);
@@ -133,9 +133,9 @@ export async function deleteBranch(branch) {
     await finalise();
     const { stdout, stderr } = await execute(`git branch -D ${branch}`);
     console.log(stdout);
-    if (stderr) {
-      throw new Error(stderr);
-    }
+    // if (stderr) {
+    //   throw new Error(stderr);
+    // }
   } catch (e) {
     console.error("🔴 Failed to delete branch: ", branch);
     return Promise.reject(e);
