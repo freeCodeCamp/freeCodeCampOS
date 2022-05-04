@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:20.04
 
 ARG USERNAME=camper
 ARG REPO_NAME=external-project
