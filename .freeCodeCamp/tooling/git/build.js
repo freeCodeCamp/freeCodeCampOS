@@ -31,10 +31,7 @@ for (const project of PROJECT_LIST) {
 
 async function buildProject() {
   const { CURRENT_PROJECT } = await readEnv();
-  const FILE = join(
-    "..",
-    `${PATH}/tooling/locales/english/${CURRENT_PROJECT}.md`
-  );
+  const FILE = join(`${PATH}/tooling/locales/english/${CURRENT_PROJECT}.md`);
 
   try {
     await initCurrentProjectBranch();
