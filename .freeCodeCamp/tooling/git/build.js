@@ -29,8 +29,10 @@ for (const project of PROJECT_LIST) {
     throw new Error(e);
   } finally {
     await checkoutMain();
+    console.log("✅ Successfully built project: ", project);
   }
 }
+console.log("✅ Successfully built all projects");
 
 async function buildProject() {
   const { CURRENT_PROJECT } = await readEnv();
