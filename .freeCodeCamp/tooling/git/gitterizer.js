@@ -4,6 +4,17 @@ import { exec } from "child_process";
 import { readEnv, updateEnv } from "../env.js";
 const execute = promisify(exec);
 
+/**
+ * Runs the following commands:
+ *
+ * ```bash
+ * git add .
+ * git commit --allow-empty -m "(<lesson_number>)"
+ * ```
+ *
+ * @param {number} lessonNumber
+ * @returns {Promise<void>}
+ */
 export async function commit(lessonNumber) {
   try {
     const { stdout, stderr } = await execute(
@@ -19,6 +30,10 @@ export async function commit(lessonNumber) {
   return Promise.resolve();
 }
 
+/**
+ * Initialises a new branch for the `CURRENT_PROJECT`
+ * @returns {Promise<void>}
+ */
 export async function initCurrentProjectBranch() {
   const { CURRENT_PROJECT } = await readEnv();
   try {
@@ -35,6 +50,11 @@ export async function initCurrentProjectBranch() {
   return Promise.resolve();
 }
 
+/**
+ * Returns the commit hash of the branch `origin/<CURRENT_PROJECT>`
+ * @param {number} number
+ * @returns {Promise<string>}
+ */
 export async function getCommitHashByNumber(number) {
   const { LAST_KNOWN_LESSON_WITH_HASH, CURRENT_PROJECT } = await readEnv();
   try {
@@ -56,6 +76,10 @@ export async function getCommitHashByNumber(number) {
   }
 }
 
+/**
+ * Aborts and in-progress `cherry-pick`
+ * @returns {Promise<void>}
+ */
 async function ensureNoUnfinishedGit() {
   try {
     const { stdout, stderr } = await execute(`git cherry-pick --abort`);
@@ -69,6 +93,11 @@ async function ensureNoUnfinishedGit() {
   return Promise.resolve();
 }
 
+/**
+ * Git cleans the current branch, then `cherry-pick`s the commit hash found by `lessonNumber`
+ * @param {number} lessonNumber
+ * @returns {Promise<void>}
+ */
 export async function setFileSystemToLessonNumber(lessonNumber) {
   await ensureNoUnfinishedGit();
   const endHash = await getCommitHashByNumber(lessonNumber);
@@ -98,6 +127,10 @@ export async function setFileSystemToLessonNumber(lessonNumber) {
   return Promise.resolve();
 }
 
+/**
+ * Pushes the `<CURRENT_PROJECT>` branch to `origin`
+ * @returns {Promise<void>}
+ */
 export async function pushProject() {
   const { CURRENT_PROJECT } = await readEnv();
   try {
@@ -114,6 +147,12 @@ export async function pushProject() {
   return Promise.resolve();
 }
 
+/**
+ * Checks out the `main` branch
+ *
+ * **IMPORTANT**: This function restores any/all git changes that are uncommitted.
+ * @returns {Promise<void>}
+ */
 export async function checkoutMain() {
   try {
     await execute("git restore .");
@@ -127,6 +166,11 @@ export async function checkoutMain() {
   return Promise.resolve();
 }
 
+/**
+ * If the given branch is found to exist, deletes the branch
+ * @param {string} branch
+ * @returns {Promise<void>}
+ */
 export async function deleteBranch(branch) {
   const isBranchExists = await branchExists(branch);
   if (!isBranchExists) {
@@ -147,6 +191,11 @@ export async function deleteBranch(branch) {
   return Promise.resolve();
 }
 
+/**
+ * Checks if the given branch exists
+ * @param {string} branch
+ * @returns {Promise<boolean>}
+ */
 export async function branchExists(branch) {
   try {
     const { stdout, stderr } = await execute(`git branch --list ${branch}`);

@@ -1,4 +1,4 @@
-// This file handles creating the Git curriculum branch
+// This file handles creating the Git curriculum branches
 import { join } from "path";
 import { PATH, readEnv, updateEnv } from "../env.js";
 import {
