@@ -45,13 +45,12 @@ async function buildProject() {
 
   let lessonNumber = 1;
   let lesson = await getLessonFromFile(FILE, lessonNumber);
-  console.log(`🔵 '${lesson}'`, !!lesson);
   if (!lesson) {
     return Promise.reject(
       new Error(`🔴 No lesson found for ${CURRENT_PROJECT}`)
     );
   }
-  while (lesson.length > 0) {
+  while (lesson) {
     const seed = getLessonSeed(lesson);
 
     if (seed) {
