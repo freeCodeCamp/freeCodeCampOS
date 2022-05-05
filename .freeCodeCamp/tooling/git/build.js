@@ -9,6 +9,7 @@ import {
 } from "../parser.js";
 import { runCommands, runSeed } from "../seed.js";
 import {
+  checkoutMain,
   commit,
   deleteBranch,
   initCurrentProjectBranch,
@@ -26,6 +27,8 @@ for (const project of PROJECT_LIST) {
     console.error("🔴 Failed to build project: ", project);
     await deleteBranch(project);
     throw new Error(e);
+  } finally {
+    await checkoutMain();
   }
 }
 
