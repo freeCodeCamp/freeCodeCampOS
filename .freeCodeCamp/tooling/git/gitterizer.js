@@ -114,7 +114,7 @@ export async function pushProject() {
   return Promise.resolve();
 }
 
-export async function finalise() {
+export async function checkoutMain() {
   try {
     await execute("git restore .");
     const { stdout, stderr } = await execute(`git checkout main`);
@@ -128,9 +128,13 @@ export async function finalise() {
 }
 
 export async function deleteBranch(branch) {
+  const isBranchExists = await branchExists(branch);
+  if (!isBranchExists) {
+    return Promise.resolve();
+  }
   console.warn("🟠 Deleting branch ", branch);
   try {
-    await finalise();
+    await checkoutMain();
     const { stdout, stderr } = await execute(`git branch -D ${branch}`);
     console.log(stdout);
     // if (stderr) {
@@ -141,4 +145,13 @@ export async function deleteBranch(branch) {
     return Promise.reject(e);
   }
   return Promise.resolve();
+}
+
+export async function branchExists(branch) {
+  try {
+    const { stdout, stderr } = await execute(`git branch --list ${branch}`);
+    return Promise.resolve(stdout.includes(branch));
+  } catch (e) {
+    return Promise.reject(e);
+  }
 }

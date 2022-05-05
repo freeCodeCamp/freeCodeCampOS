@@ -21,8 +21,6 @@ for (const project of PROJECT_LIST) {
   await updateEnv({ CURRENT_PROJECT: project });
   try {
     await deleteBranch(project);
-  } catch (e) {}
-  try {
     await buildProject();
   } catch (e) {
     console.error("🔴 Failed to build project: ", project);
