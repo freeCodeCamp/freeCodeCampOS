@@ -36,9 +36,11 @@ export async function getProjectTitle(file) {
  */
 export async function getLessonFromFile(file, lessonNumber) {
   const fileContent = await readFile(file, "utf8");
-  const lesson = fileContent.match(
+  const mat = fileContent.match(
     new RegExp(`## ${lessonNumber}\n(.*?)\n(## ${lessonNumber + 1})?`, "s")
-  )?.[1];
+  );
+  console.log("mat: ", mat);
+  const lesson = mat?.[1];
   return lesson;
 }
 
