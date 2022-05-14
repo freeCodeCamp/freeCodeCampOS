@@ -35,7 +35,7 @@
     "@types/marked": "4.0.3",
     "@types/prismjs": "^1.26.0",
     "@types/react": "17.0.45",
-    "@types/react-dom": "17.0.16",
+    "@types/react-dom": "17.0.17",
     "babel-loader": "8.2.5",
     "babel-plugin-prismjs": "^2.1.0",
     "css-loader": "6.7.1",
