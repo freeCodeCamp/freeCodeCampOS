@@ -194,16 +194,4 @@ const p = await new Promise((resolve) => setTimeout(resolve, 4000));
 assert(p === true);
 ```
 
-## 8
-
-### --description--
-
-Is this necessary?
-
-### --tests--
-
-Hi, I'm a test.
-
-```js
-assert(false);
-```
+## --fcc-end--
