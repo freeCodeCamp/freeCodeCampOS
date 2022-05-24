@@ -55,9 +55,7 @@ export async function runSeed(filesWithSeed) {
   try {
     for (const [filePath, fileSeed] of filesWithSeed) {
       const filePathWithRoot = `${filePath}`;
-      const file = await readFile(filePathWithRoot, "utf8");
-      const newFile = file.replace(fileSeed, "");
-      await writeFile(filePathWithRoot, newFile);
+      await writeFile(filePathWithRoot, fileSeed);
     }
   } catch (e) {
     return Promise.reject(e);
