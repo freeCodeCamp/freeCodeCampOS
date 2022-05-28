@@ -28,8 +28,8 @@
     "url": "https://github.com/freeCodeCamp/external-project"
   },
   "devDependencies": {
-    "@babel/core": "7.18.0",
-    "@babel/preset-env": "7.18.0",
+    "@babel/core": "7.18.2",
+    "@babel/preset-env": "7.18.2",
     "@babel/preset-react": "7.17.12",
     "@babel/preset-typescript": "7.17.12",
     "@types/marked": "4.0.3",
