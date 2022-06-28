@@ -1,6 +1,6 @@
 // These are used in the local scope of the `eval` in `runTests`
 import fs from "fs";
-import { assert } from "chai";
+import { assert, AssertionError } from "chai";
 import __helpers from "./test-utils.js";
 
 import {
@@ -20,9 +20,9 @@ import {
   updateConsole,
   updateHints,
 } from "./client-socks.js";
-import logover, { error } from "logover";
+import logover, { error, warn } from "logover";
 logover({
-  level: process.env.NODE_ENV === "production" ? "error" : "debug",
+  level: process.env.NODE_ENV === "production" ? "warn" : "debug",
 });
 
 export default async function runTests(ws, project, lessonNumber) {
@@ -36,9 +36,7 @@ export default async function runTests(ws, project, lessonNumber) {
 
     if (beforeAll) {
       try {
-        console.log(beforeAll);
-        await eval(beforeAll);
-        console.log(_radom);
+        await eval(`(async () => {${beforeAll}})()`);
       } catch (e) {
         error("--before-all-- hook failed to run:");
         error(e);
@@ -75,6 +73,9 @@ export default async function runTests(ws, project, lessonNumber) {
           testId: i,
         });
       } catch (e) {
+        if (!e instanceof AssertionError) {
+          warn(e);
+        }
         const consoleError = `${i + 1}) ${hint}\n\`\`\`json\n${JSON.stringify(
           e,
           null,

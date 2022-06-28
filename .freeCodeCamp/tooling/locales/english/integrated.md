@@ -110,8 +110,11 @@ assert(true);
 
 ```js
 console.log("I run before the tests do");
-var _radom = "test";
-console.log("2: ", _radom);
+async function timeout(time) {
+  await new Promise((resolve) => setTimeout(resolve, time));
+}
+// Anything you want access to out of this scope needs to be attached to the global object.
+global.timeout = timeout;
 ```
 
 ### --before-each--

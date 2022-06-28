@@ -5,9 +5,7 @@ import { createInterface } from "readline";
 
 const DESCRIPTION_MARKER = "### --description--";
 const SEED_MARKER = "### --seed--";
-const BEFORE_ALL_MARKER = "### --before-all--";
-const BEFORE_EACH_MARKER = "### --before-each--";
-const NEXT_MARKER = `###? --`;
+const NEXT_MARKER = `### --`;
 const CMD_MARKER = "#### --cmd--";
 const FILE_MARKER_REG = '(?<=#### --")[^"]+(?="--)';
 
@@ -95,10 +93,10 @@ export function getLessonSeed(lesson) {
  * @returns {string} The command to run before running the lesson tests
  */
 export function getBeforeAll(lesson) {
-  const beforeAllMatch = lesson.match(
-    new RegExp(`${BEFORE_ALL_MARKER}\n(.*?)${NEXT_MARKER}`, "s")
+  const sections = lesson.trim().split(NEXT_MARKER);
+  const beforeAll = sections.find((section) =>
+    section.startsWith("before-all")
   );
-  const beforeAll = beforeAllMatch?.[1];
   const beforeAllCommand = extractStringFromCode(beforeAll ?? "");
   return beforeAllCommand ?? "";
 }
@@ -109,9 +107,10 @@ export function getBeforeAll(lesson) {
  * @returns {string} The command to run before running each lesson test
  */
 export function getBeforeEach(lesson) {
-  const beforeEach = lesson.match(
-    new RegExp(`${BEFORE_EACH_MARKER}\n(.*?)${NEXT_MARKER}`, "s")
-  )?.[1];
+  const sections = lesson.trim().split(NEXT_MARKER);
+  const beforeEach = sections.find((section) =>
+    section.startsWith("before-each")
+  );
   const beforeEachCommand = extractStringFromCode(beforeEach ?? "");
   return beforeEachCommand ?? "";
 }
