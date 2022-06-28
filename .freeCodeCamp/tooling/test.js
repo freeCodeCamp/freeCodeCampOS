@@ -3,7 +3,12 @@ import fs from "fs";
 import { assert } from "chai";
 import __helpers from "./test-utils.js";
 
-import { getLessonHintsAndTests, getLessonFromFile } from "./parser.js";
+import {
+  getLessonHintsAndTests,
+  getLessonFromFile,
+  getBeforeAll,
+  getBeforeEach,
+} from "./parser.js";
 
 import { t, LOCALE } from "./t.js";
 import { updateEnv, PATH } from "./env.js";
@@ -15,6 +20,10 @@ import {
   updateConsole,
   updateHints,
 } from "./client-socks.js";
+import logover, { error } from "logover";
+logover({
+  level: process.env.NODE_ENV === "production" ? "error" : "debug",
+});
 
 export default async function runTests(ws, project, lessonNumber) {
   const locale = LOCALE === "undefined" ? "english" : LOCALE ?? "english";
@@ -22,6 +31,20 @@ export default async function runTests(ws, project, lessonNumber) {
   try {
     const projectFile = `${PATH}/tooling/locales/${locale}/${project}.md`;
     const lesson = await getLessonFromFile(projectFile, lessonNumber);
+    const beforeAll = getBeforeAll(lesson);
+    const beforeEach = getBeforeEach(lesson);
+
+    if (beforeAll) {
+      try {
+        console.log(beforeAll);
+        await eval(beforeAll);
+        console.log(_radom);
+      } catch (e) {
+        error("--before-all-- hook failed to run:");
+        error(e);
+      }
+    }
+
     const hintsAndTestsArr = getLessonHintsAndTests(lesson);
     updateTests(
       ws,
@@ -33,6 +56,16 @@ export default async function runTests(ws, project, lessonNumber) {
       }, [])
     );
     const testPromises = hintsAndTestsArr.map(async ([hint, test], i) => {
+      if (beforeEach) {
+        try {
+          const _beforeEachOut = await eval(
+            `(async () => { ${beforeEach} })();`
+          );
+        } catch (e) {
+          error("--before-each-- hook failed to run:");
+          error(e);
+        }
+      }
       try {
         const _testOutput = await eval(`(async () => {${test}})();`);
         updateTest(ws, {

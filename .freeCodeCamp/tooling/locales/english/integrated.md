@@ -50,49 +50,49 @@ CREATE TABLE IF NOT EXISTS `tom` (
 Tom can join the meeting
 
 ```js
-await new Promise((resolve) => setTimeout(resolve, 1564));
+await timeout(1564);
 assert(true);
 ```
 
 Tom can see other members in the meeting room
 
 ```js
-await new Promise((resolve) => setTimeout(resolve, 1756));
+await timeout(1756);
 assert(true);
 ```
 
 Tom can present his screen
 
 ```js
-await new Promise((resolve) => setTimeout(resolve, 1863));
+await timeout(1863);
 assert(false, "Tom cannot present his screen");
 ```
 
 Tom can see his screen being presented
 
 ```js
-await new Promise((resolve) => setTimeout(resolve, 1114));
+await timeout(1114);
 assert(true);
 ```
 
 Tom can speak to the other members
 
 ```js
-await new Promise((resolve) => setTimeout(resolve, 2214));
+await timeout(2214);
 assert(true);
 ```
 
 Tom can hear other members speak
 
 ```js
-await new Promise((resolve) => setTimeout(resolve, 4861));
+await timeout(4861);
 assert(true);
 ```
 
 Tom's screen does not freeze mid-presentation
 
 ```js
-await new Promise((resolve) => setTimeout(resolve, 2222));
+await timeout(2222);
 assert(
   false,
   "Tom's screen still freezes... Probably from the Wisconsin cold."
@@ -102,8 +102,22 @@ assert(
 Tom's TomTom takes Tom to Tennessee to temporarily try towing taxis
 
 ```js
-await new Promise((resolve) => setTimeout(resolve, 2000));
+await timeout(2000);
 assert(true);
+```
+
+### --before-all--
+
+```js
+console.log("I run before the tests do");
+var _radom = "test";
+console.log("2: ", _radom);
+```
+
+### --before-each--
+
+```js
+console.log("I run before each test runs");
 ```
 
 ## --fcc-end--
