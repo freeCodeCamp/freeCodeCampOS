@@ -2,13 +2,11 @@ interface DescriptionProps {
   description: string;
 }
 
-const Description = ({ description }: DescriptionProps) => {
+export const Description = ({ description }: DescriptionProps) => {
   return (
     <section
-      id="description"
+      id='description'
       dangerouslySetInnerHTML={{ __html: description }}
     ></section>
   );
 };
-
-export default Description;

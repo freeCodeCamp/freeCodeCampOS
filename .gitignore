@@ -1,6 +1,6 @@
+target
 node_modules
-.env
-
-*.log
-
-.DS_Store
+.freeCodeCamp/.env
+Cargo.lock
+!.gitkeep
+.freeCodeCamp/dist

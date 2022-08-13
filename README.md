@@ -1,25 +1,6 @@
 # freeCodeCamp - External Project Template
 
-## Feature Flags
-
-- `CURRENT_PROJECT` - must match `/tooling/locales/en/<project_name>.md` filename
-- `INTEGRATED_PROJECT` - boolean to indicate if project is _Integrated_ or _Practice_
-- `LAST_KNOWN_LESSON_WITH_HASH` - legacy, but left in case we want a Git-saving workflow
-- `LOCALE` - one of `/tooling/locales/conf.js` - defaults to `english`
-- `RUN_TESTS_ON_WATCH` - whether or not to run the tests on every input/save/change - defaults to `false`
-- `TEST_POLLING_RATE` - how often to refresh for changes in `ms`
-
 ## How To Run A Course
-
-### In Gitpod!
-
-1. Ensure you have the Gitpod extension. _Otherwise [click here](https://gitpod.io/#https://github.com/ShaunSHamilton/external-project)_
-2. Once Gitpod opens, ensure it is done doing its stuffs
-3. Open Command Palette, run `freeCodeCamp: Run Course`
-
-**Notes**
-
-- When doing the course, ensure you are in the root directory
 
 ### Locally
 
@@ -68,8 +49,8 @@ code .
 
 ### Adding the Course to the `freeCodeCamp Courses` Extension
 
-1. Go to the [freeCodeCamp/freecodecamp-courses repo](https://github.com/freeCodeCamp/freecodecamp-courses)
-2. Open a PR adding to the [resources/courses.json](https://github.com/freeCodeCamp/freecodecamp-courses/blob/main/resources/courses.json) file.
+1. Go to the [freeCodeCamp/courses-vscode-extension repo](https://github.com/freeCodeCamp/courses-vscode-extension)
+2. Open a PR adding to the [resources/courses.json](https://github.com/freeCodeCamp/courses-vscode-extension/blob/main/resources/courses.json) file.
 
 ## Markdown Syntax
 
@@ -96,7 +77,7 @@ Teach Campers amazing things here...
 At least one line as a hint in the tests
 
 ```js
-assert("Chai.js tests with async code");
+assert('Chai.js tests with async code');
 ```
 
 ### --seed--

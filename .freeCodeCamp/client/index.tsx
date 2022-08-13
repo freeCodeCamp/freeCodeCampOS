@@ -1,25 +1,34 @@
-import { render } from "react-dom";
-import { useEffect, useState, StrictMode, lazy, Suspense } from "react";
-import "./styles.css";
-const IntegratedOrProject = lazy(() => {
-  return process.env.INTEGRATED_PROJECT === "true"
-    ? import("./templates/integrated-project")
-    : import("./templates/project");
-});
-import { Events, TestType } from "./types/index";
-import { parseMarkdown } from "./utils";
-import Loader from "./components/loader";
+import { createRoot } from 'react-dom/client';
+import { Suspense, useState, useEffect } from 'react';
+import { ConsoleError, Events, ProjectI, TestType } from './types/index';
+import { Loader } from './components/loader';
+import { Landing } from './templates/landing';
+import { Project } from './templates/project';
+import { Alert } from './components/alert';
+import { parseMarkdown, parse } from './utils/index';
+import { Header } from './components/header';
+import './styles.css';
 
-const socket = new WebSocket("ws://localhost:8080");
+let socket: WebSocket;
+if (process.env.GITPOD_WORKSPACE_URL) {
+  socket = new WebSocket(
+    process.env.GITPOD_WORKSPACE_URL.replace(/^https:\/\//, 'wss://8080-') + ''
+  );
+} else {
+  socket = new WebSocket('ws://localhost:8080');
+}
+
 const App = () => {
-  const [topic, setTopic] = useState("");
-  const [project, setProject] = useState("");
+  const [project, setProject] = useState<ProjectI | null>(null);
+  const [topic, setTopic] = useState('');
+
   const [lessonNumber, setLessonNumber] = useState(1);
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState('');
   const [tests, setTests] = useState<TestType[]>([]);
-  const [hints, setHints] = useState("");
-  const [cons, setCons] = useState("");
+  const [hints, setHints] = useState('');
+  const [cons, setCons] = useState<ConsoleError[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [alertCamper, setAlertCamper] = useState<null | string>(null);
 
   useEffect(() => {
     socket.onopen = function (_event) {
@@ -31,39 +40,48 @@ const App = () => {
       );
       handle[parsedData.event]?.(parsedData.data);
     };
+    socket.onclose = function (_event) {
+      setAlertCamper(
+        'freeCodeCamp development server has stopped. Please restart the server: 1) Open the Command Palette 2) Run `freeCodeCamp: Run Course`'
+      );
+    };
 
     return () => {
-      console.log("socket closing");
+      console.log('socket closing');
       socket.close();
     };
   }, []);
 
   const handle = {
-    "toggle-loader-animation": toggleLoaderAnimation,
-    "update-test": updateTest,
-    "update-tests": updateTests,
-    "update-hints": updateHints,
-    "update-console": updateConsole,
-    "update-description": updateDescription,
-    "update-project-heading": updateProjectHeading,
-    "reset-tests": resetTests,
+    'toggle-loader-animation': toggleLoaderAnimation,
+    'update-test': updateTest,
+    'update-tests': updateTests,
+    'update-hints': updateHints,
+    'update-console': updateConsole,
+    'update-description': updateDescription,
+    'update-project-heading': updateProjectHeading,
+    'update-project': setProject,
+    'reset-tests': resetTests
   };
 
   function sock(type: Events, data = {}) {
     socket.send(parse({ event: type, data }));
   }
 
+  function updateProject(project: ProjectI | null) {
+    sock(Events.SELECT_PROJECT, { id: project?.id });
+    resetState();
+    setProject(project);
+  }
+
   function updateProjectHeading({
     projectTopic,
-    currentProject,
-    lessonNumber,
+    lessonNumber
   }: {
     projectTopic: string;
-    currentProject: string;
     lessonNumber: number;
   }) {
     setTopic(projectTopic);
-    setProject(currentProject);
     setLessonNumber(lessonNumber);
   }
 
@@ -75,25 +93,40 @@ const App = () => {
     setTests(tests);
   }
   function updateTest({ test }: { test: TestType }) {
-    setTests((ts) => ts.map((t) => (t.testId === test.testId ? test : t)));
+    setTests(ts => ts.map(t => (t.testId === test.testId ? test : t)));
   }
   function updateHints({ hints }: { hints: string }) {
     setHints(parseMarkdown(hints));
   }
-  function updateConsole({ cons }: { cons: string }) {
-    setCons((prev) => prev + "\n\n" + parseMarkdown(cons));
+
+  function updateConsole({ cons }: { cons: ConsoleError }) {
+    // Insert cons in array at index `id`
+    setCons(prev => {
+      const sorted = [
+        ...prev.slice(0, cons.id),
+        cons,
+        ...prev.slice(cons.id)
+      ].filter(Boolean);
+      return sorted;
+    });
   }
 
   function resetTests() {
     setTests([]);
   }
 
+  function resetState() {
+    setTests([]);
+    setHints('');
+    setCons([]);
+  }
+
   function toggleLoaderAnimation() {
-    setIsLoading((prev) => !prev);
+    setIsLoading(prev => !prev);
   }
 
   function runTests() {
-    setCons("");
+    setCons([]);
     sock(Events.RUN_TESTS);
   }
   function resetProject() {
@@ -105,41 +138,38 @@ const App = () => {
   function goToPreviousLesson() {
     sock(Events.GO_TO_PREVIOUS_LESSON);
   }
+
   return (
     <>
       <Suspense fallback={<Loader />}>
-        <IntegratedOrProject
-          {...{
-            cons,
-            description,
-            goToNextLesson,
-            goToPreviousLesson,
-            hints,
-            isLoading,
-            lessonNumber,
-            project,
-            resetProject,
-            runTests,
-            tests,
-            topic,
-          }}
-        />
+        {alertCamper && <Alert text={alertCamper} />}
+        <Header updateProject={updateProject} />
+        {project ? (
+          <Project
+            {...{
+              project,
+              topic,
+              lessonNumber,
+              description,
+              tests,
+              hints,
+              cons,
+              isLoading,
+              runTests,
+              resetProject,
+              goToNextLesson,
+              goToPreviousLesson
+            }}
+          />
+        ) : (
+          <Landing {...{ topic, sock }} />
+        )}
       </Suspense>
     </>
   );
 };
 
-render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-  document.getElementById("root")
-);
-
-function parse(objOrString: any) {
-  if (typeof objOrString === "string") {
-    return JSON.parse(objOrString);
-  } else {
-    return JSON.stringify(objOrString);
-  }
-}
+const container = document.getElementById('root');
+if (!container) throw Error('Element #root not found to mount to');
+const root = createRoot(container);
+root.render(<App />);

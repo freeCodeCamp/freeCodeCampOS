@@ -1,27 +1,27 @@
-import { F } from "../types";
+import { F } from '../types';
 
 interface HeadingProps {
   topic: string;
-  project: string;
+  title: string;
   lessonNumber?: number;
   goToNextLesson?: F<void, void>;
   goToPreviousLesson?: F<void, void>;
 }
 
-const Heading = ({
+export const Heading = ({
   topic,
-  project,
+  title,
   lessonNumber,
   goToNextLesson,
-  goToPreviousLesson,
+  goToPreviousLesson
 }: HeadingProps) => {
   return (
     <nav>
       {goToPreviousLesson && (
         <button onClick={() => goToPreviousLesson()}>&lt;</button>
       )}
-      <h1 id="project-heading">
-        {topic} - {project}
+      <h1 id='project-heading'>
+        {topic} - {title}
         {lessonNumber && <LessonNumber lessonNumber={lessonNumber} />}
       </h1>
       {goToNextLesson && <button onClick={() => goToNextLesson()}>&gt;</button>}
@@ -32,13 +32,11 @@ const Heading = ({
 const LessonNumber = ({ lessonNumber }: { lessonNumber: number }) => {
   return (
     <>
-      {" "}
-      - Lesson{" "}
-      <span id="lesson-number" className="sparkle">
+      {' '}
+      - Lesson{' '}
+      <span id='lesson-number' className='sparkle'>
         {lessonNumber}
       </span>
     </>
   );
 };
-
-export default Heading;
