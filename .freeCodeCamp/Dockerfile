@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 
 ARG USERNAME=camper
-ARG REPO_NAME=external-project
+ARG REPO_NAME=web3-curriculum
 ARG HOMEDIR=/workspace/$REPO_NAME
 
 ENV TZ="America/New_York"
@@ -24,11 +24,19 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> \
   /etc/sudoers
 
 # Install packages for projects
-RUN sudo apt-get install -y curl git bash-completion man-db
+RUN sudo apt-get install -y curl git bash-completion man-db firefox
 
 # Install Node LTS
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 RUN sudo apt-get install -y nodejs
+
+# Rust
+RUN sudo apt-get install -y build-essential
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# wasm-pack
+RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
 # /usr/lib/node_modules is owned by root, so this creates a folder ${USERNAME} 
 # can use for npm install --global
@@ -39,16 +47,3 @@ RUN npm config set prefix '~/.npm-global'
 # Configure course-specific environment
 COPY . .
 WORKDIR ${HOMEDIR}
-
-
-
-# Other Tools
-
-## Rust
-# RUN sudo apt-get install build-essential
-# RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-# ENV PATH="/root/.cargo/bin:${PATH}"
-
-## Python
-
-## SQL
