@@ -30,6 +30,8 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [alertCamper, setAlertCamper] = useState<null | string>(null);
 
+  const [debouncers, setDebouncers] = useState<string[]>([]);
+
   useEffect(() => {
     socket.onopen = function (_event) {
       sock(Events.CONNECT);
@@ -61,10 +63,21 @@ const App = () => {
     'update-description': updateDescription,
     'update-project-heading': updateProjectHeading,
     'update-project': setProject,
-    'reset-tests': resetTests
+    'reset-tests': resetTests,
+    RESPONSE: debounce
   };
 
+  function debounce({ event }: { event: string }) {
+    const debouncerRemoved = debouncers.filter(d => d !== event);
+    setDebouncers(debouncerRemoved);
+  }
+
   function sock(type: Events, data = {}) {
+    if (debouncers.includes(type)) {
+      return;
+    }
+    debouncers.push(type);
+    setDebouncers(debouncers);
     socket.send(parse({ event: type, data }));
   }
 
@@ -100,6 +113,9 @@ const App = () => {
   }
 
   function updateConsole({ cons }: { cons: ConsoleError }) {
+    if (!Object.keys(cons).length) {
+      return setCons([]);
+    }
     // Insert cons in array at index `id`
     setCons(prev => {
       const sorted = [

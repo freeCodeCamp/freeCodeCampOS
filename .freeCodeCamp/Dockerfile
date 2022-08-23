@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 
 ARG USERNAME=camper
-ARG REPO_NAME=web3-curriculum
+ARG REPO_NAME=curriculum
 ARG HOMEDIR=/workspace/$REPO_NAME
 
 ENV TZ="America/New_York"
@@ -34,9 +34,6 @@ RUN sudo apt-get install -y nodejs
 RUN sudo apt-get install -y build-essential
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
-
-# wasm-pack
-RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
 # /usr/lib/node_modules is owned by root, so this creates a folder ${USERNAME} 
 # can use for npm install --global

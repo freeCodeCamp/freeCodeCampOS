@@ -1,4 +1,4 @@
-# Web3 - Build a Web3 Client-Side Package for Your dApp
+# Solana - Build X Using Y
 
 ## 1
 

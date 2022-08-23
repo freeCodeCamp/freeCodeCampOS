@@ -1,23 +1,39 @@
-# Web3 - Learn Intermediate Rust by Building a Blockchain
+# freeCodeCampOS - Learn X by Building Y
 
 ## 1
 
 ### --description--
 
-Some description.
+Description.
 
 ### --tests--
 
-Test that always passes.
+You should ...
 
 ```js
-assert(true);
-```
-
-Test that always fails.
-
-```js
-assert.fail();
+await new Promise(resolve => setTimeout(resolve, 2000));
+assert.equal(true, true);
 ```
 
 ## 2
+
+### --description--
+
+Description with code block:
+
+```rs
+fn main() {
+    println!("Hello, world!");
+}
+```
+
+### --tests--
+
+You should fail...
+
+```js
+await new Promise(resolve => setTimeout(resolve, 2500));
+assert.fail('You will always fail this');
+```
+
+## 3

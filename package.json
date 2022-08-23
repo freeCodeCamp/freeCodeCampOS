@@ -1,10 +1,10 @@
 {
-  "name": "external-project",
+  "name": "freecodecamp-os",
   "version": "1.0.0",
   "description": "Root package.json",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/freeCodeCamp/external-project.git"
+    "url": "git+https://github.com/freeCodeCamp/freeCodeCampOS.git"
   },
   "author": "Shaun Hamilton",
   "type": "module",
