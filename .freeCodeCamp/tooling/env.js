@@ -6,6 +6,14 @@ const __dirname = dirname(__filename);
 
 export const ROOT = join(__dirname, '../..');
 
+export async function getConfig() {
+  const config = await readFile(join(ROOT, 'freecodecamp.conf.json'), 'utf-8');
+  return JSON.parse(config);
+}
+
+const freeCodeCampConfig = await getConfig();
+
+
 export async function getState() {
   let defaultState = {
     currentProject: null,
@@ -13,13 +21,13 @@ export async function getState() {
   };
   try {
     const state = JSON.parse(
-      await readFile(join(ROOT, '.freeCodeCamp/config/state.json'), 'utf-8')
+      await readFile(freeCodeCampConfig.config['state.json'], 'utf-8')
     );
     return { ...defaultState, ...state };
   } catch (err) {
     console.error(err);
   }
-  return meta;
+  return defaultState;
 }
 
 export async function setState(obj) {
@@ -30,7 +38,7 @@ export async function setState(obj) {
   };
 
   await writeFile(
-    join(ROOT, '.freeCodeCamp/config/state.json'),
+    freeCodeCampConfig.config['state.json'],
     JSON.stringify(updatedState, null, 2)
   );
 }
@@ -40,7 +48,7 @@ export async function setState(obj) {
  */
 export async function getProjectConfig(project) {
   const projects = JSON.parse(
-    await readFile(join(ROOT, '.freeCodeCamp/config/projects.json'), 'utf-8')
+    await readFile(freeCodeCampConfig.config['projects.json'], 'utf-8')
   );
 
   const proj = projects.find(p => p.dashedName === project);
@@ -66,7 +74,7 @@ export async function getProjectConfig(project) {
  */
 export async function setProjectConfig(project, config = {}) {
   const projects = JSON.parse(
-    await readFile(join(ROOT, '.freeCodeCamp/config/projects.json'), 'utf-8')
+    await readFile(freeCodeCampConfig.config['projects.json'], 'utf-8')
   );
 
   const updatedProject = {
@@ -79,7 +87,7 @@ export async function setProjectConfig(project, config = {}) {
   );
 
   await writeFile(
-    join(ROOT, '.freeCodeCamp/config/projects.json'),
+    freeCodeCampConfig.config['projects.json'],
     JSON.stringify(updatedProjects, null, 2)
   );
 }

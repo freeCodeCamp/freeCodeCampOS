@@ -18,17 +18,19 @@ function hotReload(ws) {
 
   const pathsToIgnore = [
     '.logs/.temp.log',
-    '.freeCodeCamp/config/**/*',
-    '**/node_modules/**/*',
-    '**/.git/**/*'
+    '.freeCodeCamp/config/',
+    '/node_modules/',
+    '.git',
+    '/target/',
+    '/test-ledger/'
   ];
 
   watch(ROOT, {
-    ignoreInitial: true,
-    ignored: pathsToIgnore,
-    cwd: ROOT
+    ignoreInitial: true
+    // `ignored` appears to do nothing. Have tried multiple permutations
+    // ignored: pathsToIgnore.join('|') //p => pathsToIgnore.includes(p)
   }).on('all', async (event, name) => {
-    if (name) {
+    if (name && !pathsToIgnore.find(p => name.includes(p))) {
       if (isWait) return;
       isWait = setTimeout(() => {
         isWait = false;
@@ -38,15 +40,14 @@ function hotReload(ws) {
       if (!currentProject) {
         return;
       }
-      const project = await getProjectConfig(currentProject);
       if (isClearConsole) {
         console.clear();
       }
-      await runLesson(ws, project);
-      // console.log(`Watcher: ${event} - ${name}`);
+      await runLesson(ws, currentProject);
       if (runTestsOnWatch && !testsRunning) {
+        console.log(`Watcher: ${event} - ${name}`);
         testsRunning = true;
-        await runTests(ws, project);
+        await runTests(ws, currentProject);
         testsRunning = false;
       }
     }

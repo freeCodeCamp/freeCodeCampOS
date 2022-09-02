@@ -10,7 +10,6 @@ import { ROOT, getState } from './env.js';
 import { writeFile } from 'fs/promises';
 import { promisify } from 'util';
 import { exec } from 'child_process';
-import { get } from 'http';
 const execute = promisify(exec);
 
 export default async function seedLesson(ws, project) {
