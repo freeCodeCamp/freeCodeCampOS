@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const freeCodeCampConfig = require('../freecodecamp.conf.json');
 
 module.exports = {
-  entry: './client/index.tsx',
+  entry: path.join(__dirname, 'client/index.tsx'),
   devtool: 'inline-source-map',
   mode: process.env.NODE_ENV || 'development',
   devServer: {

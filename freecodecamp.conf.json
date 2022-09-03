@@ -40,7 +40,7 @@
     }
   },
   "config": {
-    "projects.json": "../../../config/projects.json",
+    "projects.json": "./config/projects.json",
     "state.json": "./config/state.json"
   },
   "curriculum": {

@@ -18,7 +18,7 @@ function hotReload(ws) {
 
   const pathsToIgnore = [
     '.logs/.temp.log',
-    '.freeCodeCamp/config/',
+    'config/',
     '/node_modules/',
     '.git',
     '/target/',

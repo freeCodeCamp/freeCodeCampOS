@@ -3,11 +3,11 @@
 .vscode
 bash
 build-x-using-y
-client
+/client
 config
 curriculum
 learn-x-by-building-y
-tooling
+/tooling
 .editorconfig
 .gitignore
 .gitpod.Dockerfile

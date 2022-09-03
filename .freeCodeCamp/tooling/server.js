@@ -1,24 +1,32 @@
 import express from 'express';
+import { readFile } from 'fs/promises';
 import runTests from './test.js';
 import {
   getProjectConfig,
   getState,
+  ROOT,
   setProjectConfig,
-  setState
+  setState,
+  getConfig
 } from './env.js';
 import logover, { debug, error, warn } from 'logover';
 
 import { WebSocketServer } from 'ws';
 import runLesson from './lesson.js';
-import { updateTests, updateHints, updateConsole } from './client-socks.js';
+import {
+  updateTests,
+  updateHints,
+  updateConsole,
+  updateProjects,
+  updateFreeCodeCampConfig
+} from './client-socks.js';
 import hotReload from './hot-reload.js';
 import { hideAll, showFile } from './utils.js';
-import {getConfig} from "./config/index.js";
+import { join } from 'path';
 logover({
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug'
 });
 const freeCodeCampConfig = await getConfig();
-const projects = await import(freeCodeCampConfig.config['projects.json'], {assert :{ 'type': 'json' }});
 
 const app = express();
 
@@ -58,6 +66,14 @@ async function handleGoToPreviousLesson(ws, data) {
 }
 
 async function handleConnect(ws) {
+  const projects = JSON.parse(
+    await readFile(
+      join(ROOT, freeCodeCampConfig.config['projects.json']),
+      'utf-8'
+    )
+  );
+  updateProjects(ws, projects);
+  updateFreeCodeCampConfig(ws, freeCodeCampConfig);
   const { currentProject } = await getState();
   if (!currentProject) {
     return;

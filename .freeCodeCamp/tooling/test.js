@@ -11,7 +11,13 @@ import {
   getAfterAll
 } from './parser.js';
 
-import { getProjectConfig, getState, ROOT, setProjectConfig } from './env.js';
+import {
+  freeCodeCampConfig,
+  getProjectConfig,
+  getState,
+  ROOT,
+  setProjectConfig
+} from './env.js';
 import runLesson from './lesson.js';
 import {
   toggleLoaderAnimation,
@@ -33,8 +39,7 @@ export default async function runTests(ws, projectDashedName) {
   const lessonNumber = project.currentLesson;
   const projectFile = join(
     ROOT,
-    '.freeCodeCamp/tooling/locales',
-    locale,
+    freeCodeCampConfig.curriculum.locales[locale],
     project.dashedName + '.md'
   );
   try {

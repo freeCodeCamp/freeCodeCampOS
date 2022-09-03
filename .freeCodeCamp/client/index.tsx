@@ -1,6 +1,12 @@
 import { createRoot } from 'react-dom/client';
 import { Suspense, useState, useEffect } from 'react';
-import { ConsoleError, Events, ProjectI, TestType } from './types/index';
+import {
+  ConsoleError,
+  Events,
+  FreeCodeCampConfigI,
+  ProjectI,
+  TestType
+} from './types/index';
 import { Loader } from './components/loader';
 import { Landing } from './templates/landing';
 import { Project } from './templates/project';
@@ -19,6 +25,9 @@ if (process.env.GITPOD_WORKSPACE_URL) {
 }
 
 const App = () => {
+  const [projects, setProjects] = useState<ProjectI[]>([]);
+  const [freeCodeCampConfig, setFreeCodeCampConfig] =
+    useState<FreeCodeCampConfigI>({});
   const [project, setProject] = useState<ProjectI | null>(null);
   const [topic, setTopic] = useState('');
 
@@ -63,6 +72,8 @@ const App = () => {
     'update-description': updateDescription,
     'update-project-heading': updateProjectHeading,
     'update-project': setProject,
+    'update-projects': setProjects,
+    'update-freeCodeCamp-config': setFreeCodeCampConfig,
     'reset-tests': resetTests,
     RESPONSE: debounce
   };
@@ -178,7 +189,7 @@ const App = () => {
             }}
           />
         ) : (
-          <Landing {...{ topic, sock }} />
+          <Landing {...{ topic, sock, projects, freeCodeCampConfig }} />
         )}
       </Suspense>
     </>

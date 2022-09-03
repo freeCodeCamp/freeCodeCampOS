@@ -6,7 +6,7 @@ import {
   getCommands,
   getFilesWithSeed
 } from './parser.js';
-import { ROOT, getState } from './env.js';
+import { ROOT, getState, freeCodeCampConfig } from './env.js';
 import { writeFile } from 'fs/promises';
 import { promisify } from 'util';
 import { exec } from 'child_process';
@@ -18,8 +18,7 @@ export default async function seedLesson(ws, project) {
   const { locale } = await getState();
   const projectFile = join(
     ROOT,
-    '.freeCodeCamp/tooling/locales',
-    locale,
+    freeCodeCampConfig.curriculum.locales[locale],
     project.dashedName + '.md'
   );
   const lesson = await getLessonFromFile(projectFile, lessonNumber);
