@@ -9,8 +9,12 @@ copyDotFreeCodeCampToRoot();
 console.log('--- TEST ---');
 
 async function copyDotFreeCodeCampToRoot() {
-  await cp('.freeCodeCamp', join(ROOT, '.freeCodeCamp'), {
-    recursive: true,
-    force: true
-  });
+  await cp(
+    join(ROOT, 'node_modules/freecodecamp-os/.freeCodeCamp'),
+    join(ROOT, '.freeCodeCamp'),
+    {
+      recursive: true,
+      force: true
+    }
+  );
 }

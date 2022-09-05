@@ -1,4 +1,4 @@
-# Solana - Build X Using Y
+# freeCodeCamp - Build X Using Y
 
 ## 1
 
@@ -28,6 +28,13 @@ Second test using global variables passed from `before` hook.
 ```js
 // 2
 assert.equal(__projectLoc, 'global variable for tests');
+```
+
+Dynamic helpers should be imported.
+
+```js
+// 3
+assert.equal(__helpers.testDynamicHelper(), 'Helper success!');
 ```
 
 ### --before-all--

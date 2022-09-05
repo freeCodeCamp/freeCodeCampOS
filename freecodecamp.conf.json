@@ -1,6 +1,6 @@
 {
-  "path": ".freeCodeCamp",
-  "prepare": "npm ci && cd .. && npm ci",
+  "path": ".",
+  "prepare": "echo 'prep'",
   "scripts": {
     "develop-course": "npm run develop",
     "run-course": "npm run start",

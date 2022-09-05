@@ -19,10 +19,13 @@ export const Landing = ({
     <>
       <h2>{topic}</h2>
       <p className='description'>
-        {freeCodeCampConfig.client.landing.description}
+        {freeCodeCampConfig.client?.landing?.description}
       </p>
-      <a className='faq' href={freeCodeCampConfig.client.landing['faq-link']}>
-        {freeCodeCampConfig.client.landing['faq-text']}
+      <a
+        className='faq'
+        href={freeCodeCampConfig.client?.landing?.['faq-link']}
+      >
+        {freeCodeCampConfig.client?.landing?.['faq-text']}
       </a>
       <Selection {...{ topic, sock, projects }} />
     </>

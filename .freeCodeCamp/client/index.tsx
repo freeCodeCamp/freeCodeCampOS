@@ -80,15 +80,15 @@ const App = () => {
 
   function debounce({ event }: { event: string }) {
     const debouncerRemoved = debouncers.filter(d => d !== event);
-    setDebouncers(debouncerRemoved);
+    setDebouncers(() => debouncerRemoved);
   }
 
   function sock(type: Events, data = {}) {
     if (debouncers.includes(type)) {
       return;
     }
-    debouncers.push(type);
-    setDebouncers(debouncers);
+    const newDebouncers = [...debouncers, type];
+    setDebouncers(() => newDebouncers);
     socket.send(parse({ event: type, data }));
   }
 

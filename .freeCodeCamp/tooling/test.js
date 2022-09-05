@@ -1,7 +1,7 @@
 // These are used in the local scope of the `eval` in `runTests`
 import fs from 'fs';
 import { assert, AssertionError } from 'chai';
-import __helpers from './test-utils.js';
+import __helpers_c from './test-utils.js';
 
 import {
   getLessonHintsAndTests,
@@ -32,7 +32,15 @@ logover({
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug'
 });
 
+let __helpers = __helpers_c;
+
 export default async function runTests(ws, projectDashedName) {
+  // Update __helpers with dynamic utils:
+  const helpers = freeCodeCampConfig.tooling?.['helpers'];
+  if (helpers) {
+    const dynamicHelpers = await import(join(ROOT, helpers));
+    __helpers = { ...__helpers_c, ...dynamicHelpers };
+  }
   const project = await getProjectConfig(projectDashedName);
   const { locale } = await getState();
   // toggleLoaderAnimation(ws);

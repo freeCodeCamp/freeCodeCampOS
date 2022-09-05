@@ -30,7 +30,7 @@ const freeCodeCampConfig = await getConfig();
 
 const app = express();
 
-app.use(express.static('./dist'));
+app.use(express.static(join(ROOT, '.freeCodeCamp/dist')));
 
 async function handleRunTests(ws, data) {
   const { currentProject } = await getState();
@@ -83,6 +83,12 @@ async function handleConnect(ws) {
 }
 
 async function handleSelectProject(ws, data) {
+  const projects = JSON.parse(
+    await readFile(
+      join(ROOT, freeCodeCampConfig.config['projects.json']),
+      'utf-8'
+    )
+  );
   const selectedProject = projects.find(p => p.id === data?.data?.id);
   // TODO: Should this set the currentProject to `null` (empty string)?
   // for the case where the Camper has navigated to the landing page.
@@ -122,6 +128,16 @@ wss.on('connection', function connection(ws) {
     const parsedData = parseBuffer(data);
     handle[parsedData.event]?.(ws, parsedData);
   });
+  (async () => {
+    const projects = JSON.parse(
+      await readFile(
+        join(ROOT, freeCodeCampConfig.config['projects.json']),
+        'utf-8'
+      )
+    );
+    updateProjects(ws, projects);
+    updateFreeCodeCampConfig(ws, freeCodeCampConfig);
+  })();
   sock('connect', { message: "Server says 'Hello!'" });
 
   function sock(type, data = {}) {
