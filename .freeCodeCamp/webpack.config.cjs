@@ -1,15 +1,20 @@
 const path = require('path');
 const { DefinePlugin } = require('webpack');
-const Dotenv = require('dotenv-webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const freeCodeCampConfig = require('../freecodecamp.conf.json');
+
 module.exports = {
-  entry: './client/index.tsx',
+  entry: path.join(__dirname, 'client/index.tsx'),
   devtool: 'inline-source-map',
   mode: process.env.NODE_ENV || 'development',
   devServer: {
     compress: true,
     port: 9000
+  },
+  watch: process.env.NODE_ENV === 'development',
+  watchOptions: {
+    ignored: ['**/node_modules', 'config']
   },
   module: {
     rules: [
@@ -80,8 +85,10 @@ module.exports = {
     new DefinePlugin({
       'process.env.GITPOD_WORKSPACE_URL': JSON.stringify(
         process.env.GITPOD_WORKSPACE_URL
+      ),
+      'process.env.CONFIG_PROJECTS': JSON.stringify(
+        freeCodeCampConfig.config['projects.json']
       )
-    }),
-    new Dotenv()
+    })
   ]
 };

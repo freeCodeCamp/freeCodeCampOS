@@ -4,9 +4,10 @@
     "title": "Learn X by Building Y",
     "dashedName": "learn-x-by-building-y",
     "isIntegrated": false,
-    "description": "In this course, you will learn x by building y.",
-    "isPublic": false,
-    "currentLesson": 1
+    "description": "In this course, you will learn X by building Y.",
+    "isPublic": true,
+    "currentLesson": 1,
+    "runTestsOnWatch": true
   },
   {
     "id": 1,

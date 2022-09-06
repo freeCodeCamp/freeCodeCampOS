@@ -1,19 +1,5 @@
-# freeCodeCampOS
-
-## How To Create A Course
-
-1. Install `freecodecamp-os` in your project root:
-
-```bash
-npm install freecodecamp-os
-```
-
-2. Add a `freecodecamp.conf.json` file to your project root:
-
-```json
 {
   "path": ".",
-  "prepare": "echo 'prep'",
   "scripts": {
     "develop-course": "npm run develop",
     "run-course": "npm run start",
@@ -65,6 +51,3 @@ npm install freecodecamp-os
     "helpers": "./tooling/helpers.js"
   }
 }
-```
-
-3. Add all the necessary files to your project (_use this repo as a reference_)

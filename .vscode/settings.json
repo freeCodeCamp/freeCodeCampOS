@@ -1,22 +1,29 @@
 {
   "files.exclude": {
-    ".devcontainer": true,
-    ".editorconfig": true,
-    ".freeCodeCamp": true,
-    ".gitignore": true,
-    ".gitpod.Dockerfile": true,
-    ".gitpod.yml": true,
-    ".logs": true,
-    ".prettierignore": true,
-    ".prettierrc": true,
-    ".vscode": true,
-    "node_modules": true,
-    "package.json": true,
-    "package-lock.json": true,
-    "LICENSE": true,
-    "README.md": true,
-    "renovate.json": true,
-    "build-x-using-y": true,
-    "learn-x-by-building-y": true
+    ".devcontainer": false,
+    ".editorconfig": false,
+    ".freeCodeCamp": false,
+    ".gitignore": false,
+    ".gitpod.Dockerfile": false,
+    ".gitpod.yml": false,
+    ".logs": false,
+    ".prettierignore": false,
+    ".prettierrc": false,
+    ".vscode": false,
+    "node_modules": false,
+    "package.json": false,
+    "package-lock.json": false,
+    "LICENSE": false,
+    "README.md": false,
+    "renovate.json": false,
+    "build-x-using-y": false,
+    "learn-x-by-building-y": false
+  },
+  "terminal.integrated.profiles.linux": {
+    "bash": {
+      "path": "bash",
+      "icon": "terminal-bash",
+      "args": ["--init-file", "./bash/sourcerer.sh"]
+    }
   }
 }
