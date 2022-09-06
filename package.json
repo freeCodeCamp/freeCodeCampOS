@@ -1,5 +1,5 @@
 {
-  "name": "freecodecamp-os",
+  "name": "@freecodecamp/freecodecamp-os",
   "author": "freeCodeCamp",
   "version": "1.5.0",
   "description": "Package used for freeCodeCamp projects with the freeCodeCamp Courses VSCode extension",
