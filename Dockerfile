@@ -30,10 +30,10 @@ RUN sudo apt-get install -y curl git bash-completion man-db firefox
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 RUN sudo apt-get install -y nodejs
 
-# Rust
-RUN sudo apt-get install -y build-essential
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
+# # Rust
+# RUN sudo apt-get install -y build-essential
+# RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+# ENV PATH="/root/.cargo/bin:${PATH}"
 
 # /usr/lib/node_modules is owned by root, so this creates a folder ${USERNAME} 
 # can use for npm install --global

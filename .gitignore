@@ -4,3 +4,4 @@ node_modules
 Cargo.lock
 !.gitkeep
 .freeCodeCamp/dist
+.DS_Store

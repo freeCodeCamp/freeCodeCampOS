@@ -1,20 +1,22 @@
 import { cp } from 'fs/promises';
+import { warn } from 'logover';
 import { join } from 'path';
 
 const ROOT = process.env.INIT_CWD;
 
-console.log('--- TEST ---');
-console.log('init_cwd: ', process.env.INIT_CWD);
 copyDotFreeCodeCampToRoot();
-console.log('--- TEST ---');
 
 async function copyDotFreeCodeCampToRoot() {
-  await cp(
-    join(ROOT, 'node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp'),
-    join(ROOT, '.freeCodeCamp'),
-    {
-      recursive: true,
-      force: true
-    }
-  );
+  try {
+    await cp(
+      join(ROOT, 'node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp'),
+      join(ROOT, '.freeCodeCamp'),
+      {
+        recursive: true,
+        force: true
+      }
+    );
+  } catch (e) {
+    warn(e);
+  }
 }
