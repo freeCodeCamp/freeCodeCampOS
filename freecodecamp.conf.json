@@ -1,8 +1,8 @@
 {
   "path": ".",
   "scripts": {
-    "develop-course": "npm run develop",
-    "run-course": "npm run start",
+    "develop-course": "NODE_ENV=development nodemon --watch ./tooling/ --ignore ./config/ .freeCodeCamp/tooling/server.js",
+    "run-course": "NODE_ENV=production node ./.freeCodeCamp/tooling/server.js",
     "test": {
       "functionName": "handleMessage",
       "arguments": [

@@ -1,10 +1,9 @@
 import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 
-export const ROOT = process.env.INIT_CWD;
+export const ROOT = process.env.INIT_CWD || process.cwd();
 
 export async function getConfig() {
-  console.log('ROOT: ', ROOT);
   const config = await readFile(join(ROOT, 'freecodecamp.conf.json'), 'utf-8');
   return JSON.parse(config);
 }

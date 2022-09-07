@@ -2,8 +2,6 @@ const path = require('path');
 const { DefinePlugin } = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const freeCodeCampConfig = require('../freecodecamp.conf.json');
-
 module.exports = {
   entry: path.join(__dirname, 'client/index.tsx'),
   devtool: 'inline-source-map',
@@ -20,7 +18,6 @@ module.exports = {
     rules: [
       {
         test: /\.(js|jsx|tsx|ts)$/,
-        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -51,7 +48,6 @@ module.exports = {
       },
       {
         test: /\.(ts|tsx)$/,
-        exclude: /node_modules/,
         use: ['ts-loader']
       },
       {
@@ -85,9 +81,6 @@ module.exports = {
     new DefinePlugin({
       'process.env.GITPOD_WORKSPACE_URL': JSON.stringify(
         process.env.GITPOD_WORKSPACE_URL
-      ),
-      'process.env.CONFIG_PROJECTS': JSON.stringify(
-        freeCodeCampConfig.config['projects.json']
       )
     })
   ]

@@ -1,3 +1,3 @@
 #!/bin/bash
-source ./.freeCodeCamp/bash/.bashrc
+source ./bash/.bashrc
 echo "BashRC Sourced"
