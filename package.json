@@ -10,7 +10,7 @@
     "build:client": "NODE_ENV=production webpack --config ./.freeCodeCamp/webpack.config.cjs",
     "develop:client": "NODE_ENV=development webpack --mode development",
     "develop:server": "nodemon --watch ./dist/ --watch ./tooling/ --ignore ./config/ ./tooling/server.js",
-    "postinstall": "node ./.freeCodeCamp/npm/postinstall.js",
+    "postinstall": "npm run build:client && node ./.freeCodeCamp/npm/postinstall.js",
     "uninstall": "node ./.freeCodeCamp/npm/uninstall.js"
   },
   "dependencies": {
