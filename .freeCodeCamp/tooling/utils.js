@@ -1,4 +1,4 @@
-import { cp, readdir, rm, rmdir, writeFile } from 'fs/promises';
+import { cp, readdir, rm, rmdir, writeFile, readFile } from 'fs/promises';
 import path, { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
@@ -19,7 +19,7 @@ const PERMANENT_PATHS_IN_ROOT = readdirSync('..');
  */
 export async function setVSCSettings(obj) {
   const pathToSettings = join(ROOT, '.vscode', 'settings.json');
-  const settings = getVSCSettings();
+  const settings = await getVSCSettings();
   const updated = {
     ...settings,
     ...obj
@@ -65,6 +65,17 @@ export async function hideAll() {
   const filesExclude = (await getVSCSettings())['files.exclude'];
   for (const file of Object.keys(filesExclude)) {
     filesExclude[file] = true;
+  }
+  await setVSCSettings({ 'files.exclude': filesExclude });
+}
+
+/**
+ * Show all files in the `files.exclude` property of the `.vscode/settings.json` file
+ */
+export async function showAll() {
+  const filesExclude = (await getVSCSettings())['files.exclude'];
+  for (const file of Object.keys(filesExclude)) {
+    filesExclude[file] = false;
   }
   await setVSCSettings({ 'files.exclude': filesExclude });
 }
