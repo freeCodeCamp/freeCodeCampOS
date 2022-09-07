@@ -190,7 +190,41 @@ function writeJsonFile(path, content) {
   fs.writeFileSync(join(ROOT, path), JSON.stringify(content, null, 2));
 }
 
+/**
+ * @typedef ControlWrapperOptions
+ * @type {object}
+ * @property {number} timeout
+ * @property {number} stepSize
+ */
+
+/**
+ * Wraps a function in an interval to retry until it succeeds
+ * @param {callback} cb Callback to wrap
+ * @param {ControlWrapperOptions} options Options to pass to `ControlWrapper`
+ * @returns {Promise<any>} Returns the result of the callback or `null`
+ */
+async function controlWrapper(cb, { timeout = 10000, stepSize = 250 }) {
+  return new Promise((resolve, reject) => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await cb();
+        if (response) {
+          clearInterval(interval);
+          resolve(response);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }, stepSize);
+    setTimeout(() => {
+      clearInterval(interval);
+      reject(null);
+    }, timeout);
+  });
+}
+
 const __helpers = {
+  controlWrapper,
   copyDirectory,
   copyProjectFiles,
   fileExists,
