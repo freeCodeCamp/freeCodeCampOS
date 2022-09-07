@@ -6,6 +6,6 @@
   ],
   "forwardPorts": [3000],
   "workspaceFolder": "/workspace/freeCodeCampOS",
-  "dockerFile": "./Dockerfile",
+  "dockerFile": "../Dockerfile",
   "context": ".."
 }

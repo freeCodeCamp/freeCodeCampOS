@@ -93,14 +93,16 @@ async function handleSelectProject(ws, data) {
   // TODO: Should this set the currentProject to `null` (empty string)?
   // for the case where the Camper has navigated to the landing page.
   await setState({ currentProject: selectedProject?.dashedName ?? null });
-  if (!selectedProject) {
+  if (!selectedProject && data?.data?.id) {
     warn('Selected project does not exist: ', data);
     return ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
   }
 
-  // TODO: Disabled whilst in development because it is annoying
-  // await hideAll();
-  // await showFile(selectedProject.dashedName);
+  // Disabled whilst in development because it is annoying
+  if (process.env.NODE_ENV === 'production') {
+    await hideAll();
+    await showFile(selectedProject.dashedName);
+  }
   await runLesson(ws, selectedProject.dashedName);
   return ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }

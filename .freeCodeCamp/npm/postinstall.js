@@ -2,7 +2,7 @@ import { cp } from 'fs/promises';
 import { warn } from 'logover';
 import { join } from 'path';
 
-const ROOT = process.env.INIT_CWD;
+const ROOT = process.env.INIT_CWD || process.cwd();
 
 copyDotFreeCodeCampToRoot();
 
