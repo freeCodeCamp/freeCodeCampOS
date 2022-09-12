@@ -25,9 +25,9 @@ export const Heading = ({
           {'<'}
         </button>
       )}
-      <h1 id='project-heading'>
+      <h1 id='project-heading' className='fade-in'>
         {topic} - {title}
-        {lessonNumber && <LessonNumber lessonNumber={lessonNumber} />}
+        {lessonNumber && ' - Lesson ' + lessonNumber}
       </h1>
       {goToNextLesson && (
         <button className='next-lesson-btn' onClick={() => goToNextLesson()}>
@@ -35,17 +35,5 @@ export const Heading = ({
         </button>
       )}
     </nav>
-  );
-};
-
-const LessonNumber = ({ lessonNumber }: { lessonNumber: number }) => {
-  return (
-    <>
-      {' '}
-      - Lesson{' '}
-      <span id='lesson-number' className='sparkle'>
-        {lessonNumber}
-      </span>
-    </>
   );
 };
