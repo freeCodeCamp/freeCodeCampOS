@@ -1,7 +1,7 @@
 export const E44o5 = ({ text }: { text: string }) => {
   return (
     <main className='e44o5'>
-      <header>Error 4XX - 5XX</header>
+      <h1>Error 4XX - 5XX</h1>
       <p>{text}</p>
       <h2>To Keep Learning:</h2>
       <ul>
