@@ -1,7 +1,8 @@
 {
   "path": ".",
+  "version": "0.1.0",
   "scripts": {
-    "develop-course": "NODE_ENV=development nodemon --watch ./tooling/ --ignore ./config/ .freeCodeCamp/tooling/server.js",
+    "develop-course": "NODE_ENV=development node ./.freeCodeCamp/tooling/server.js",
     "run-course": "NODE_ENV=production node ./.freeCodeCamp/tooling/server.js",
     "test": {
       "functionName": "handleMessage",
@@ -19,7 +20,7 @@
         "open": true,
         "url": "http://localhost:8080",
         "showLoader": true,
-        "timeout": 20000
+        "timeout": 4000
       }
     ]
   },
@@ -34,7 +35,7 @@
     },
     "landing": {
       "description": "Placeholder description",
-      "faq-link": "#",
+      "faq-link": "https://freecodecamp.org",
       "faq-text": "Link to FAQ related to course"
     }
   },
@@ -46,6 +47,16 @@
     "locales": {
       "english": "./curriculum/locales/english"
     }
+  },
+  "hotReload": {
+    "ignore": [
+      ".logs/.temp.log",
+      "config/",
+      "/node_modules/",
+      ".git",
+      "/target/",
+      "/test-ledger/"
+    ]
   },
   "tooling": {
     "helpers": "./tooling/helpers.js"
