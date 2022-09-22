@@ -21,13 +21,12 @@ const logover = new Logger({ level: 'debug', timestamp: null });
 
 const FLAGS = process.argv;
 
-const handleFlag = {
-  '--history': printCommandHistory,
-  '--directory': printDirectoryTree
-};
-
 async function main() {
   try {
+    const handleFlag = {
+      '--history': printCommandHistory,
+      '--directory': printDirectoryTree
+    };
     const projectConfig = await getProjectConfig();
     const config = await getConfig();
     const state = await getState();
@@ -56,6 +55,20 @@ async function main() {
     for (const arg of FLAGS) {
       await handleFlag[arg]?.();
     }
+    async function printDirectoryTree() {
+      const files = await readdir('.', { withFileTypes: true });
+      let depth = 0;
+      for (const file of files) {
+        if (file.isDirectory() && file.name === currentProject) {
+          await recurseDirectory(file.name, depth);
+        }
+      }
+    }
+
+    async function printCommandHistory() {
+      const historyCwd = await readFile('.logs/.history_cwd.log', 'utf-8');
+      logover.info('Command History:\n', historyCwd);
+    }
   } catch (e) {
     logover.error(e);
   }
@@ -77,19 +90,4 @@ async function recurseDirectory(path, depth) {
       }
     }
   }
-}
-
-async function printDirectoryTree() {
-  const files = await readdir('.', { withFileTypes: true });
-  let depth = 0;
-  for (const file of files) {
-    if (file.isDirectory() && file.name === '.freeCodeCamp') {
-      await recurseDirectory(file.name, depth);
-    }
-  }
-}
-
-async function printCommandHistory() {
-  const historyCwd = await readFile('.logs/.history_cwd.log', 'utf-8');
-  logover.info('Command History:\n', historyCwd);
 }
