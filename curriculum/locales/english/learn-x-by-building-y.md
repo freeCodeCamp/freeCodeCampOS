@@ -4,21 +4,36 @@
 
 ### --description--
 
-Description.
+Add the following code to `index.js`:
+
+```javascript
+const a = 1;
+```
 
 ### --tests--
 
-You should ...
+You should declare a variable named `a`.
 
 ```js
-await new Promise(resolve => setTimeout(resolve, 2000));
-assert.equal(true, true);
+const test = `console.assert(typeof a);`;
+const filePath = 'learn-x-by-building-y/index.js';
+const cb = (stdout, stderr) => {
+  assert.isEmpty(stderr);
+  assert.exists(stdout);
+};
+await __helpers.javascriptTest(filePath, test, cb);
 ```
 
-You should 2...
+You should give `a` a value of `1`.
 
 ```js
-const a = 1;
+const test = `console.assert(a === 1, \`expected \${a} to equal 1\`);`;
+const filePath = 'learn-x-by-building-y/index.js';
+const cb = (stdout, stderr) => {
+  assert.isEmpty(stderr);
+  assert.exists(stdout);
+};
+await __helpers.javascriptTest(filePath, test, cb);
 ```
 
 ### --seed--

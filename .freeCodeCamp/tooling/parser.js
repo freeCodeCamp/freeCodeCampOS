@@ -9,7 +9,7 @@ const SEED_MARKER = '### --seed--';
 const BEFORE_ALL_MARKER = '### --before-all--';
 const AFTER_ALL_MARKER = '### --after-all--';
 const BEFORE_EACH_MARKER = '### --before-each--';
-const NEXT_MARKER_REG = `###? --`;
+const NEXT_MARKER_REG = `\n###? --`;
 const CMD_MARKER = '#### --cmd--';
 const FILE_MARKER_REG = '(?<=#### --")[^"]+(?="--)';
 

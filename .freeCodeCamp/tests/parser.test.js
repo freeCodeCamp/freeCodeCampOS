@@ -109,14 +109,6 @@ try {
 
   const beforeAll = getBeforeAll(lesson);
   assert.equal(beforeAll, "global.__beforeAll = 'before-all';\n");
-
-  const beforeEach = getBeforeEach(lesson);
-
-  const commands = getCommands(lessonSeed);
-
-  const filesWithSeed = getFilesWithSeed(lessonSeed);
-
-  const isForce = isForceFlag(lessonSeed);
 } catch (e) {
   throw logover.error(e);
 }

@@ -1,12 +1,14 @@
 // Handles all the resetting of the projects
 
-import { getProjectConfig, getState } from './env';
-import { getLessonFromFile, getLessonSeed, seedToIterator } from './parser';
-import { runLessonSeed } from './seed';
+import { join } from 'path';
+import { getConfig, getProjectConfig, getState, ROOT } from './env.js';
+import { getLessonFromFile, getLessonSeed } from './parser.js';
+import { runLessonSeed } from './seed.js';
 
 export async function resetProject() {
   // Get commands and handle file setting
   const { currentProject } = await getState();
+  const freeCodeCampConfig = await getConfig();
   const project = await getProjectConfig(currentProject);
   const { currentLesson } = project;
   const FILE = join(
