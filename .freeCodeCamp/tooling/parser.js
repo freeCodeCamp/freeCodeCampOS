@@ -213,7 +213,7 @@ export function* seedToIterator(seed) {
     const isFile = section.match(
       new RegExp(`#### --"([^"]+)"--\n(.*?\`\`\`\n)`, 's')
     );
-    const isCMD = seed.match(new RegExp(`#### --cmd--\n(.*?\`\`\`\n)`, 's'));
+    const isCMD = section.match(new RegExp(`#### --cmd--\n(.*?\`\`\`\n)`, 's'));
     if (isFile) {
       const filePath = isFile[1];
       const fileSeed = extractStringFromCode(isFile[2])?.trim();

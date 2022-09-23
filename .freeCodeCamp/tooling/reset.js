@@ -1,14 +1,8 @@
 // Handles all the resetting of the projects
 
 import { getProjectConfig, getState } from './env';
-import { logover } from './logger';
-import {
-  getCommands,
-  getFilesWithSeed,
-  getLessonFromFile,
-  getLessonSeed
-} from './parser';
-import { runCommands, runSeed } from './seed';
+import { getLessonFromFile, getLessonSeed, seedToIterator } from './parser';
+import { runLessonSeed } from './seed';
 
 export async function resetProject() {
   // Get commands and handle file setting
@@ -29,15 +23,7 @@ export async function resetProject() {
   while (lessonNumber <= currentLesson) {
     const seed = getLessonSeed(lesson);
     if (seed) {
-      const commands = getCommands(seed);
-      const filesWithSeed = getFilesWithSeed(seed);
-      try {
-        await runCommands(commands);
-        await runSeed(filesWithSeed);
-      } catch (e) {
-        logover.error('Failed to run seed for lesson: ', lessonNumber);
-        throw new Error(e);
-      }
+      await runLessonSeed(seed, currentProject, lessonNumber);
     }
     lessonNumber++;
     lesson = await getLessonFromFile(FILE, lessonNumber);
