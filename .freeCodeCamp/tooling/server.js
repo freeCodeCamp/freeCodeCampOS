@@ -24,6 +24,7 @@ import { hideAll, showFile, showAll } from './utils.js';
 import { join } from 'path';
 import { logover } from './logger.js';
 import { getTotalLessons } from './parser.js';
+import { resetProject } from './reset.js';
 
 const freeCodeCampConfig = await getConfig();
 
@@ -39,7 +40,9 @@ async function handleRunTests(ws, data) {
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
 
-function handleResetProject(ws, data) {}
+async function handleResetProject(ws, data) {
+  await resetProject();
+}
 function handleResetLesson(ws, data) {}
 
 async function handleGoToNextLesson(ws, data) {

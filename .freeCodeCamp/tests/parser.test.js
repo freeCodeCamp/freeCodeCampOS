@@ -12,9 +12,9 @@ import {
   extractStringFromCode
 } from '../tooling/parser.js';
 import { assert } from 'chai';
-import logover, { debug, error } from 'logover';
+import { Logger } from 'logover';
 
-logover({
+const logover = new Logger({
   debug: '\x1b[33m[parser.test]\x1b[0m',
   error: '\x1b[31m[parser.test]\x1b[0m',
   level: 'debug',
@@ -35,7 +35,7 @@ try {
   const lessonDescription = getLessonDescription(lesson);
   assert.equal(
     lessonDescription,
-    '\nSome description.\n\nMaybe some code:\n\n```js\nconst a = 1;\n// A comment at the end?\n```\n'
+    '\nSome description.\n\nMaybe some code:\n\n```js\nconst a = 1;\n// A comment at the end?\n```\n\n'
   );
 
   const lessonHintsAndTests = getLessonHintsAndTests(lesson);
@@ -57,7 +57,7 @@ try {
   const lessonSeed = getLessonSeed(lesson);
 
   const beforeAll = getBeforeAll(lesson);
-  assert.equal(beforeAll, "global.__beforeAll = 'before-all';\n\n\n");
+  assert.equal(beforeAll, "global.__beforeAll = 'before-all';\n");
 
   const beforeEach = getBeforeEach(lesson);
   assert.equal(beforeEach, "global.__beforeEach = 'before-each';\n");
@@ -68,7 +68,7 @@ try {
 
   const isForce = isForceFlag(lessonSeed);
 } catch (e) {
-  throw error(e);
+  throw logover.error(e);
 }
 
 // -----------------
@@ -86,7 +86,7 @@ try {
   const lessonDescription = getLessonDescription(lesson);
   assert.equal(
     lessonDescription,
-    'This description has no spaces between the heading.\n```rs\n\n//Same goes for this code.\nlet mut a = 1;\n// comment\n```'
+    'This description has no spaces between the heading.\n```rs\n\n//Same goes for this code.\nlet mut a = 1;\n// comment\n```\n'
   );
 
   const lessonHintsAndTests = getLessonHintsAndTests(lesson);
@@ -118,7 +118,7 @@ try {
 
   const isForce = isForceFlag(lessonSeed);
 } catch (e) {
-  throw error(e);
+  throw logover.error(e);
 }
 
 try {
@@ -131,9 +131,9 @@ const a = 1;
 // comment
 \`\`\`
 `);
-  assert.equal(stringFromCode, 'const a = 1;\n// comment\n\n');
+  assert.equal(stringFromCode, 'const a = 1;\n// comment\n');
 } catch (e) {
-  throw error(e);
+  throw logover.error(e);
 }
 
-debug('All tests passed! 🎉');
+logover.debug('All tests passed! 🎉');

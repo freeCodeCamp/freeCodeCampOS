@@ -15,6 +15,44 @@ await new Promise(resolve => setTimeout(resolve, 2000));
 assert.equal(true, true);
 ```
 
+You should 2...
+
+```js
+const a = 1;
+```
+
+### --seed--
+
+#### --"index.js"--
+
+```js
+const a = 0;
+```
+
+#### --cmd--
+
+```bash
+echo "I should run first"
+```
+
+#### --cmd--
+
+```bash
+mkdir test
+```
+
+#### --cmd--
+
+```bash
+touch test/index.ts
+```
+
+#### --"test/index.ts"--
+
+```ts
+const test: string = 'test';
+```
+
 ## 2
 
 ### --description--
