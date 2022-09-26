@@ -4,7 +4,11 @@
 
 ### --description--
 
-Description.
+Add something to a file:
+
+```javascript
+const codeToAdd = 'Hello';
+```
 
 ### --tests--
 
@@ -13,6 +17,14 @@ You should ...
 ```js
 await new Promise(resolve => setTimeout(resolve, 2000));
 assert.equal(true, true);
+```
+
+### --seed--
+
+#### --cmd--
+
+```bash
+git restore .
 ```
 
 ## 2
@@ -34,6 +46,14 @@ You should ...
 ```js
 await new Promise(resolve => setTimeout(resolve, 2000));
 assert.equal(true, true);
+```
+
+### --seed-- <!-- Seed should be run in order written -->
+
+#### --"index.js"--
+
+```javascript
+const codeToAdd = 'Hello';
 ```
 
 ## 3
