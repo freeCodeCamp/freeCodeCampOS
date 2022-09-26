@@ -4,10 +4,10 @@
 
 ### --description--
 
-Add the following code to `index.js`:
+Add something to a file:
 
 ```javascript
-const a = 1;
+const codeToAdd = 'Hello';
 ```
 
 ### --tests--
@@ -68,6 +68,14 @@ touch test/index.ts
 const test: string = 'test';
 ```
 
+### --seed--
+
+#### --cmd--
+
+```bash
+git restore .
+```
+
 ## 2
 
 ### --description--
@@ -87,6 +95,14 @@ You should ...
 ```js
 await new Promise(resolve => setTimeout(resolve, 2000));
 assert.equal(true, true);
+```
+
+### --seed-- <!-- Seed should be run in order written -->
+
+#### --"index.js"--
+
+```javascript
+const codeToAdd = 'Hello';
 ```
 
 ## 3
