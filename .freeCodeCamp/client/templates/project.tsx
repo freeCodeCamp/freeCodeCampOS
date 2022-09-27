@@ -54,7 +54,11 @@ export const Project = ({
         <Controls
           {...(project.isIntegrated
             ? { runTests }
-            : { runTests, resetProject })}
+            : {
+                runTests,
+                resetProject,
+                isResetEnabled: project.isResetEnabled
+              })}
         />
 
         <Output
