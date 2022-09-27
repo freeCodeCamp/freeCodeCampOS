@@ -4,10 +4,10 @@
 
 ### --description--
 
-Add something to a file:
+Declare a variable `a` with value `1`, in `index.js`.
 
 ```javascript
-const codeToAdd = 'Hello';
+const a = 1;
 ```
 
 ### --tests--
@@ -41,8 +41,55 @@ await __helpers.javascriptTest(filePath, test, cb);
 #### --"index.js"--
 
 ```js
-const a = 0;
+// I am an example boilerplate file
 ```
+
+## 2
+
+### --description--
+
+Create a new directory named `test`, and create a file `test/index.ts`.
+
+Then add the following:
+
+```ts
+const test: string = 'test';
+```
+
+### --tests--
+
+You should ...
+
+```js
+await new Promise(resolve => setTimeout(resolve, 2000));
+assert.equal(true, true);
+```
+
+### --seed--
+
+#### --"index.js"--
+
+```javascript
+// I am an example boilerplate file
+const a = 1;
+```
+
+## 3
+
+### --description--
+
+Description.
+
+### --tests--
+
+You should ...
+
+```js
+await new Promise(resolve => setTimeout(resolve, 2000));
+assert.equal(true, true);
+```
+
+### --seed--
 
 #### --cmd--
 
@@ -66,58 +113,6 @@ touch test/index.ts
 
 ```ts
 const test: string = 'test';
-```
-
-### --seed--
-
-#### --cmd--
-
-```bash
-git restore .
-```
-
-## 2
-
-### --description--
-
-Description with code block:
-
-```rust
-fn main() {
-    println!("Hello, world!");
-}
-```
-
-### --tests--
-
-You should ...
-
-```js
-await new Promise(resolve => setTimeout(resolve, 2000));
-assert.equal(true, true);
-```
-
-### --seed-- <!-- Seed should be run in order written -->
-
-#### --"index.js"--
-
-```javascript
-const codeToAdd = 'Hello';
-```
-
-## 3
-
-### --description--
-
-Description.
-
-### --tests--
-
-You should ...
-
-```js
-await new Promise(resolve => setTimeout(resolve, 2000));
-assert.equal(true, true);
 ```
 
 ## 4

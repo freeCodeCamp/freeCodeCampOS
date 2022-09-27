@@ -38,8 +38,9 @@ async function gitResetCurrentProjectDir() {
   const { currentProject } = await getState();
   const project = await getProjectConfig(currentProject);
   try {
+    logover.debug(`Cleaning '${project.dashedName}'`);
     const { stdout, stderr } = await runCommand(
-      `git restore ${project.dashedName}`
+      `git clean -f -q -- ${project.dashedName}`
     );
   } catch (e) {
     logover.error(e);

@@ -94,7 +94,10 @@ export async function runLessonSeed(seed, currentProject, lessonNumber) {
   try {
     for (const cmdOrFile of seedGenerator) {
       if (typeof cmdOrFile === 'string') {
-        await runCommand(cmdOrFile, currentProject);
+        const { stdout, stderr } = await runCommand(cmdOrFile, currentProject);
+        if (stdout || stderr) {
+          logover.debug(stdout, stderr);
+        }
       } else {
         const { filePath, fileSeed } = cmdOrFile;
         await runSeed(fileSeed, filePath, currentProject);
