@@ -42,6 +42,7 @@ async function handleRunTests(ws, data) {
 
 async function handleResetProject(ws, data) {
   await resetProject();
+  ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
 function handleResetLesson(ws, data) {}
 
