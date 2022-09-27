@@ -23,7 +23,7 @@ import hotReload from './hot-reload.js';
 import { hideAll, showFile, showAll } from './utils.js';
 import { join } from 'path';
 import { logover } from './logger.js';
-import { getTotalLessons } from './parser.js';
+import { getLessonExists, getTotalLessons } from './parser.js';
 
 const freeCodeCampConfig = await getConfig();
 
@@ -46,24 +46,32 @@ async function handleGoToNextLesson(ws, data) {
   const { currentProject } = await getState();
   const project = await getProjectConfig(currentProject);
   const nextLesson = project.currentLesson + 1;
-  await setProjectConfig(currentProject, { currentLesson: nextLesson });
-  await runLesson(ws, project.dashedName);
-  updateHints(ws, '');
-  updateTests(ws, []);
-  updateConsole(ws, '');
-  ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
+  const lessonExists = getLessonExists(nextLesson, project?.numberOfLessons);
+
+  if (lessonExists) {
+    await setProjectConfig(currentProject, { currentLesson: nextLesson });
+    await runLesson(ws, project.dashedName);
+    updateHints(ws, '');
+    updateTests(ws, []);
+    updateConsole(ws, '');
+    ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
+  }
 }
 
 async function handleGoToPreviousLesson(ws, data) {
   const { currentProject } = await getState();
   const project = await getProjectConfig(currentProject);
   const prevLesson = project.currentLesson - 1;
-  await setProjectConfig(currentProject, { currentLesson: prevLesson });
-  await runLesson(ws, project.dashedName);
-  updateTests(ws, []);
-  updateHints(ws, '');
-  updateConsole(ws, '');
-  ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
+  const lessonExists = getLessonExists(prevLesson, project?.numberOfLessons);
+
+  if (lessonExists) {
+    await setProjectConfig(currentProject, { currentLesson: prevLesson });
+    await runLesson(ws, project.dashedName);
+    updateTests(ws, []);
+    updateHints(ws, '');
+    updateConsole(ws, '');
+    ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
+  }
 }
 
 async function handleConnect(ws) {
@@ -197,6 +205,18 @@ async function updateProjectConfig() {
       project.dashedName + '.md'
     );
     const numberOfLessons = (await getTotalLessons(projectFilePath)) || 1;
-    await setProjectConfig(project.dashedName, { numberOfLessons });
+    const newConfig = {
+      numberOfLessons
+    };
+
+    // set the current lesson to 1 if it somehow got to a lesson that doesn't exist
+    if (project.hasOwnProperty('currentLesson')) {
+      const lessonExists = getLessonExists(project.currentLesson, numberOfLessons);
+      if (!lessonExists) {
+        newConfig.currentLesson = 1;
+      }
+    }
+
+    await setProjectConfig(project.dashedName, newConfig);
   }
 }

@@ -190,3 +190,7 @@ export async function getTotalLessons(file) {
   const numberOfLessons = lessonNumbers.length;
   return numberOfLessons;
 }
+
+export function getLessonExists(lessonNumber, totalNumberOfLessons) {
+  return lessonNumber > 0 && lessonNumber <= totalNumberOfLessons;
+}
