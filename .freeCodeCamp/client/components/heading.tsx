@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { F } from '../types';
 
 interface HeadingProps {
@@ -13,8 +13,8 @@ interface HeadingProps {
 export const Heading = ({
   topic,
   title,
-  lessonNumber = 1,
-  numberOfLessons = 1,
+  lessonNumber,
+  numberOfLessons,
   goToNextLesson,
   goToPreviousLesson
 }: HeadingProps) => {
@@ -25,14 +25,16 @@ export const Heading = ({
     setTimeout(() => setAnim(''), 1000);
   }, [lessonNumber]);
 
-  const canGoBack = lessonNumber > 1;
-  const canGoForward = lessonNumber < numberOfLessons;
+  const canGoBack = lessonNumber && lessonNumber > 1;
+  const canGoForward =
+    lessonNumber && numberOfLessons && lessonNumber < numberOfLessons;
 
   return (
     <nav className='heading'>
       {goToPreviousLesson && (
         <button
           className='previous-lesson-btn'
+          disabled={!canGoBack}
           onClick={() => goToPreviousLesson()}
           style={{ cursor: `${canGoBack ? 'pointer' : 'not-allowed'}` }}
         >
@@ -46,6 +48,7 @@ export const Heading = ({
       {goToNextLesson && (
         <button
           className='next-lesson-btn'
+          disabled={!canGoForward}
           onClick={() => goToNextLesson()}
           style={{ cursor: `${canGoForward ? 'pointer' : 'not-allowed'}` }}
         >
