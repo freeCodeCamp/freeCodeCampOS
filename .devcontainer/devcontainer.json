@@ -4,7 +4,7 @@
     "freeCodeCamp.freecodecamp-courses@1.6.0",
     "freeCodeCamp.freecodecamp-dark-vscode-theme"
   ],
-  "forwardPorts": [3000],
+  "forwardPorts": [8080],
   "workspaceFolder": "/workspace/freeCodeCampOS",
   "dockerFile": "../Dockerfile",
   "context": ".."
