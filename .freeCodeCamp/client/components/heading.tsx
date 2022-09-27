@@ -5,6 +5,7 @@ interface HeadingProps {
   topic: string;
   title: string;
   lessonNumber?: number;
+  numberOfLessons?: number;
   goToNextLesson?: F<void, void>;
   goToPreviousLesson?: F<void, void>;
 }
@@ -12,7 +13,8 @@ interface HeadingProps {
 export const Heading = ({
   topic,
   title,
-  lessonNumber,
+  lessonNumber = 1,
+  numberOfLessons = 1,
   goToNextLesson,
   goToPreviousLesson
 }: HeadingProps) => {
@@ -23,12 +25,16 @@ export const Heading = ({
     setTimeout(() => setAnim(''), 1000);
   }, [lessonNumber]);
 
+  const canGoBack = lessonNumber > 1;
+  const canGoForward = lessonNumber < numberOfLessons;
+
   return (
     <nav className='heading'>
       {goToPreviousLesson && (
         <button
           className='previous-lesson-btn'
           onClick={() => goToPreviousLesson()}
+          style={{ cursor: `${canGoBack ? 'pointer' : 'not-allowed'}` }}
         >
           {'<'}
         </button>
@@ -38,7 +44,11 @@ export const Heading = ({
         {lessonNumber && ' - Lesson ' + lessonNumber}
       </h1>
       {goToNextLesson && (
-        <button className='next-lesson-btn' onClick={() => goToNextLesson()}>
+        <button
+          className='next-lesson-btn'
+          onClick={() => goToNextLesson()}
+          style={{ cursor: `${canGoForward ? 'pointer' : 'not-allowed'}` }}
+        >
           {'>'}
         </button>
       )}

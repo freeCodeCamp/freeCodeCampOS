@@ -43,6 +43,7 @@ export const Project = ({
             : {
                 goToNextLesson,
                 goToPreviousLesson,
+                numberOfLessons: project.numberOfLessons,
                 topic,
                 title: project.title,
                 lessonNumber
