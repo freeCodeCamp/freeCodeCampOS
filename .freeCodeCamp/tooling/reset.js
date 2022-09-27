@@ -2,8 +2,9 @@
 
 import { join } from 'path';
 import { getConfig, getProjectConfig, getState, ROOT } from './env.js';
+import { logover } from './logger.js';
 import { getLessonFromFile, getLessonSeed } from './parser.js';
-import { runLessonSeed } from './seed.js';
+import { runCommand, runLessonSeed } from './seed.js';
 
 export async function resetProject() {
   // Get commands and handle file setting
@@ -22,6 +23,7 @@ export async function resetProject() {
   if (!lesson) {
     return new Error(`No lesson found for ${currentProject}`);
   }
+  await gitResetCurrentProjectDir();
   while (lessonNumber <= currentLesson) {
     const seed = getLessonSeed(lesson);
     if (seed) {
@@ -29,5 +31,17 @@ export async function resetProject() {
     }
     lessonNumber++;
     lesson = await getLessonFromFile(FILE, lessonNumber);
+  }
+}
+
+async function gitResetCurrentProjectDir() {
+  const { currentProject } = await getState();
+  const project = await getProjectConfig(currentProject);
+  try {
+    const { stdout, stderr } = await runCommand(
+      `git restore ${project.dashedName}`
+    );
+  } catch (e) {
+    logover.error(e);
   }
 }
