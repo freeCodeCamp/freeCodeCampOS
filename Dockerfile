@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 
 ARG USERNAME=camper
-ARG REPO_NAME=curriculum
+ARG REPO_NAME=freeCodeCampOS
 ARG HOMEDIR=/workspace/$REPO_NAME
 
 ENV TZ="America/New_York"
