@@ -36,7 +36,7 @@ export const Heading = ({
           className='previous-lesson-btn'
           disabled={!canGoBack}
           onClick={() => goToPreviousLesson()}
-          style={{ cursor: `${canGoBack ? 'pointer' : 'not-allowed'}` }}
+          style={{ cursor: canGoBack ? 'pointer' : 'not-allowed' }}
         >
           {'<'}
         </button>
@@ -50,7 +50,7 @@ export const Heading = ({
           className='next-lesson-btn'
           disabled={!canGoForward}
           onClick={() => goToNextLesson()}
-          style={{ cursor: `${canGoForward ? 'pointer' : 'not-allowed'}` }}
+          style={{ cursor: canGoForward ? 'pointer' : 'not-allowed' }}
         >
           {'>'}
         </button>
