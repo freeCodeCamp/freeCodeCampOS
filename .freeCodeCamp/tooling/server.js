@@ -46,11 +46,14 @@ async function handleGoToNextLesson(ws, data) {
   const { currentProject } = await getState();
   const project = await getProjectConfig(currentProject);
   const nextLesson = project.currentLesson + 1;
-  await setProjectConfig(currentProject, { currentLesson: nextLesson });
-  await runLesson(ws, project.dashedName);
-  updateHints(ws, '');
-  updateTests(ws, []);
-  updateConsole(ws, '');
+
+  if (nextLesson > 0 && nextLesson <= project.numberOfLessons) {
+    await setProjectConfig(currentProject, { currentLesson: nextLesson });
+    await runLesson(ws, project.dashedName);
+    updateHints(ws, '');
+    updateTests(ws, []);
+    updateConsole(ws, '');
+  }
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
 
@@ -58,11 +61,14 @@ async function handleGoToPreviousLesson(ws, data) {
   const { currentProject } = await getState();
   const project = await getProjectConfig(currentProject);
   const prevLesson = project.currentLesson - 1;
-  await setProjectConfig(currentProject, { currentLesson: prevLesson });
-  await runLesson(ws, project.dashedName);
-  updateTests(ws, []);
-  updateHints(ws, '');
-  updateConsole(ws, '');
+
+  if (prevLesson > 0 && prevLesson <= project.numberOfLessons) {
+    await setProjectConfig(currentProject, { currentLesson: prevLesson });
+    await runLesson(ws, project.dashedName);
+    updateTests(ws, []);
+    updateHints(ws, '');
+    updateConsole(ws, '');
+  }
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
 
