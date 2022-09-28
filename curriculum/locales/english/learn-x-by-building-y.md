@@ -4,10 +4,56 @@
 
 ### --description--
 
-Add something to a file:
+Declare a variable `a` with value `1`, in `index.js`.
 
 ```javascript
-const codeToAdd = 'Hello';
+const a = 1;
+```
+
+### --tests--
+
+You should declare a variable named `a`.
+
+```js
+const test = `console.assert(typeof a);`;
+const filePath = 'learn-x-by-building-y/index.js';
+const cb = (stdout, stderr) => {
+  assert.isEmpty(stderr);
+  assert.exists(stdout);
+};
+await __helpers.javascriptTest(filePath, test, cb);
+```
+
+You should give `a` a value of `1`.
+
+```js
+const test = `console.assert(a === 1, \`expected \${a} to equal 1\`);`;
+const filePath = 'learn-x-by-building-y/index.js';
+const cb = (stdout, stderr) => {
+  assert.isEmpty(stderr);
+  assert.exists(stdout);
+};
+await __helpers.javascriptTest(filePath, test, cb);
+```
+
+### --seed--
+
+#### --"index.js"--
+
+```js
+// I am an example boilerplate file
+```
+
+## 2
+
+### --description--
+
+Create a new directory named `test`, and create a file `test/index.ts`.
+
+Then add the following:
+
+```ts
+const test: string = 'test';
 ```
 
 ### --tests--
@@ -21,39 +67,11 @@ assert.equal(true, true);
 
 ### --seed--
 
-#### --cmd--
-
-```bash
-git restore .
-```
-
-## 2
-
-### --description--
-
-Description with code block:
-
-```rust
-fn main() {
-    println!("Hello, world!");
-}
-```
-
-### --tests--
-
-You should ...
-
-```js
-await new Promise(resolve => setTimeout(resolve, 2000));
-assert.equal(true, true);
-```
-
-### --seed-- <!-- Seed should be run in order written -->
-
 #### --"index.js"--
 
 ```javascript
-const codeToAdd = 'Hello';
+// I am an example boilerplate file
+const a = 1;
 ```
 
 ## 3
@@ -69,6 +87,32 @@ You should ...
 ```js
 await new Promise(resolve => setTimeout(resolve, 2000));
 assert.equal(true, true);
+```
+
+### --seed--
+
+#### --cmd--
+
+```bash
+echo "I should run first"
+```
+
+#### --cmd--
+
+```bash
+mkdir test
+```
+
+#### --cmd--
+
+```bash
+touch test/index.ts
+```
+
+#### --"test/index.ts"--
+
+```ts
+const test: string = 'test';
 ```
 
 ## 4

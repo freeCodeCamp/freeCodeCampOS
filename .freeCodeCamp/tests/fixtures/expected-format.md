@@ -29,6 +29,20 @@ const a = 'test2';
 // Second test code;
 ```
 
+### --seed--
+
+#### --"some/file.js"--
+
+```js
+const file = 'some';
+```
+
+#### --cmd--
+
+```bash
+echo "I am bash seed"
+```
+
 ### --before-all--
 
 ```js
