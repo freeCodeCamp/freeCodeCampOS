@@ -203,9 +203,6 @@ async function updateProjectConfig() {
       project.dashedName + '.md'
     );
     const numberOfLessons = (await getTotalLessons(projectFilePath)) || 1;
-    const newConfig = {
-      numberOfLessons
-    };
-    await setProjectConfig(project.dashedName, newConfig);
+    await setProjectConfig(project.dashedName, { numberOfLessons });
   }
 }
