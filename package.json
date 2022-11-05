@@ -34,7 +34,7 @@
     "file-loader": "6.2.0",
     "html-webpack-plugin": "5.5.0",
     "logover": "2.0.0",
-    "marked": "4.1.1",
+    "marked": "4.2.2",
     "nodemon": "2.0.20",
     "os-browserify": "0.3.0",
     "path-browserify": "1.0.1",
