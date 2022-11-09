@@ -5,7 +5,7 @@
 1. Install `freecodecamp-os` in your project root:
 
 ```bash
-npm install freecodecamp-os
+npm install @freecodecamp/freecodecamp-os
 ```
 
 2. Add a `freecodecamp.conf.json` file to your project root:
@@ -68,3 +68,22 @@ npm install freecodecamp-os
 ```
 
 3. Add all the necessary files to your project (_use this repo as a reference_)
+
+## How this Works
+
+This repo consists of:
+
+- `.freeCodeCamp/` - the directory that is published to NPM
+  - `client/` - SPA showcasing the curricula content
+  - `tooling/` - directory containing Nodejs scripts to run a server serving the client
+- `.logs/` - directory containing files with terminal log data
+- `bash/` - directory for bash configuration
+- `client/` - directory for assets used in `.freeCodeCamp/client/`
+- `config/` - directory for project configuration and state
+- `curriculum/` - directory for curriculum content
+  - `locales/` - directory for different language versions of the curriculum
+- `tooling/` - directory for Nodejs scripts integrated with `.freeCodeCamp/tooling/` but specific to the curriculum
+
+The course content served on the client is written in Markdown files. The lesson/project tests run on the Nodejs server are written in the same markdown files.
+
+The `freecodecamp.conf.json` file is used to configure the course, and define the actions taken by the [freeCodeCamp - Courses](https://marketplace.visualstudio.com/items?itemName=freeCodeCamp.freecodecamp-courses) extension. The `freecodecamp-os` package version used should match the minor version used for the extension. This is configured in the `.devcontainer/devcontainer.json` file.
