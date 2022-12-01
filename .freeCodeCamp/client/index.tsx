@@ -3,6 +3,7 @@ import { Suspense, useState, useEffect } from 'react';
 import {
   ConsoleError,
   Events,
+  FCCError,
   FreeCodeCampConfigI,
   ProjectI,
   TestType
@@ -38,6 +39,7 @@ const App = () => {
   const [cons, setCons] = useState<ConsoleError[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [alertCamper, setAlertCamper] = useState<null | string>(null);
+  const [error, setError] = useState<FCCError | null>(null);
 
   const [debouncers, setDebouncers] = useState<string[]>([]);
 
@@ -72,6 +74,7 @@ const App = () => {
     'update-project': setProject,
     'update-projects': setProjects,
     'update-freeCodeCamp-config': setFreeCodeCampConfig,
+    'update-error': updateError,
     'reset-tests': resetTests,
     RESPONSE: debounce
   };
@@ -136,6 +139,10 @@ const App = () => {
     });
   }
 
+  function updateError({ error }: { error: FCCError }) {
+    setError(error);
+  }
+
   function resetTests() {
     setTests([]);
   }
@@ -168,7 +175,7 @@ const App = () => {
     return (
       <>
         <Header updateProject={updateProject} />
-        <E44o5 text={alertCamper} />
+        <E44o5 text={alertCamper} error={error} />
       </>
     );
   }
