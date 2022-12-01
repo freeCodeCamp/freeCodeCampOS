@@ -2,7 +2,7 @@
 import { readFile } from 'fs/promises';
 import { createReadStream } from 'fs';
 import { createInterface } from 'readline';
-import { logover } from './logger';
+import { logover } from './logger.js';
 
 const DESCRIPTION_MARKER = '### --description--';
 const TEST_MARKER = '### --tests--';
