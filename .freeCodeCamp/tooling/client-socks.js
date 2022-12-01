@@ -96,17 +96,9 @@ export function updateConsole(ws, cons) {
 }
 
 /**
- * @typedef {object} fccError
- * @property {string} message
- * @property {string} stack
- * @property {string} type
- * @property {string} name
- */
-
-/**
  * Update error
  * @param {WebSocket} ws WebSocket connection to the client
- * @param {fccError} error Error object
+ * @param {Error} error Error object
  */
 export function updateError(ws, error) {
   ws.send(parse({ event: 'update-error', data: { error } }));

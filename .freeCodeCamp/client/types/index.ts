@@ -42,10 +42,3 @@ export type ConsoleError = {
 export type FreeCodeCampConfigI = {
   [key: string]: any;
 };
-
-export type FCCError = {
-  message: string;
-  stack: string;
-  type: string;
-  name: string;
-};

@@ -3,7 +3,6 @@ import { Suspense, useState, useEffect } from 'react';
 import {
   ConsoleError,
   Events,
-  FCCError,
   FreeCodeCampConfigI,
   ProjectI,
   TestType
@@ -39,7 +38,7 @@ const App = () => {
   const [cons, setCons] = useState<ConsoleError[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [alertCamper, setAlertCamper] = useState<null | string>(null);
-  const [error, setError] = useState<FCCError | null>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const [debouncers, setDebouncers] = useState<string[]>([]);
 
@@ -139,7 +138,7 @@ const App = () => {
     });
   }
 
-  function updateError({ error }: { error: FCCError }) {
+  function updateError({ error }: { error: Error }) {
     setError(error);
   }
 

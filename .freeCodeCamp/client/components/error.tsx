@@ -1,11 +1,9 @@
-import { FCCError } from '../types';
-
 export const E44o5 = ({
   text,
   error
 }: {
   text: string;
-  error: FCCError | null;
+  error: Error | null;
 }) => {
   return (
     <main className='e44o5'>
