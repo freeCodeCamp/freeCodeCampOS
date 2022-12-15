@@ -246,6 +246,16 @@ async function controlWrapper(cb, { timeout = 10000, stepSize = 250 }) {
   });
 }
 
+/**
+ * Imports a module side-stepping Nodejs' cache
+ * @param {string} path Path to file/module to import
+ * @returns {Promise<ReturnType<typeof import>>}
+ */
+async function importSansCache(path) {
+  const cacheBustingModulePath = `${path}?update=${Date.now()}`;
+  return await import(cacheBustingModulePath);
+}
+
 const logoverHelp = new Logger({ level: 'debug' });
 
 const __helpers = {
@@ -257,14 +267,15 @@ const __helpers = {
   getCommandOutput,
   getCWD,
   getDirectory,
-  makeDirectory,
   getFile,
   getJsonFile,
   getLastCommand,
   getLastCWD,
   getTemp,
   getTerminalOutput,
+  importSansCache,
   logover: logoverHelp,
+  makeDirectory,
   runCommand,
   writeJsonFile
 };
