@@ -1,7 +1,7 @@
 {
   "name": "@freecodecamp/freecodecamp-os",
   "author": "freeCodeCamp",
-  "version": "1.6.9",
+  "version": "1.7.0",
   "description": "Package used for freeCodeCamp projects with the freeCodeCamp Courses VSCode extension",
   "scripts": {
     "start": "npm run build:client && node ./.freeCodeCamp/tooling/server.js",
@@ -10,8 +10,7 @@
     "build:client": "NODE_ENV=production webpack --config ./.freeCodeCamp/webpack.config.cjs",
     "develop:client": "NODE_ENV=development webpack --mode development",
     "develop:server": "nodemon --watch ./dist/ --watch ./tooling/ --ignore ./config/ ./tooling/server.js",
-    "postinstall": "npm run build:client && node ./.freeCodeCamp/npm/postinstall.js",
-    "uninstall": "node ./.freeCodeCamp/npm/uninstall.js"
+    "postinstall": "npm run build:client && node ./.freeCodeCamp/npm/postinstall.js"
   },
   "dependencies": {
     "@babel/core": "7.20.5",
