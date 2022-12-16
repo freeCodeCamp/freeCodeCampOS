@@ -25,10 +25,15 @@ import { join } from 'path';
 import { logover } from './logger.js';
 import { getTotalLessons } from './parser.js';
 import { resetProject } from './reset.js';
+import { validateCurriculum } from './validate.js';
 
 const freeCodeCampConfig = await getConfig();
 
 await updateProjectConfig();
+
+if (process.env.NODE_ENV === 'development') {
+  await validateCurriculum();
+}
 
 const app = express();
 
