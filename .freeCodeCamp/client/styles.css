@@ -158,7 +158,7 @@ code {
   margin-bottom: 0.1rem;
 }
 
-#description > pre {
+#description pre {
   overflow-x: auto;
 }
 
