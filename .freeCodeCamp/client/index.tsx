@@ -63,6 +63,7 @@ const App = () => {
   }, []);
 
   const handle = {
+    'handle-project-finish': handleProjectFinish,
     'toggle-loader-animation': toggleLoaderAnimation,
     'update-test': updateTest,
     'update-tests': updateTests,
@@ -77,6 +78,15 @@ const App = () => {
     'reset-tests': resetTests,
     RESPONSE: debounce
   };
+
+  function handleProjectFinish() {
+    // Send Camper to landing page
+    updateProject(null);
+  }
+
+  useEffect(() => {
+    sock(Events.REQUEST_DATA, { request: 'projects' });
+  }, [project]);
 
   function debounce({ event }: { event: string }) {
     const debouncerRemoved = debouncers.filter(d => d !== event);

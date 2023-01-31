@@ -15,13 +15,22 @@ export const Block = ({
   isPublic,
   numberOfLessons,
   currentLesson,
+  completedDate,
   sock
 }: BlockProps) => {
   function selectProject() {
     sock(Events.SELECT_PROJECT, { id });
   }
 
-  const lessonsCompleted = currentLesson - 1;
+  let lessonsCompleted = 0;
+  if (completedDate) {
+    lessonsCompleted = numberOfLessons;
+  } else {
+    lessonsCompleted =
+      !isIntegrated && currentLesson === numberOfLessons
+        ? currentLesson
+        : currentLesson - 1;
+  }
   return (
     <li className='block'>
       <button
