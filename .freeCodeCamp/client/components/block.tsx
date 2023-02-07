@@ -1,7 +1,7 @@
 import { SelectionProps } from './selection';
 import { ProjectI, Events } from '../types/index';
 import { Tag } from './tag';
-import { Badge } from './badge';
+import { Checkmark } from './checkmark';
 
 type BlockProps = {
   sock: SelectionProps['sock'];
@@ -40,8 +40,8 @@ export const Block = ({
         style={
           !isPublic
             ? {
-                cursor: 'not-allowed'
-              }
+              cursor: 'not-allowed'
+            }
             : {}
         }
       >
@@ -51,7 +51,10 @@ export const Block = ({
           {!isPublic && <Tag text='Coming Soon' />}
         </div>
 
-        <h2>{title}</h2>
+        <h2>
+          {title}
+          {completedDate ? <span className='block-checkmark'><Checkmark /></span> : null}
+        </h2>
         <div className='block-info'>
           <p>{description}</p>
           <span aria-hidden='true'>
