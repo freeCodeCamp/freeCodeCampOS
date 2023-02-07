@@ -122,22 +122,19 @@ export default async function runTests(ws, projectDashedName) {
       const result = await Promise.allSettled(testPromises);
       const passed = result.every(r => r.status === 'fulfilled');
       if (passed) {
-        if (!project.isIntegrated) {
-          if (lessonNumber === project.numberOfLessons) {
-            handleProjectFinish(ws);
-          } else {
-            await setProjectConfig(project.dashedName, {
-              currentLesson: lessonNumber + 1
-            });
-            await runLesson(ws, projectDashedName);
-            updateHints(ws, '');
-          }
-        } else {
+        if (project.isIntegrated || lessonNumber === project.numberOfLessons) {
+          await setProjectConfig(project.dashedName, {
+            completedDate: Date.now()
+          });
           handleProjectFinish(ws);
+        } else {
+          await setProjectConfig(project.dashedName, {
+            currentLesson: lessonNumber + 1
+          });
+          await runLesson(ws, projectDashedName);
+          updateHints(ws, '');
         }
-        await setProjectConfig(project.dashedName, {
-          completedDate: Date.now()
-        });
+
       } else {
         updateHints(
           ws,
