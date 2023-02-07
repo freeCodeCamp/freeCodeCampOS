@@ -41,9 +41,11 @@ const App = () => {
   const [error, setError] = useState<Error | null>(null);
 
   const [debouncers, setDebouncers] = useState<string[]>([]);
+  const [connected, setConnected] = useState<boolean>(false);
 
   useEffect(() => {
     socket.onopen = function (_event) {
+      setConnected(true);
       sock(Events.CONNECT);
     };
     socket.onmessage = function (event) {
@@ -54,6 +56,7 @@ const App = () => {
     };
     socket.onclose = function (_event) {
       setAlertCamper('Client has disconnected from local server');
+      setConnected(false);
     };
 
     return () => {
@@ -85,7 +88,9 @@ const App = () => {
   }
 
   useEffect(() => {
-    sock(Events.REQUEST_DATA, { request: 'projects' });
+    if (connected) {
+      sock(Events.REQUEST_DATA, { request: 'projects' });
+    }
   }, [project]);
 
   function debounce({ event }: { event: string }) {
