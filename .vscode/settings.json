@@ -19,6 +19,7 @@
     "build-x-using-y": false,
     "learn-x-by-building-y": false
   },
+  "terminal.integrated.defaultProfile.linux": "bash",
   "terminal.integrated.profiles.linux": {
     "bash": {
       "path": "bash",
