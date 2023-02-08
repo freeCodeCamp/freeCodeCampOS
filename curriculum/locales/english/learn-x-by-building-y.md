@@ -153,11 +153,11 @@ Description.
 
 ### --tests--
 
-You should fail...
+This test will pass after 5 seconds.
 
 ```js
-await new Promise(resolve => setTimeout(resolve, 2500));
-assert.fail('You will always fail this');
+await new Promise(resolve => setTimeout(resolve, 5000));
+assert.equal(1, 1);
 ```
 
 ## --fcc-end--

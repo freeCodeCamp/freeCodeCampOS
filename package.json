@@ -1,7 +1,7 @@
 {
   "name": "@freecodecamp/freecodecamp-os",
   "author": "freeCodeCamp",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "Package used for freeCodeCamp projects with the freeCodeCamp Courses VSCode extension",
   "scripts": {
     "start": "npm run build:client && node ./.freeCodeCamp/tooling/server.js",
@@ -51,11 +51,5 @@
     "type": "git",
     "url": "https://github.com/freeCodeCamp/freeCodeCampOS"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
   "type": "module"
 }
