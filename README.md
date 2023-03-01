@@ -15,8 +15,8 @@ npm install @freecodecamp/freecodecamp-os
   "path": ".",
   "prepare": "echo 'prep'",
   "scripts": {
-    "develop-course": "npm run develop",
-    "run-course": "npm run start",
+    "develop-course": "NODE_ENV=development node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js",
+    "run-course": "NODE_ENV=production node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js",
     "test": {
       "functionName": "handleMessage",
       "arguments": [
