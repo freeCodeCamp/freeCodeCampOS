@@ -5,6 +5,7 @@ export async function t(key, args = {}, forceLangToUse) {
   // Get key from ./locales/{locale}/comments.json
   // Read file and parse JSON
   const locale = forceLangToUse ?? loc;
+  // TODO: Not used anywhere, but needs path fixing too.
   const comments = import(
     `.freeCodeCamp/tooling/locales/${locale}/comments.json`,
     {
