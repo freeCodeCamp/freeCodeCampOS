@@ -59,7 +59,7 @@ export async function getLessonFromFile(file, lessonNumber = 1) {
   const fileContent = await readFile(file, 'utf8');
   const mat = fileContent.match(
     new RegExp(
-      `## ${lessonNumber}\n(.*?)\n## (${lessonNumber + 1}|--fcc-end--)`,
+      `## ${lessonNumber}\r?\n(.*?)\n## (${lessonNumber + 1}|--fcc-end--)`,
       's'
     )
   );
@@ -89,8 +89,8 @@ export function getLessonDescription(lesson) {
 export function getLessonHintsAndTests(lesson) {
   const testsString = parseMarker(TEST_MARKER, lesson);
   const hintsAndTestsArr = [];
-  const hints = testsString?.match(/^(.*?)$(?=\n+```js)/gm)?.filter(Boolean);
-  const tests = testsString?.match(/(?<=```js\n).*?(?=```)/gms);
+  const hints = testsString?.match(/^(.*?)$(?=\r?\n+```js)/gm)?.filter(Boolean);
+  const tests = testsString?.match(/(?<=```js\r?\n).*?(?=```)/gms);
 
   if (hints?.length) {
     for (let i = 0; i < hints.length; i++) {
@@ -152,7 +152,7 @@ export function getAfterAll(lesson) {
  * @returns {string[]} The commands of the lesson in order
  */
 export function getCommands(seed) {
-  const cmds = seed.match(new RegExp(`${CMD_MARKER}\n(.*?\`\`\`\n)`, 'gs'));
+  const cmds = seed.match(new RegExp(`${CMD_MARKER}\r?\n(.*?\`\`\`\n)`, 'gs'));
   const commands = cmds?.map(cmd => extractStringFromCode(cmd)?.trim());
   return commands ?? [];
 }
@@ -164,7 +164,7 @@ export function getCommands(seed) {
  */
 export function getFilesWithSeed(seed) {
   const files = seed.match(
-    new RegExp(`#### --"([^"]+)"--\n(.*?\`\`\`\n)`, 'gs')
+    new RegExp(`#### --"([^"]+)"--\r?\n(.*?\`\`\`\r?\n)`, 'gs')
   );
   const filePaths = seed.match(new RegExp(FILE_MARKER_REG, 'gsm'));
   const fileSeeds = files?.map(file => extractStringFromCode(file)?.trim());
@@ -193,7 +193,7 @@ export function isForceFlag(seed) {
  * @returns {string} The stripped codeblock
  */
 export function extractStringFromCode(code) {
-  return code.replace(/.*?```[a-z]+\n(.*?)```.*/s, '$1');
+  return code.replace(/.*?```[a-z]+\r?\n(.*?)```.*/s, '$1');
 }
 
 /**
@@ -229,9 +229,11 @@ export function* seedToIterator(seed) {
   const sections = seed.match(new RegExp(`#### --(((?!#### --).)*\n?)`, 'sg'));
   for (const section of sections) {
     const isFile = section.match(
-      new RegExp(`#### --"([^"]+)"--\n(.*?\`\`\`\n)`, 's')
+      new RegExp(`#### --"([^"]+)"--\r?\n(.*?\`\`\`\r?\n)`, 's')
     );
-    const isCMD = section.match(new RegExp(`#### --cmd--\n(.*?\`\`\`\n)`, 's'));
+    const isCMD = section.match(
+      new RegExp(`#### --cmd--\r?\n(.*?\`\`\`\r?\n)`, 's')
+    );
     if (isFile) {
       const filePath = isFile[1];
       const fileSeed = extractStringFromCode(isFile[2])?.trim();
