@@ -34,7 +34,7 @@
     "html-webpack-plugin": "5.5.0",
     "logover": "2.0.0",
     "marked": "4.2.12",
-    "nodemon": "2.0.20",
+    "nodemon": "2.0.21",
     "os-browserify": "0.3.0",
     "path-browserify": "1.0.1",
     "prismjs": "1.29.0",
