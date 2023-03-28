@@ -100,7 +100,7 @@ export default async function runTests(ws, projectDashedName) {
         });
       } catch (e) {
         if (!(e instanceof AssertionError)) {
-          logover.error(e);
+          logover.error(`Test #${i + 1}:`, e);
         }
 
         const testState = {
@@ -134,7 +134,6 @@ export default async function runTests(ws, projectDashedName) {
           await runLesson(ws, projectDashedName);
           updateHints(ws, '');
         }
-
       } else {
         updateHints(
           ws,
