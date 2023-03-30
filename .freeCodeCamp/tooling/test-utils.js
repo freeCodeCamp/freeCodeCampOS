@@ -223,7 +223,7 @@ async function getTerminalOutput() {
  * @returns {Promise<ReturnType<typeof import>>}
  */
 async function importSansCache(path) {
-  const cacheBustingModulePath = `${path}?update=${Date.now()}`;
+  const cacheBustingModulePath = `${join(ROOT, path)}?update=${Date.now()}`;
   return await import(cacheBustingModulePath);
 }
 

@@ -1,7 +1,7 @@
 {
   "name": "@freecodecamp/freecodecamp-os",
   "author": "freeCodeCamp",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "description": "Package used for freeCodeCamp projects with the freeCodeCamp Courses VSCode extension",
   "scripts": {
     "start": "npm run build:client && node ./.freeCodeCamp/tooling/server.js",
