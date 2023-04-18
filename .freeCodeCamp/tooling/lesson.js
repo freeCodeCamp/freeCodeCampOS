@@ -16,7 +16,7 @@ import {
   updateError
 } from './client-socks.js';
 import { ROOT, getState, getProjectConfig, freeCodeCampConfig } from './env.js';
-import seedLesson from './seed.js';
+import { seedLesson } from './seed.js';
 import { logover } from './logger.js';
 
 /**
@@ -24,7 +24,7 @@ import { logover } from './logger.js';
  * @param {WebSocket} ws WebSocket connection to the client
  * @param {object} projectDashedName Project dashed-name
  */
-async function runLesson(ws, projectDashedName) {
+export async function runLesson(ws, projectDashedName) {
   const project = await getProjectConfig(projectDashedName);
   const { locale } = await getState();
   const projectFile = join(
@@ -73,5 +73,3 @@ async function runLesson(ws, projectDashedName) {
     logover.error(err);
   }
 }
-
-export default runLesson;

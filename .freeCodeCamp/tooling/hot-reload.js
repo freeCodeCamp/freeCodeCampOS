@@ -1,8 +1,8 @@
 // This file handles the watching of the /curriculum folder for changes
 // and executing the command to run the tests for the next (current) lesson
 import { getState, getProjectConfig, ROOT } from './env.js';
-import runLesson from './lesson.js';
-import runTests from './test.js';
+import { runLesson } from './lesson.js';
+import { runTests } from './test.js';
 import { watch } from 'chokidar';
 import { logover } from './logger.js';
 
@@ -15,7 +15,7 @@ const defaultPathsToIgnore = [
   '/test-ledger/'
 ];
 
-function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
+export function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
   logover.info(`Watching for file changes on ${ROOT}`);
   let isWait = false;
   let testsRunning = false;
@@ -54,5 +54,3 @@ function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
     }
   });
 }
-
-export default hotReload;

@@ -15,7 +15,7 @@ import { logover } from './logger.js';
 import { updateError } from './client-socks.js';
 const execute = promisify(exec);
 
-export default async function seedLesson(ws, project) {
+export async function seedLesson(ws, project) {
   // TODO: Use ws to display loader whilst seeding
   const lessonNumber = project.currentLesson;
   const { locale } = await getState();
@@ -33,8 +33,7 @@ export default async function seedLesson(ws, project) {
     const filesWithSeed = getFilesWithSeed(seed);
 
     await runCommands(commands);
-    await runSeed(filesWithSeed);
-    logover.error(e);
+    await runSeedDeprecated(filesWithSeed);
   } catch (e) {
     updateError(ws, e);
     logover.error(e);
@@ -49,6 +48,9 @@ export async function runCommands(commands) {
   // Execute the following commands in the shell
   for (const command of commands) {
     const { stdout, stderr } = await execute(command);
+    if (stdout) {
+      logover.debug(stdout);
+    }
     if (stderr) {
       logover.error(stderr);
       return Promise.reject(stderr);
@@ -72,6 +74,8 @@ export async function runCommand(command, path = '.') {
 /**
  * Runs the given array of files with seed
  * @param {[string, string][]} filesWithSeed - [[filePath, fileSeed]]
+ *
+ * @deprecated Prefer to use `runLessonSeed` instead
  */
 export async function runSeedDeprecated(filesWithSeed) {
   try {

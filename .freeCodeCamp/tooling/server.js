@@ -1,6 +1,6 @@
 import express from 'express';
 import { readFile } from 'fs/promises';
-import runTests from './test.js';
+import { runTests } from './test.js';
 import {
   getProjectConfig,
   getState,
@@ -11,7 +11,7 @@ import {
 } from './env.js';
 
 import { WebSocketServer } from 'ws';
-import runLesson from './lesson.js';
+import { runLesson } from './lesson.js';
 import {
   updateTests,
   updateHints,
@@ -19,7 +19,7 @@ import {
   updateProjects,
   updateFreeCodeCampConfig
 } from './client-socks.js';
-import hotReload from './hot-reload.js';
+import { hotReload } from './hot-reload.js';
 import { hideAll, showFile, showAll } from './utils.js';
 import { join } from 'path';
 import { logover } from './logger.js';
