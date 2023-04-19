@@ -18,7 +18,7 @@ import {
   ROOT,
   setProjectConfig
 } from './env.js';
-import runLesson from './lesson.js';
+import { runLesson } from './lesson.js';
 import {
   toggleLoaderAnimation,
   updateTest,
@@ -32,7 +32,7 @@ import { logover } from './logger.js';
 
 let __helpers = __helpers_c;
 
-export default async function runTests(ws, projectDashedName) {
+export async function runTests(ws, projectDashedName) {
   // Update __helpers with dynamic utils:
   const helpers = freeCodeCampConfig.tooling?.['helpers'];
   if (helpers) {
