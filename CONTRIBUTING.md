@@ -1,3 +1,3 @@
 # Contributing
 
-See: https://freecodecampos.github.io/
+See: https://opensource.freecodecamp.org/freeCodeCampOS/contributing.html
