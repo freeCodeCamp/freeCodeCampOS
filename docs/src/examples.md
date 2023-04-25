@@ -13,10 +13,3 @@ If you create a course using `@freecodecamp/freecodecamp-os`, open a pull reques
 ### Rust
 
 - <a href="https://github.com/freeCodeCamp/euler-rust" target="_blank">Euler Rust</a>
-
-## External Courses
-
-<!-- TODO: Check if this is 👍 -->
-<!-- ### [Rust]
-
-- [Into the Book](https://github.com/ShaunSHamilton/into-the-book/) -->

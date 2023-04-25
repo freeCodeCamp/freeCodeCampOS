@@ -1,0 +1,67 @@
+@font-face {
+  font-family: 'Hack';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./Hack-ZeroSlash-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Hack';
+  font-style: italic;
+  font-weight: 400;
+  src: url('./Hack-ZeroSlash-Italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Hack';
+  font-style: bold;
+  font-weight: 700;
+  src: url('./Hack-ZeroSlash-Bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Hack';
+  font-style: bold italic;
+  font-weight: 700;
+  src: url('./Hack-ZeroSlash-BoldItalic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Lato';
+  font-weight: 300;
+  font-style: normal;
+  font-display: fallback;
+  src: url('./Lato-Light.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lato';
+  font-weight: normal;
+  font-style: normal;
+  font-display: fallback;
+  src: url('./Lato-Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lato';
+  font-weight: normal;
+  font-style: italic;
+  font-display: fallback;
+  src: url('./Lato-Italic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lato';
+  font-weight: bold;
+  font-style: normal;
+  font-display: fallback;
+  src: url('./Lato-Bold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lato';
+  font-weight: 900;
+  font-style: normal;
+  font-display: fallback;
+  src: url('./Lato-Black.woff') format('woff');
+}
