@@ -34,14 +34,13 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 
 This is a string command run in the terminal before the course is opened.
 
-<!-- prettier-ignore -->
-~~~admonish example
+````admonish example
 ```json
 {
   "prepare": "npm i"
 }
 ```
-~~~
+````
 
 #### `workspace`
 
@@ -57,8 +56,7 @@ This configures files, terminals, and previews to open when the course is opened
 - `previews.showLoader`: whether or not to show the loader. This is useful if setup takes a long time - `boolean`
 - `previews.timeout`: how long to show the loader before trying the `url` - `number` (ms)
 
-<!-- prettier-ignore -->
-~~~admonish example
+````admonish example
 ```json
 {
   "workspace": {
@@ -84,7 +82,7 @@ This configures files, terminals, and previews to open when the course is opened
   }
 }
 ```
-~~~
+````
 
 #### `bash`
 
@@ -154,8 +152,7 @@ WIP
 
 ### Optional Configuration
 
-<!-- prettier-ignore -->
-~~~admonish example
+````admonish example
 ```json
 [
   {
@@ -172,4 +169,4 @@ WIP
   }
 ]
 ```
-~~~
+````

@@ -20,12 +20,11 @@ The project title requires the `TITLE` and `SUB_TITLE` to be separated by a dash
 ## <LESSON_NUMBER>
 ```
 
-<!-- prettier-ignore -->
-~~~admonish example collapsible=true
+````admonish example collapsible=true
 ```markdown
 ## 1
 ```
-~~~
+````
 
 ### Description (Instruction)
 
@@ -35,29 +34,27 @@ The project title requires the `TITLE` and `SUB_TITLE` to be separated by a dash
 <DESCRIPTION_CONTENT>
 ```
 
-<!-- prettier-ignore -->
-~~~admonish example collapsible=true
+````admonish example collapsible=true
 ```markdown
 ### --description--
 
 This is the description content.
 ```
-~~~
+````
 
 ### Tests
 
-```markdown
+````markdown
 ### --tests--
 
 <TEST_TEXT>
 
-\`\`\`js
+```js
 <TEST_CODE>
-\`\`\`
 ```
+````
 
-<!-- prettier-ignore -->
-~~~admonish example collapsible=true
+`````admonish example collapsible=true
 ````markdown
 ### --tests--
 
@@ -68,28 +65,27 @@ await new Promise(resolve => setTimeout(resolve, 2000));
 assert.equal(true, true);
 ```
 ````
-~~~
+`````
 
 ### Seed
 
-```markdown
+````markdown
 #### --seed--
 
 #### --"<FILE_PATH>"--
 
-\`\`\`<FILE_EXTENSION>
+```<FILE_EXTENSION>
 <FILE_CONTENT>
-\`\`\`
+```
 
 #### --cmd--
 
-\`\`\`bash
+```bash
 <COMMAND>
-\`\`\`
 ```
+````
 
-<!-- prettier-ignore -->
-~~~admonish example collapsible=true
+`````admonish example collapsible=true
 ````markdown
 #### --seed--
 
@@ -105,7 +101,7 @@ assert.equal(true, true);
 npm install
 ```
 ````
-~~~
+`````
 
 ### End Discriminator
 

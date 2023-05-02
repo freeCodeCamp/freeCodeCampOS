@@ -45,8 +45,7 @@ Add the following required configuration:
 }
 ```
 
-<!-- prettier-ignore -->
-~~~admonish attention
+````admonish attention
 Technically, the `develop-course` and `run-course` scripts have to be specific values (see below), but you can customize the command with other conditions.
 
 ```json
@@ -57,10 +56,9 @@ Technically, the `develop-course` and `run-course` scripts have to be specific v
   }
 }
 ```
-~~~
+````
 
-<!-- prettier-ignore -->
-~~~admonish example collapsible=true
+````admonish example collapsible=true
 ```json
 {
   "path": ".",
@@ -80,7 +78,7 @@ Technically, the `develop-course` and `run-course` scripts have to be specific v
   }
 }
 ```
-~~~
+````
 
 ```admonish info
 There are many more configuration options available. See the [configuration](./configuration.md) page for more details.
@@ -121,13 +119,12 @@ mkdir <LOCALE_DIR>
 touch <LOCALE_DIR>/<PROJECT_DASHED_NAME>.md
 ```
 
-<!-- prettier-ignore -->
-~~~admonish example
+````admonish example
 ```bash
 mkdir curriculum/locales/english
 touch curriculum/locales/english/learn-x-by-building-y.md
 ```
-~~~
+````
 
 Create the project boilerplate/working directory in the root:
 
@@ -139,8 +136,7 @@ mkdir <PROJECT_DASHED_NAME>
 WIP
 ```
 
-<!-- prettier-ignore -->
-~~~admonish attention title="Required Files"
+````admonish attention title="Required Files"
 ```txt
 <COURSE_DIR>/
 ├── freecodecamp.conf.json
@@ -164,4 +160,4 @@ If using the `tooling` feature:
 ```
 
 WIP
-~~~
+````
