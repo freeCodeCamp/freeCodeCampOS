@@ -7,3 +7,4 @@
 - [Project Syntax](./project-syntax.md)
 - [Contributing](./contributing.md)
 - [CHANGELOG](./CHANGELOG.md)
+- [Roadmap](./roadmap.md)
