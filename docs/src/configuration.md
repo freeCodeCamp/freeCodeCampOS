@@ -134,6 +134,7 @@ WIP
 - `runTestsOnWatch`: Whether or not to run tests on file change - `boolean`
 - `isResetEnabled`: Whether or not to enable the reset button - `boolean`
 - `numLessons`: The number of lessons in the project - `number`[^1]
+- `seedEveryLesson`: Whether or not to run the seed on lesson load - `boolean`
 
 [^1]: This is automagically calculated when the app is launched.
 

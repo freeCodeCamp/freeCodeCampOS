@@ -1,16 +1,9 @@
 # Roadmap
 
+For the most part, this roadmap outlines todos for `freecodecamp-os`. If this roadmap is empty, then there are no todos 🎉
+
 ## Documentation
 
-- [ ] `#### --force--` flag
-- [ ] `test-utils.js`
-- [ ] Globals
-  - [ ] `join`
-  - [ ] `logover`
-  - [ ] `fs`
-  - [ ] `assert` from `chai`
-  - [ ] `ROOT`
-- [ ] Collisions - same name variables
 - [ ] Reset functionality
   - [ ] How to retain files - .gitignore
 - [ ] List of features
