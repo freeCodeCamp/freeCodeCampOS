@@ -35,7 +35,7 @@ jobs:
           curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf -y | sh
           rustup update
           cargo install --version ${MDBOOK_VERSION} mdbook
-          cargo install --git https://github.com/tommilligan/mdbook-admonish --tag v1.9.0
+          cargo install --version 1 mdbook-admonish
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@f156874f8191504dae5b037505266ed5dda6c382 # v3
