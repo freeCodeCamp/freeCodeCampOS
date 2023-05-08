@@ -4,7 +4,7 @@ This is the Markdown syntax used to create projects in the curriculum.
 
 ## Markers
 
-### Project Title
+### `# <TITLE> - <SUB_TITLE>`
 
 ```markdown
 # <TITLE> - <SUB_TITLE>
@@ -14,7 +14,7 @@ This is the Markdown syntax used to create projects in the curriculum.
 The project title requires the `TITLE` and `SUB_TITLE` to be separated by a dash (`-`).
 ```
 
-### Lesson
+### `## <N>`
 
 ```markdown
 ## <LESSON_NUMBER>
@@ -26,7 +26,7 @@ The project title requires the `TITLE` and `SUB_TITLE` to be separated by a dash
 ```
 ````
 
-### Description (Instruction)
+### `### --description--`
 
 ```markdown
 ### --description--
@@ -42,7 +42,7 @@ This is the description content.
 ```
 ````
 
-### Tests
+### `### --tests--`
 
 ````markdown
 ### --tests--
@@ -67,7 +67,7 @@ assert.equal(true, true);
 ````
 `````
 
-### Seed
+### `### --seed--`
 
 ````markdown
 #### --seed--
@@ -103,7 +103,25 @@ npm install
 ````
 `````
 
-### End Discriminator
+#### `#### --force--`
+
+Any seed marked with the force flag will overwrite the [`seedEveryLesson` configuration option](/configuration.html#definitions-1).
+
+```markdown
+### --seed--
+
+#### --force--
+
+<!-- Rest of seed -->
+```
+
+```admonish attention
+The force flag is ignored when the whole project is reset.
+```
+
+### `## --fcc-end--`
+
+An EOF discriminator.
 
 ```markdown
 ## --fcc-end--

@@ -2,7 +2,6 @@
 
 ## Documentation
 
-- [ ] `#### --force--` flag
 - [ ] `test-utils.js`
 - [ ] Globals
   - [ ] `join`
