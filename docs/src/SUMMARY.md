@@ -5,6 +5,7 @@
 - [Examples](./examples.md)
 - [Configuration](./configuration.md)
 - [Project Syntax](./project-syntax.md)
+- [Test Utilities](./test-utilities.md)
 - [Contributing](./contributing.md)
 - [CHANGELOG](./CHANGELOG.md)
 - [Roadmap](./roadmap.md)
