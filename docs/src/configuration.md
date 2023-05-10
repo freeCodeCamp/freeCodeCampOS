@@ -175,17 +175,7 @@ WIP
 
 ### Retaining files when step is reset
 
-Reseting step will remove all untracked files from the project working directory (`<PROJECT_DASHED_NAME>`). `.gitignore` files can be used to prevent git from removing certain files when step is reset. Normal gitignore patterns applies.
+```admonish warning
+Resetting a step removes all untracked files from the project directory. To prevent this for specific files, add them to a boilerplate `.gitignore` file, or the one in root.
+```
 
-````admonish info
-For defining pattern for whole course:
-```txt
-<COURSE_DIR>/
-|-- .gitignore
-```
-For specific project:
-```txt
-|-- <PROJECT_DASHED_NAME>/
-|   |-- .gitignore
-```
-````
