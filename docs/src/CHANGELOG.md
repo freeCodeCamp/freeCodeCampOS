@@ -1,8 +1,6 @@
 # Changelog
 
-## [Unreleased]
-
-## [2.0.0] -
+## [2.0.0] - UNRELEASED
 
 ### Add
 
@@ -18,11 +16,18 @@
 - remove `__helpers.copyProjectFiles`
 - remove `__helpers.fileExists`
 
+### Update
+
+- dependency babel-loader to v9.1.2
+- dependency marked to v5.0.1
+- dependency typescript to v5.0.4
+- dependency webpack-cli to v5.1.1
+
 ### Migration Guide
 
 1. Refactor tests to use global `fs` instead of removed `__helpers` functions.
 
-## [1.8.5] -
+## [1.8.5] - UNRELEASED
 
 ### Add
 
