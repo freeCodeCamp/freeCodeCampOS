@@ -31,12 +31,6 @@ const cb = async () => {
 const result = await __helpers.controlWrapper(cb);
 ```
 
-## `copyDirectory`
-
-## `copyProjectFiles`
-
-## `fileExists`
-
 ## `getBashHistory`
 
 Get the `.logs/.bash_history.log` file contents
@@ -83,12 +77,6 @@ function getCWD(): Promise<string>;
 ```javascript
 const cwd = await __helpers.getCWD();
 ```
-
-## `getDirectory`
-
-## `getFile`
-
-## `getJsonFile`
 
 ## `getLastCommand`
 
@@ -177,9 +165,3 @@ const { exportedFile } = await __helpers.importSansCache(
   'learn-x-by-building-y/index.js'
 );
 ```
-
-## `makeDirectory`
-
-## `runCommand`
-
-## `writeJsonFile`

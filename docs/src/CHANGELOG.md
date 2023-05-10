@@ -2,6 +2,28 @@
 
 ## [Unreleased]
 
+## [2.0.0] -
+
+### Add
+
+### Change
+
+- remove `__helpers.makeDirectory`
+- remove `__helpers.runCommand`
+- remove `__helpers.writeJsonFile`
+- remove `__helpers.getDirectory`
+- remove `__helpers.getFile`
+- remove `__helpers.getJsonFile`
+- remove `__helpers.copyDirectory`
+- remove `__helpers.copyProjectFiles`
+- remove `__helpers.fileExists`
+
+### Migration Guide
+
+1. Refactor tests to use global `fs` instead of removed `__helpers` functions.
+
+## [1.8.5] -
+
 ### Add
 
 - add detailed docs (#240)
@@ -12,8 +34,14 @@
 
 ### Update
 
-- dependency @types/react to v18.0.38
-- dependency @types/node to v18.15.13
+- dependency webpack-dev-server to v4.15.0
+- dependency @types/react to v18.2.6
+- dependency @types/marked to v4.3.0
+- react monorepo
+- dependency @types/node to v18.16.5
+- dependency @babel/core to v7.21.8
+- babel monorepo to v7.21.5
+- pin dependencies (#241)
 
 ## [1.8.4] - 2023-04-19
 
@@ -26,10 +54,6 @@
 - dependency webpack-dev-server to v4.13.3
 - dependency html-webpack-plugin to v5.5.1
 - dependency @types/react to v18.0.35
-- dependency @types/react to v18.0.33
-- dependency @types/react to v18.0.32
-- dependency webpack-dev-server to v4.13.2
-- dependency @types/react to v18.0.31
 - dependency @types/node to v18.15.11
 - babel monorepo to v7.21.4
 

@@ -1,11 +1,9 @@
-import { readFile, readdir, mkdir } from 'fs/promises';
-import { exec, execSync } from 'child_process';
+import { readFile } from 'fs/promises';
+import { exec } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
-import fs from 'fs';
 import { ROOT } from './env.js';
 import { logover } from './logger.js';
-import { Logger } from 'logover';
 
 // ---------------
 // GENERIC HELPERS
@@ -49,58 +47,11 @@ async function controlWrapper(cb, { timeout = 10000, stepSize = 250 }) {
 }
 
 /**
- * Copy the contents of a directory from one location to another
- * @param {string} folderToCopyPath Path to folder to copy relative to root
- * @param {string} destinationFolderPath Path to folder destination relative to root
- */
-function copyDirectory(folderToCopyPath, destinationFolderPath) {
-  const folderToCopy = join(ROOT, folderToCopyPath);
-  const destinationFolder = join(ROOT, destinationFolderPath);
-
-  if (!fs.existsSync(destinationFolder)) {
-    fs.mkdirSync(destinationFolder);
-  }
-
-  fs.readdirSync(folderToCopy).forEach(file => {
-    fs.copyFileSync(`${folderToCopy}/${file}`, `${destinationFolder}/${file}`);
-  });
-}
-
-function copyProjectFiles(
-  projectFolderPath,
-  testsFolderPath,
-  arrayOfFiles = []
-) {
-  const projectFolder = join(ROOT, projectFolderPath);
-  const testsFolder = join(ROOT, testsFolderPath);
-
-  if (!projectFolder || !testsFolder || arrayOfFiles.length === 0) {
-    throw Error('Cannot copy project files');
-  }
-
-  arrayOfFiles.forEach(file => {
-    fs.copyFileSync(`${projectFolder}/${file}`, `${testsFolder}/${file}`);
-  });
-}
-
-/**
- * Check if given path exists
- * @param {string} path Path relative to root of working directory
- * @returns {boolean}
- */
-function fileExists(path) {
-  return fs.existsSync(join(ROOT, path));
-}
-
-/**
  * Get the `.logs/.bash_history.log` file contents
  * @returns {Promise<string>}
  */
 async function getBashHistory() {
   const bashHistory = await readFile(PATH_BASH_HISTORY, 'utf8');
-  if (!bashHistory) {
-    throw new Error(`Could not find ${PATH_CWD}`);
-  }
   return bashHistory;
 }
 
@@ -129,40 +80,7 @@ async function getCommandOutput(command, path = '') {
  */
 async function getCWD() {
   const cwd = await readFile(PATH_CWD, 'utf8');
-  if (!cwd) {
-    throw new Error(`Could not find ${PATH_CWD}`);
-  }
   return cwd;
-}
-
-/**
- * Get the contents of a directory
- * @param {string} path Path relative to root of working directory
- * @returns {Promise<string[]>} An array of file names
- */
-async function getDirectory(path) {
-  const files = await readdir(join(ROOT, path));
-  return files;
-}
-
-/**
- * Get a file from the given `path`
- * @param {string} path Path relative to root of working directory
- * @returns {Promise<string>}
- */
-async function getFile(path) {
-  const file = await readFile(join(ROOT, path), 'utf8');
-  return file;
-}
-
-/**
- *
- * @param {string} filePath Path to JSON file relative to root
- * @returns {object} `JSON.parse` file contents
- */
-function getJsonFile(filePath) {
-  const fileString = fs.readFileSync(join(ROOT, filePath));
-  return JSON.parse(fileString);
 }
 
 /**
@@ -199,9 +117,6 @@ async function getLastCWD(howManyBack = 0) {
  */
 async function getTemp() {
   const tempLogs = await readFile(PATH_TEMP, 'utf8');
-  if (!tempLogs) {
-    throw new Error(`Could not find ${PATH_TEMP}`);
-  }
   return tempLogs;
 }
 
@@ -211,9 +126,6 @@ async function getTemp() {
  */
 async function getTerminalOutput() {
   const terminalLogs = await readFile(PATH_TERMINAL_OUT, 'utf8');
-  if (!terminalLogs) {
-    throw new Error(`Could not find ${PATH_TERMINAL_OUT}`);
-  }
   return terminalLogs;
 }
 
@@ -227,57 +139,16 @@ async function importSansCache(path) {
   return await import(cacheBustingModulePath);
 }
 
-const logoverHelp = new Logger({ level: 'debug' });
-
-/**
- * Create a directory
- * @param {string} path Path relative to root of working directory
- */
-async function makeDirectory(path) {
-  await mkdir(join(ROOT, path));
-}
-
-/**
- *
- * @param {string} command Command string to run
- * @param {string} path Path relative to root to run command in
- */
-function runCommand(command, path) {
-  execSync(command, {
-    cwd: join(ROOT, path),
-    shell: '/bin/bash'
-  });
-}
-
-/**
- *
- * @param {string} path Path to JSON file relative to root
- * @param {any} content Stringifiable content to write to `path`
- */
-function writeJsonFile(path, content) {
-  fs.writeFileSync(join(ROOT, path), JSON.stringify(content, null, 2));
-}
-
 const __helpers = {
   controlWrapper,
-  copyDirectory,
-  copyProjectFiles,
-  fileExists,
   getBashHistory,
   getCommandOutput,
   getCWD,
-  getDirectory,
-  getFile,
-  getJsonFile,
   getLastCommand,
   getLastCWD,
   getTemp,
   getTerminalOutput,
-  importSansCache,
-  logover: logoverHelp,
-  makeDirectory,
-  runCommand,
-  writeJsonFile
+  importSansCache
 };
 
 export default __helpers;
