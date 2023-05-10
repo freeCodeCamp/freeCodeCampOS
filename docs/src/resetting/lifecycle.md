@@ -15,6 +15,6 @@ Then, the seed of each lesson will be run in order.
 
 ## Lesson
 
-A lesson reset only happens when either `seedEveryLesson` is set to `true` in the [project config](/configuration.html#projectsjson), or the [force](/project-syntax.html#--force--) flag is set on a given lessons seed.
+A lesson reset only happens when either `seedEveryLesson` is set to `true` in the [project config](../configuration.md#projectsjson), or the [force](../project-syntax.md#--force--) flag is set on a given lessons seed.
 
 This will only run the seed for the current lesson.
