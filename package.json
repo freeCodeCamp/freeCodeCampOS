@@ -23,7 +23,7 @@
     "@types/prismjs": "1.26.0",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
-    "babel-loader": "8.3.0",
+    "babel-loader": "9.1.2",
     "babel-plugin-prismjs": "2.1.0",
     "chai": "4.3.7",
     "chokidar": "3.5.3",
@@ -33,7 +33,7 @@
     "file-loader": "6.2.0",
     "html-webpack-plugin": "5.5.1",
     "logover": "2.0.0",
-    "marked": "4.3.0",
+    "marked": "5.0.1",
     "nodemon": "2.0.22",
     "os-browserify": "0.3.0",
     "path-browserify": "1.0.1",
@@ -43,8 +43,8 @@
     "react-dom": "18.2.0",
     "style-loader": "3.3.2",
     "ts-loader": "9.4.2",
-    "typescript": "4.9.5",
-    "webpack-cli": "4.10.0",
+    "typescript": "5.0.4",
+    "webpack-cli": "5.1.1",
     "webpack-dev-server": "4.15.0"
   },
   "repository": {
