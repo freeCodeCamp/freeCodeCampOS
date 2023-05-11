@@ -12,7 +12,7 @@ The `fs` module for file system operations: <https://nodejs.org/api/fs.html>
 
 ### `join`
 
-The `join` function from the `path` module: <https://nodejs.org/dist/docs/api/path.html#pathjoinpaths>
+The `join` function from the `path` module: <https://nodejs.org/api/path.html#pathjoinpaths>
 
 ### `logover`
 
