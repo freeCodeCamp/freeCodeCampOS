@@ -31,9 +31,9 @@ jobs:
         run: |
           curl -sSL https://github.com/tommilligan/mdbook-admonish/releases/download/v${ADMONISH_VERSION}/mdbook-admonish-v${ADMONISH_VERSION}-x86_64-unknown-linux-gnu.tar.gz | tar -xz --directory=bin
           bin/mdbook-admonish
-      - name: Install mdbook-linkcheck
+      - name: Install mdbook-unlink
         run: |
-          curl -sSL https://github.com/Michael-F-Bryan/mdbook-linkcheck/releases/download/v${LINKCHECK_VERSION}/mdbook-linkcheck.x86_64-unknown-linux-gnu.zip | tar -xz --directory=bin
-          bin/mdbook-linkcheck
+          curl -sSL https://github.com/ShaunSHamilton/mdbook-unlink/releases/download/v0.1.0/mdbook-unlink-v0.1.0-x86_64-unknown-linux > bin/mdbook-unlink
+          PATH=$PATH:bin
       - name: Check Links
         run: cd docs && mdbook build
