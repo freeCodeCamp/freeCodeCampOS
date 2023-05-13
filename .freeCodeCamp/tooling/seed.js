@@ -96,18 +96,18 @@ export async function runSeed(fileSeed, filePath, projectPath) {
   await writeFile(path, fileSeed);
 }
 
-export async function runLessonSeed(seed, currentProject, lessonNumber) {
+export async function runLessonSeed(seed, projectPath, lessonNumber) {
   const seedGenerator = seedToIterator(seed);
   try {
     for (const cmdOrFile of seedGenerator) {
       if (typeof cmdOrFile === 'string') {
-        const { stdout, stderr } = await runCommand(cmdOrFile, currentProject);
+        const { stdout, stderr } = await runCommand(cmdOrFile, projectPath);
         if (stdout || stderr) {
           logover.debug(stdout, stderr);
         }
       } else {
         const { filePath, fileSeed } = cmdOrFile;
-        await runSeed(fileSeed, filePath, currentProject);
+        await runSeed(fileSeed, filePath, projectPath);
       }
     }
   } catch (e) {
