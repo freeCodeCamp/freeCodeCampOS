@@ -3,8 +3,6 @@ import { join } from 'path';
 import {
   getLessonFromFile,
   getLessonSeed,
-  getCommands,
-  getFilesWithSeed,
   seedToIterator
 } from './parser.js';
 import { ROOT, getState, freeCodeCampConfig } from './env.js';
@@ -17,23 +15,19 @@ const execute = promisify(exec);
 
 export async function seedLesson(ws, project) {
   // TODO: Use ws to display loader whilst seeding
-  const lessonNumber = project.currentLesson;
+  const { currentLesson: lessonNumber, dashedName: projectPath } = project;
   const { locale } = await getState();
   const projectFile = join(
     ROOT,
     freeCodeCampConfig.curriculum.locales[locale],
-    project.dashedName + '.md'
+    projectPath + '.md'
   );
 
   try {
     const lesson = await getLessonFromFile(projectFile, lessonNumber);
     const seed = getLessonSeed(lesson);
 
-    const commands = getCommands(seed);
-    const filesWithSeed = getFilesWithSeed(seed);
-
-    await runCommands(commands);
-    await runSeedDeprecated(filesWithSeed);
+    await runLessonSeed(seed, projectPath, lessonNumber);
   } catch (e) {
     updateError(ws, e);
     logover.error(e);
