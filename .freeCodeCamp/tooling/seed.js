@@ -67,23 +67,6 @@ export async function runCommand(command, path = '.') {
 
 /**
  * Runs the given array of files with seed
- * @param {[string, string][]} filesWithSeed - [[filePath, fileSeed]]
- *
- * @deprecated Prefer to use `runLessonSeed` instead
- */
-export async function runSeedDeprecated(filesWithSeed) {
-  try {
-    for (const [filePath, fileSeed] of filesWithSeed) {
-      const filePathWithRoot = `${filePath}`;
-      await writeFile(filePathWithRoot, fileSeed);
-    }
-  } catch (e) {
-    return Promise.reject(e);
-  }
-  return Promise.resolve();
-}
-/**
- * Runs the given array of files with seed
  */
 export async function runSeed(fileSeed, filePath, projectPath) {
   const path = join(ROOT, projectPath, filePath);
