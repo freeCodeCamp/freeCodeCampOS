@@ -14,6 +14,7 @@ assets_version = "2.0.1"    # do not edit: managed by `mdbook-admonish install`
 [output]
 
 [output.unlink]
+optional = true
 ignore-files = ["CHANGELOG.md"]
 
 [output.html]
