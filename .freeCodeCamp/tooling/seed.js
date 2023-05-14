@@ -68,27 +68,27 @@ export async function runCommand(command, path = '.') {
 /**
  * Runs the given array of files with seed
  */
-export async function runSeed(fileSeed, filePath, projectPath) {
-  const path = join(ROOT, projectPath, filePath);
+export async function runSeed(fileSeed, filePath, dashedName) {
+  const path = join(ROOT, dashedName, filePath);
   await writeFile(path, fileSeed);
 }
 
-export async function runLessonSeed(seed, projectPath, lessonNumber) {
+export async function runLessonSeed(seed, dashedName, currentLesson) {
   const seedGenerator = seedToIterator(seed);
   try {
     for (const cmdOrFile of seedGenerator) {
       if (typeof cmdOrFile === 'string') {
-        const { stdout, stderr } = await runCommand(cmdOrFile, projectPath);
+        const { stdout, stderr } = await runCommand(cmdOrFile, dashedName);
         if (stdout || stderr) {
           logover.debug(stdout, stderr);
         }
       } else {
         const { filePath, fileSeed } = cmdOrFile;
-        await runSeed(fileSeed, filePath, projectPath);
+        await runSeed(fileSeed, filePath, dashedName);
       }
     }
   } catch (e) {
-    logover.error('Failed to run seed for lesson: ', lessonNumber);
+    logover.error('Failed to run seed for lesson: ', currentLesson);
     throw new Error(e);
   }
 }
