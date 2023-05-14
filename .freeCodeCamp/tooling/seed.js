@@ -15,19 +15,19 @@ const execute = promisify(exec);
 
 export async function seedLesson(ws, project) {
   // TODO: Use ws to display loader whilst seeding
-  const { currentLesson: lessonNumber, dashedName: projectPath } = project;
+  const { currentLesson, dashedName } = project;
   const { locale } = await getState();
   const projectFile = join(
     ROOT,
     freeCodeCampConfig.curriculum.locales[locale],
-    projectPath + '.md'
+    dashedName + '.md'
   );
 
   try {
-    const lesson = await getLessonFromFile(projectFile, lessonNumber);
+    const lesson = await getLessonFromFile(projectFile, currentLesson);
     const seed = getLessonSeed(lesson);
 
-    await runLessonSeed(seed, projectPath, lessonNumber);
+    await runLessonSeed(seed, dashedName, currentLesson);
   } catch (e) {
     updateError(ws, e);
     logover.error(e);
