@@ -28,7 +28,8 @@ const CONFIG_PATH = './config/projects.json';
  */
 export async function validateCurriculum() {
   const curriculumFiles = await readdir(CURRICULUM_PATH);
-  const projects = curriculumFiles.filter(file => file.endsWith('.md'));
+  const projects = curriculumFiles.filter(file => file.endsWith('.md') && !file.endsWith('-seed.md'));
+  const seeds = curriculumFiles.filter(file => file.endsWith('-seed.md'));
   const projectsConfig = JSON.parse(await readFile(CONFIG_PATH, 'utf8'));
 
   for (const project of projects) {
@@ -111,6 +112,63 @@ export async function validateCurriculum() {
         `Project "${project}" is not associated in the config/projects.json file. No matching dashed name for "${projectDirPath}"`
       );
     }
+  }
+
+  for (const seed of seeds) {
+    const project = seed.replace('-seed.md', '.md');
+    const projectDirPath = project.replace('.md', '');
+    try {
+      await access(projectDirPath, constants.F_OK);
+    } catch (e) {
+      throw new Error(
+        `Seed "${seed}" does not have an associated root directory`
+      );
+    }
+
+    const mdPath = `${CURRICULUM_PATH}/${project}`;
+    try {
+      const projectTitle = await getProjectTitle(mdPath);
+      if (!projectTitle.projectTopic || !projectTitle.currentProject) {
+        throw new Error(
+          `Seed "${seed}" has a malformed title: '${projectTitle}'`
+        );
+      }
+    } catch (e) {
+      throw new Error(
+        `Seed "${seed}" has a malformed title: '${e.message}'`
+      );
+    }
+
+    const mdFile = await readFile(mdPath, 'utf8');
+    if (!mdFile.trimEnd().endsWith('--fcc-end--')) {
+      throw new Error(`Seed "${seed}" does not end with --fcc-end--`);
+    }
+
+    const lessonNumbers = [...mdFile.matchAll(/\n## (\d+)/g)]
+      .filter(Boolean)
+      .map(([, num]) => Number(num));
+    if (!lessonNumbers.length) {
+      throw new Error(`Seed "${seed}" does not have any lessons`);
+    }
+
+    let expectedLessonNumber = 1;
+
+    for (const lessonNumber of lessonNumbers) {
+      if (lessonNumber !== expectedLessonNumber) {
+        throw new Error(
+          `Seed "${seed}" has a lesson number mismatch. Expected "${expectedLessonNumber}" but got "${lessonNumber}"`
+        );
+      }
+      expectedLessonNumber++;
+    }
+
+    const projectConfig = projectsConfig.find(({ dashedName }) => dashedName === projectDirPath);
+    if (!projectConfig) {
+      throw new Error(
+        `Seed ${seed} is not associated with project in the config/projects.json file. No matching dashed name for "${projectDirPath}"`
+      );
+    }
+
   }
   logover.info('All curriculum files are valid');
 }
