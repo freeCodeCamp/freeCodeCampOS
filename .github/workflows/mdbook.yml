@@ -41,6 +41,12 @@ jobs:
         uses: actions/configure-pages@f156874f8191504dae5b037505266ed5dda6c382 # v3
       - name: Build with mdBook
         run: cd docs && mdbook build
+      - name: Check Expected Files
+        run: |
+          if [ ! -f docs/book/html/index.html ]; then
+            echo "Expected file docs/book/html/index.html is missing. Double-check the mdBook/Pages config."
+            exit 1
+          fi
       - name: Upload artifact
         uses: actions/upload-pages-artifact@64bcae551a7b18bcb9a09042ddf1960979799187 # v1
         with:
