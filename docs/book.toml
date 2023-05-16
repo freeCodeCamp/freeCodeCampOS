@@ -22,3 +22,7 @@ default-theme = "dark"
 preferred-dark-theme = "dark"
 additional-css = ["./mdbook-admonish.css"]
 mathjax-support = true
+site-url = "/freeCodeCampOS/"
+
+[build]
+build-dir = "book" # the directory where the output is placed
