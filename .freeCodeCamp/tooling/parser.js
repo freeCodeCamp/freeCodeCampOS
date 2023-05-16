@@ -58,16 +58,33 @@ export async function getProjectTitle(file) {
 export async function getLessonFromFile(file, lessonNumber = 1) {
   const fileContent = await readFile(file, 'utf8');
   const fileContentSansCR = fileContent.replace(/\r/g, '');
-  const mat = fileContentSansCR.match(
-    new RegExp(
+  const lessonRegex = new RegExp(
       `## ${lessonNumber}\n(.*?)\n## (${lessonNumber + 1}|--fcc-end--)`,
       's'
-    )
-  );
+    );
+  const mat = fileContentSansCR.match(lessonRegex);
   const lesson = mat?.[1];
   if (!lesson) {
     logover.debug(`Lesson ${lessonNumber} not found in ${file}`);
     throw new Error(`Lesson ${lessonNumber} not found in ${file}`);
+  }
+  let fileSeedContent;
+  try {
+    const seedFile = file.replace('.md', '-seed.md');
+    fileSeedContent = await readFile(seedFile, 'utf8');
+  } catch (e) {
+    if (e?.code !== 'ENOENT') {
+      logover.debug(`Error reading external seed for ${lessonNumber}`);
+      logover.debug(e);
+      throw new Error(`Error reading external seed for ${lessonNumber}`)
+    }
+  }
+  if (fileSeedContent) {
+    const fileSeedContentSansCR = fileSeedContent.replace(/\r/g, '');
+    const seed = fileSeedContentSansCR.match(lessonRegex)?.[1];
+    if (seed) {
+      return lesson + seed;
+    }
   }
   return lesson;
 }
