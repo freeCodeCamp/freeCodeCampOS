@@ -120,7 +120,8 @@ export async function validateCurriculum() {
   const seeds = seedFiles.filter(file => file.endsWith('-seed.md'));
 
   for (const seed of seeds) {
-    const projectDirPath = seed.replace('-seed.md', '');
+    const project = seed.replace('-seed.md', '.md');
+    const projectDirPath = project.replace('.md', '');
     try {
       await access(projectDirPath, constants.F_OK);
     } catch (e) {
@@ -157,12 +158,26 @@ export async function validateCurriculum() {
 
     let expectedLessonNumber = 1;
 
+    const projectMdPath = join(ROOT, CURRICULUM_PATH, project);
     for (const lessonNumber of lessonNumbers) {
       if (lessonNumber !== expectedLessonNumber) {
         throw new Error(
           `Seed "${seed}" has a lesson number mismatch. Expected "${expectedLessonNumber}" but got "${lessonNumber}"`
         );
       }
+      const lesson = await getLessonFromFile(projectMdPath, Number(lessonNumber));
+      const seedContents = getLessonSeed(lesson);
+      if (seedContents !== null) {
+        try {
+          getFilesWithSeed(seedContents);
+        } catch (err) {
+          logover.debug(err);
+          throw new Error(
+            `Seed "${seed}" has malformed seed for lesson ${lessonNumber}`
+          )
+        }
+      }
+
       expectedLessonNumber++;
     }
 
