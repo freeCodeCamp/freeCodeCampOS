@@ -9,10 +9,11 @@
 
 import { copyFile, readFile, rm, writeFile } from 'fs/promises';
 import { Logger } from 'logover';
-import { getLessonFromFile, getLessonSeed, getProjectTitle } from '../.freeCodeCamp/tooling/parser.js';
+import { freeCodeCampConfig } from '../node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/env.js';
+import { getLessonFromFile, getLessonSeed, getProjectTitle } from '../node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/parser.js';
 import { constants } from 'fs';
 
-const CONFIG_PATH = './config/projects.json';
+const CONFIG_PATH = freeCodeCampConfig.config['projects.json'];
 
 const END_MARKER = '## --fcc-end--';
 const SEED_MARKER = '### --seed--';
@@ -27,7 +28,7 @@ async function main(filePath, noBackup = false) {
   const projectsConfig = JSON.parse(await readFile(CONFIG_PATH, 'utf8'));
   const projectConfig = projectsConfig.find(({ title }) => title === currentProject);
   if (!projectConfig) {
-    throw new Error(`No project in config/projects.json associated with "${filePath}".`)
+    throw new Error(`No project in ${CONFIG_PATH} associated with "${filePath}".`)
   }
   const seedFile = filePath.replace('.md', '-seed.md');
   try {
