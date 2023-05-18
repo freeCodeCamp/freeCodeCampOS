@@ -1,7 +1,9 @@
 // This file contains the parser for the markdown lessons
+import { basename, join } from 'path';
 import { readFile } from 'fs/promises';
 import { createReadStream } from 'fs';
 import { createInterface } from 'readline';
+import { freeCodeCampConfig, getState, ROOT } from './env.js';
 import { logover } from './logger.js';
 
 const DESCRIPTION_MARKER = '### --description--';
@@ -70,7 +72,13 @@ export async function getLessonFromFile(file, lessonNumber = 1) {
   }
   let fileSeedContent;
   try {
-    const seedFile = file.replace('.md', '-seed.md');
+    const { locale } = await getState();
+    const project = basename(file);
+    const seedFile = join(
+      ROOT,
+      freeCodeCampConfig.curriculum.seeds[locale],
+      project.replace('.md', '-seed.md')
+    );
     fileSeedContent = await readFile(seedFile, 'utf8');
   } catch (e) {
     if (e?.code !== 'ENOENT') {

@@ -1,4 +1,6 @@
+import { join } from 'path';
 import { readdir, access, constants, readFile } from 'fs/promises';
+import { freeCodeCampConfig, ROOT } from './env.js';
 import { logover } from './logger.js';
 import {
   getLessonDescription,
@@ -7,8 +9,9 @@ import {
   getProjectTitle
 } from './parser.js';
 
-const CURRICULUM_PATH = './curriculum/locales/english';
-const CONFIG_PATH = './config/projects.json';
+const CURRICULUM_PATH = freeCodeCampConfig.curriculum.locales.english;
+const SEED_PATH = freeCodeCampConfig.curriculum.seeds.english;
+const CONFIG_PATH = freeCodeCampConfig.config['projects.json'];
 
 /**
  * # Validate Curriculum
@@ -29,7 +32,6 @@ const CONFIG_PATH = './config/projects.json';
 export async function validateCurriculum() {
   const curriculumFiles = await readdir(CURRICULUM_PATH);
   const projects = curriculumFiles.filter(file => file.endsWith('.md') && !file.endsWith('-seed.md'));
-  const seeds = curriculumFiles.filter(file => file.endsWith('-seed.md'));
   const projectsConfig = JSON.parse(await readFile(CONFIG_PATH, 'utf8'));
 
   for (const project of projects) {
@@ -42,7 +44,7 @@ export async function validateCurriculum() {
       );
     }
 
-    const mdPath = `${CURRICULUM_PATH}/${project}`;
+    const mdPath = join(ROOT, CURRICULUM_PATH, project);
     try {
       const projectTitle = await getProjectTitle(mdPath);
       if (!projectTitle.projectTopic || !projectTitle.currentProject) {
@@ -109,14 +111,16 @@ export async function validateCurriculum() {
     );
     if (!projectConfig) {
       throw new Error(
-        `Project "${project}" is not associated in the config/projects.json file. No matching dashed name for "${projectDirPath}"`
+        `Project "${project}" is not associated in the ${CONFIG_PATH} file. No matching dashed name for "${projectDirPath}"`
       );
     }
   }
 
+  const seedFiles = await readdir(SEED_PATH);
+  const seeds = seedFiles.filter(file => file.endsWith('-seed.md'));
+
   for (const seed of seeds) {
-    const project = seed.replace('-seed.md', '.md');
-    const projectDirPath = project.replace('.md', '');
+    const projectDirPath = seed.replace('-seed.md', '');
     try {
       await access(projectDirPath, constants.F_OK);
     } catch (e) {
@@ -125,7 +129,7 @@ export async function validateCurriculum() {
       );
     }
 
-    const mdPath = `${CURRICULUM_PATH}/${project}`;
+    const mdPath = join(ROOT, SEED_PATH, seed);
     try {
       const projectTitle = await getProjectTitle(mdPath);
       if (!projectTitle.projectTopic || !projectTitle.currentProject) {
@@ -165,7 +169,7 @@ export async function validateCurriculum() {
     const projectConfig = projectsConfig.find(({ dashedName }) => dashedName === projectDirPath);
     if (!projectConfig) {
       throw new Error(
-        `Seed ${seed} is not associated with project in the config/projects.json file. No matching dashed name for "${projectDirPath}"`
+        `Seed ${seed} is not associated with project in the ${CONFIG_PATH} file. No matching dashed name for "${projectDirPath}"`
       );
     }
 
