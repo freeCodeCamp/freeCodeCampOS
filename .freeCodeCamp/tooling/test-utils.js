@@ -31,12 +31,9 @@ async function controlWrapper(cb, { timeout = 10000, stepSize = 250 }) {
     const interval = setInterval(async () => {
       try {
         const response = await cb();
-        if (response) {
-          clearInterval(interval);
-          resolve(response);
-        }
+        resolve(response);
       } catch (e) {
-        logover.error(e);
+        logover.debug(e);
       }
     }, stepSize);
     setTimeout(() => {
@@ -63,15 +60,11 @@ const execute = promisify(exec);
  * @returns {Promise<{stdout, stderr}>}
  */
 async function getCommandOutput(command, path = '') {
-  try {
-    const cmdOut = await execute(command, {
-      cwd: join(ROOT, path),
-      shell: '/bin/bash'
-    });
-    return cmdOut;
-  } catch (err) {
-    return err;
-  }
+  const cmdOut = await execute(command, {
+    cwd: join(ROOT, path),
+    shell: '/bin/bash'
+  });
+  return cmdOut;
 }
 
 /**
@@ -85,7 +78,7 @@ async function getCWD() {
 
 /**
  * Get the `.logs/.bash_history.log` file contents, or `throw` is not found
- * @param {number?} howManyBack The `nth` log from the history
+ * @param {number} howManyBack The `nth` log from the history
  * @returns {Promise<string>}
  */
 async function getLastCommand(howManyBack = 0) {

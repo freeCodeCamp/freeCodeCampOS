@@ -15,6 +15,7 @@
 - remove `__helpers.copyDirectory`
 - remove `__helpers.copyProjectFiles`
 - remove `__helpers.fileExists`
+- update `controlWrapper` to match documented API
 
 ### Update
 
@@ -25,7 +26,7 @@
 
 ### Migration Guide
 
-1. Refactor tests to use global `fs` instead of removed `__helpers` functions.
+1. Refactor tests to use Nodejs API instead of removed `__helpers` functions.
 
 ## [1.8.5] - UNRELEASED
 

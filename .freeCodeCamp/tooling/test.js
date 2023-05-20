@@ -1,6 +1,5 @@
 // These are used in the local scope of the `eval` in `runTests`
-import fs from 'fs';
-import { assert, AssertionError } from 'chai';
+import { assert, AssertionError, expect, config as chaiConfig } from 'chai';
 import __helpers_c from './test-utils.js';
 
 import {
