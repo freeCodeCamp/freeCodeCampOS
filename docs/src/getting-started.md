@@ -126,15 +126,19 @@ touch curriculum/locales/english/learn-x-by-building-y.md
 ```
 ````
 
+Add the Markdown content to the curricula files. See the [project syntax](./project-syntax.md) page for more details.
+
 Create the project boilerplate/working directory in the root:
 
 ```bash
 mkdir <PROJECT_DASHED_NAME>
 ```
 
-```admonish todo
-WIP
+````admonish example
+```bash
+mkdir learn-x-by-building-y
 ```
+````
 
 ````admonish attention title="Required Files"
 ```txt

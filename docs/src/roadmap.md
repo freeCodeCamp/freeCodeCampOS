@@ -4,13 +4,8 @@ For the most part, this roadmap outlines todos for `freecodecamp-os`. If this ro
 
 ## Documentation
 
-- [ ] Reset functionality
-  - [ ] How to retain files - .gitignore
-- [ ] List of features
-  - [ ] `freecodecamp.conf.json`
 - [ ] Configuring a course
   - [ ] Required files for different features
-- [ ] Contributing workflow
 
 ## Features
 
