@@ -51,6 +51,10 @@ const bashHistory = await __helpers.getBashHistory();
 
 Returns the output of a command called from the given path relative to the root of the workspace.
 
+```admonish danger title="Safety"
+Throws if path is not a valid POSIX/DOS path, and if promisified `exec` throws.
+```
+
 ```typescript
 function getCommandOutput(
   command: string,
