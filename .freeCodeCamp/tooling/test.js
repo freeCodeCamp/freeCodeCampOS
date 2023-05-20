@@ -77,50 +77,70 @@ export async function runTests(ws, projectDashedName) {
       }, [])
     );
     updateConsole(ws, '');
-    const testPromises = hintsAndTestsArr.map(async ([hint, testCode], i) => {
-      if (beforeEach) {
+    const testPromises = hintsAndTestsArr.map(([hint, testCode], i) => {
+      return async () => {
+        if (beforeEach) {
+          try {
+            logover.debug('Starting: --before-each-- hook');
+            const _beforeEachOut = await eval(
+              `(async () => { ${beforeEach} })();`
+            );
+            logover.debug('Finished: --before-each-- hook');
+          } catch (e) {
+            logover.error('--before-each-- hook failed to run:');
+            logover.error(e);
+          }
+        }
         try {
-          logover.debug('Starting: --before-each-- hook');
-          const _beforeEachOut = await eval(
-            `(async () => { ${beforeEach} })();`
-          );
-          logover.debug('Finished: --before-each-- hook');
+          const _testOutput = await eval(`(async () => {${testCode}})();`);
+          updateTest(ws, {
+            passed: true,
+            testText: hint,
+            isLoading: false,
+            testId: i
+          });
         } catch (e) {
-          logover.error('--before-each-- hook failed to run:');
-          logover.error(e);
-        }
-      }
-      try {
-        const _testOutput = await eval(`(async () => {${testCode}})();`);
-        updateTest(ws, {
-          passed: true,
-          testText: hint,
-          isLoading: false,
-          testId: i
-        });
-      } catch (e) {
-        if (!(e instanceof AssertionError)) {
-          logover.error(`Test #${i + 1}:`, e);
-        }
+          if (!(e instanceof AssertionError)) {
+            logover.error(`Test #${i + 1}:`, e);
+          }
 
-        const testState = {
-          passed: false,
-          testText: hint,
-          isLoading: false,
-          testId: i
-        };
-        const consoleError = { ...testState, error: e };
+          const testState = {
+            passed: false,
+            testText: hint,
+            isLoading: false,
+            testId: i
+          };
+          const consoleError = { ...testState, error: e };
 
-        updateConsole(ws, consoleError);
-        updateTest(ws, testState);
-        return Promise.reject(`- ${hint}\n`);
-      }
-      return Promise.resolve();
+          updateConsole(ws, consoleError);
+          updateTest(ws, testState);
+          return Promise.reject(`- ${hint}\n`);
+        }
+        return Promise.resolve();
+      };
     });
 
     try {
-      const result = await Promise.allSettled(testPromises);
-      const passed = result.every(r => r.status === 'fulfilled');
+      let passed = false;
+      let results = [];
+      if (project.blockingTests) {
+        for (const testPromise of testPromises) {
+          try {
+            const val = await testPromise();
+            results.push({ status: 'fulfilled', value: val });
+          } catch (e) {
+            passed = false;
+            results.push({ status: 'rejected', reason: e });
+            if (project.breakOnFailure) {
+              break;
+            }
+          }
+        }
+      } else {
+        results = await Promise.allSettled(testPromises.map(p => p()));
+        passed = results.every(r => r.status === 'fulfilled');
+      }
+
       if (passed) {
         if (project.isIntegrated || lessonNumber === project.numberOfLessons) {
           await setProjectConfig(project.dashedName, {
@@ -137,7 +157,7 @@ export async function runTests(ws, projectDashedName) {
       } else {
         updateHints(
           ws,
-          result
+          results
             .filter(r => r.status === 'rejected')
             .map(r => r.value)
             .join('\n')
