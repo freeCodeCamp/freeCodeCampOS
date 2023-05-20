@@ -86,39 +86,100 @@ This configures files, terminals, and previews to open when the course is opened
 
 #### `bash`
 
-```admonish todo
-WIP
+- `.bashrc`: path relative to the root of the course - `string`
+- `sourcerer.sh`: path relative to the root of the course - `string`
+
+````admonish example
+```json
+{
+  "bash": {
+    ".bashrc": "./bash/.bashrc",
+    "sourcerer.sh": "./bash/sourcerer.sh"
+  }
+}
 ```
+````
 
 #### `client`
 
-```admonish todo
-WIP
+- `assets.header`: path relative to the root of the course - `string`
+- `assets.favicon`: path relative to the root of the course - `string`
+- `landing.description`: description of the course shown on the landing page - `string`
+- `landing.faq-link`: link to the FAQ page - `string`
+- `landing.faq-text`: text to display for the FAQ link - `string`
+
+````admonish example
+```json
+{
+  "client": {
+    "assets": {
+      "header": "./client/assets/header.png",
+      "favicon": "./client/assets/favicon.ico"
+    }
+  }
+}
 ```
+````
 
 #### `config`
 
-```admonish todo
-WIP
+- `projects.json`: path relative to the root of the course - `string`
+- `state.json`: path relative to the root of the course - `string`
+
+````admonish example
+```json
+{
+  "config": {
+    "projects.json": "./config/projects.json",
+    "state.json": "./config/state.json"
+  }
+}
 ```
+````
 
 #### `curriculum`
 
-```admonish todo
-WIP
+- `locales`: an object of locale names and their corresponding paths relative to the root of the course - `Record<string, string>`
+
+````admonish example
+```json
+{
+  "curriculum": {
+    "locales": {
+      "english": "./curriculum/locales/english"
+    }
+  }
+}
 ```
+````
 
 #### `hotReload`
 
-```admonish todo
-WIP
+- `ignore`: a list of paths to ignore when hot reloading - `string[]`
+
+````admonish example
+```json
+{
+  "hotReload": {
+    "ignore": [".logs/.temp.log", "config/", "/node_modules/", ".git"]
+  }
+}
 ```
+````
 
 #### `tooling`
 
-```admonish todo
-WIP
+- `helpers`: path relative to the root of the course - `string`
+
+````admonish example
+```json
+{
+  "tooling": {
+    "helpers": "./tooling/helpers.js"
+  }
+}
 ```
+````
 
 ## `projects.json`
 
@@ -179,4 +240,3 @@ WIP
 ```admonish warning
 Resetting a step removes all untracked files from the project directory. To prevent this for specific files, add them to a boilerplate `.gitignore` file, or the one in root.
 ```
-
