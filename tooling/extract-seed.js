@@ -49,10 +49,9 @@ async function main(filePath, noBackup = false) {
   try {
     while (lessonNumber <= projectConfig.numberOfLessons) {
       let lesson = await getLessonFromFile(filePath, lessonNumber);
-      seedContents.push(`## ${lessonNumber}\n`)
       const seed = getLessonSeed(lesson);
       if (seed) {
-        seedContents.push(SEED_MARKER);
+        seedContents.push(`## ${lessonNumber}\n\n${SEED_MARKER}`);
         seedContents.push(`${seed.trimEnd('\n')}\n`);
       }
       const lessonWithoutSeed = lesson.replace(new RegExp(`${SEED_MARKER}\n*${seed}`), '');

@@ -156,13 +156,13 @@ export async function validateCurriculum() {
       throw new Error(`Seed "${seed}" does not have any lessons`);
     }
 
-    let expectedLessonNumber = 1;
+    let minimumLessonNumber = 1;
 
     const projectMdPath = join(ROOT, CURRICULUM_PATH, project);
     for (const lessonNumber of lessonNumbers) {
-      if (lessonNumber !== expectedLessonNumber) {
+      if (lessonNumber < minimumLessonNumber) {
         throw new Error(
-          `Seed "${seed}" has a lesson number mismatch. Expected "${expectedLessonNumber}" but got "${lessonNumber}"`
+          `Seed "${seed}" has a lesson number mismatch. Expected "${minimumLessonNumber}" but got "${lessonNumber}"`
         );
       }
       const lesson = await getLessonFromFile(projectMdPath, Number(lessonNumber));
@@ -178,7 +178,7 @@ export async function validateCurriculum() {
         }
       }
 
-      expectedLessonNumber++;
+      minimumLessonNumber = lessonNumber + 1;
     }
 
     const projectConfig = projectsConfig.find(({ dashedName }) => dashedName === projectDirPath);
