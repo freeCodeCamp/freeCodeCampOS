@@ -226,8 +226,10 @@ This configures files, terminals, and previews to open when the course is opened
     "isPublic": true,
     "currentLesson": 1,
     "runTestsOnWatch": true,
+    "blockingTests": false,
+    "breakOnFailure": false,
     "isResetEnabled": true,
-    "numLessons": 10
+    "numberOfLessons": 10
   }
 ]
 ```

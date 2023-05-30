@@ -62,6 +62,8 @@ export async function getProjectConfig(project) {
     runTestsOnWatch: false,
     lastKnownLessonWithHash: 1,
     seedEveryLesson: false,
+    blockingTests: false,
+    breakOnFailure: false,
     useGitBuildOnProduction: false // TODO: Necessary?
   };
   if (!proj) {

@@ -15,6 +15,17 @@
 - dependency @types/react to v18.0.38
 - dependency @types/node to v18.15.13
 
+## [1.9.0] - 2023-05-20
+
+### Add
+
+- add `blockingTests` flag
+- add `breakOnFailure` flag
+
+### Bugs
+
+- when `blockingTests && breakOnFailure`, proceeding tests appear to hang in client
+
 ## [1.8.4] - 2023-04-19
 
 ### Fix
