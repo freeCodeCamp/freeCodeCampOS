@@ -1,11 +1,13 @@
 // This file handles seeding the lesson contents with the seed in markdown.
 import { join } from 'path';
+import { getLessonFromFile, getLessonSeed, seedToIterator } from './parser.js';
 import {
-  getLessonFromFile,
-  getLessonSeed,
-  seedToIterator
-} from './parser.js';
-import { ROOT, getState, freeCodeCampConfig } from './env.js';
+  ROOT,
+  getState,
+  freeCodeCampConfig,
+  getProjectConfig,
+  setState
+} from './env.js';
 import { writeFile } from 'fs/promises';
 import { promisify } from 'util';
 import { exec } from 'child_process';
@@ -13,8 +15,14 @@ import { logover } from './logger.js';
 import { updateError } from './client-socks.js';
 const execute = promisify(exec);
 
-export async function seedLesson(ws, project) {
+/**
+ * Seeds the current lesson
+ * @param {WebSocket} ws
+ * @param {string} projectDashedName
+ */
+export async function seedLesson(ws, projectDashedName) {
   // TODO: Use ws to display loader whilst seeding
+  const project = await getProjectConfig(projectDashedName);
   const { currentLesson, dashedName } = project;
   const { locale } = await getState();
   const projectFile = join(
@@ -27,7 +35,13 @@ export async function seedLesson(ws, project) {
     const lesson = await getLessonFromFile(projectFile, currentLesson);
     const seed = getLessonSeed(lesson);
 
-    await runLessonSeed(seed, dashedName, currentLesson);
+    await runLessonSeed(seed, currentLesson);
+    await setState({
+      lastSeed: {
+        projectDashedName,
+        lessonNumber: currentLesson
+      }
+    });
   } catch (e) {
     updateError(ws, e);
     logover.error(e);
@@ -66,25 +80,30 @@ export async function runCommand(command, path = '.') {
 }
 
 /**
- * Runs the given array of files with seed
+ * Seeds the given path relative to root with the given seed
  */
-export async function runSeed(fileSeed, filePath, dashedName) {
-  const path = join(ROOT, dashedName, filePath);
+export async function runSeed(fileSeed, filePath) {
+  const path = join(ROOT, filePath);
   await writeFile(path, fileSeed);
 }
 
-export async function runLessonSeed(seed, dashedName, currentLesson) {
+/**
+ * Runs the given seed for the given project and lesson number
+ * @param {string} seed
+ * @param {number} currentLesson
+ */
+export async function runLessonSeed(seed, currentLesson) {
   const seedGenerator = seedToIterator(seed);
   try {
     for (const cmdOrFile of seedGenerator) {
       if (typeof cmdOrFile === 'string') {
-        const { stdout, stderr } = await runCommand(cmdOrFile, dashedName);
+        const { stdout, stderr } = await runCommand(cmdOrFile);
         if (stdout || stderr) {
           logover.debug(stdout, stderr);
         }
       } else {
         const { filePath, fileSeed } = cmdOrFile;
-        await runSeed(fileSeed, filePath, dashedName);
+        await runSeed(fileSeed, filePath);
       }
     }
   } catch (e) {

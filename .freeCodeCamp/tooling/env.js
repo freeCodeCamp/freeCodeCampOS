@@ -14,7 +14,14 @@ export const freeCodeCampConfig = await getConfig();
 export async function getState() {
   let defaultState = {
     currentProject: null,
-    locale: 'english'
+    locale: 'english',
+    lastSeed: {
+      projectDashedName: null,
+      // All lessons start at 1, but the logic for whether to seed a lesson
+      // or not is based on the current lesson matching the last seeded lesson
+      // So, to ensure the first lesson is seeded, this is 0
+      lessonNumber: 0
+    }
   };
   try {
     const state = JSON.parse(
