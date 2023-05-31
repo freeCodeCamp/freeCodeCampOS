@@ -32,6 +32,11 @@ import { logover } from './logger.js';
 
 let __helpers = __helpers_c;
 
+/**
+ * Run the given project's tests
+ * @param {WebSocket} ws
+ * @param {string} projectDashedName
+ */
 export async function runTests(ws, projectDashedName) {
   // Update __helpers with dynamic utils:
   const helpers = freeCodeCampConfig.tooling?.['helpers'];
@@ -48,6 +53,7 @@ export async function runTests(ws, projectDashedName) {
     freeCodeCampConfig.curriculum.locales[locale],
     project.dashedName + '.md'
   );
+  let testsState = [];
   try {
     const lesson = await getLessonFromFile(projectFile, lessonNumber);
     const beforeAll = getBeforeAll(lesson);
@@ -67,15 +73,14 @@ export async function runTests(ws, projectDashedName) {
     // toggleLoaderAnimation(ws);
 
     const hintsAndTestsArr = getLessonHintsAndTests(lesson);
-    updateTests(
-      ws,
-      hintsAndTestsArr.reduce((acc, curr, i) => {
-        return [
-          ...acc,
-          { passed: false, testText: curr[0], testId: i, isLoading: true }
-        ];
-      }, [])
-    );
+    testsState = hintsAndTestsArr.reduce((acc, curr, i) => {
+      return [
+        ...acc,
+        { passed: false, testText: curr[0], testId: i, isLoading: true }
+      ];
+    }, []);
+
+    updateTests(ws, testsState);
     updateConsole(ws, '');
     const testPromises = hintsAndTestsArr.map(([hint, testCode], i) => {
       return async () => {
@@ -93,6 +98,8 @@ export async function runTests(ws, projectDashedName) {
         }
         try {
           const _testOutput = await eval(`(async () => {${testCode}})();`);
+          testsState[i].passed = true;
+          testsState[i].isLoading = false;
           updateTest(ws, {
             passed: true,
             testText: hint,
@@ -113,6 +120,7 @@ export async function runTests(ws, projectDashedName) {
           const consoleError = { ...testState, error: e };
 
           updateConsole(ws, consoleError);
+          testsState[i].isLoading = false;
           updateTest(ws, testState);
           return Promise.reject(`- ${hint}\n`);
         }
@@ -181,5 +189,7 @@ export async function runTests(ws, projectDashedName) {
   } catch (e) {
     logover.error('Test Error: ');
     logover.error(e);
+  } finally {
+    updateTests(ws, testsState);
   }
 }
