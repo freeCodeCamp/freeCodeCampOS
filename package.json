@@ -21,7 +21,7 @@
     "@types/marked": "4.3.1",
     "@types/node": "18.16.17",
     "@types/prismjs": "1.26.0",
-    "@types/react": "18.2.10",
+    "@types/react": "18.2.11",
     "@types/react-dom": "18.2.4",
     "babel-loader": "8.3.0",
     "babel-plugin-prismjs": "2.1.0",
