@@ -22,9 +22,8 @@ export function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
   let isClearConsole = false;
 
   watch(ROOT, {
-    ignoreInitial: true
-    // `ignored` appears to do nothing. Have tried multiple permutations
-    // ignored: pathsToIgnore.join('|') //p => pathsToIgnore.includes(p)
+    ignoreInitial: true,
+    ignored: path => pathsToIgnore.some(p => path.includes(p))
   }).on('all', async (event, name) => {
     if (name && !pathsToIgnore.find(p => name.includes(p))) {
       if (isWait) return;
