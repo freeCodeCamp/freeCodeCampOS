@@ -1,0 +1,36 @@
+name: Publish to npm
+
+# Only if `package.json` has a changed `version` field
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3
+      - run: |
+          VERSION=$(npm pkg get version)
+          # Exit if the version is not changed from the previous commit
+          if [ "$(git diff HEAD^ HEAD -- package.json | grep version)" = "" ]; then
+            echo "No version change, skipping publish"
+            exit 1
+          fi
+          echo "Publishing version $VERSION"
+      - name: Publish to NPM
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+
+      - name: Publish to NPM
+        run: |
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
