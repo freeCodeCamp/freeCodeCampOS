@@ -16,6 +16,12 @@
 - dependency @types/react to v18.0.38
 - dependency @types/node to v18.15.13
 
+## [1.9.1] - 2023-05-30
+
+### Fix
+
+- fix `1.9.0` introduced bug of hanging tests
+
 ## [1.9.0] - 2023-05-20
 
 ### Add

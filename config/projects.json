@@ -20,6 +20,8 @@
     "description": "In this course, you will build x using y.",
     "isPublic": true,
     "currentLesson": 1,
-    "numberOfLessons": 1
+    "numberOfLessons": 1,
+    "blockingTests": true,
+    "breakOnFailure": false
   }
 ]

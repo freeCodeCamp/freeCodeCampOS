@@ -32,6 +32,11 @@ import { logover } from './logger.js';
 
 let __helpers = __helpers_c;
 
+/**
+ * Run the given project's tests
+ * @param {WebSocket} ws
+ * @param {string} projectDashedName
+ */
 export async function runTests(ws, projectDashedName) {
   // Update __helpers with dynamic utils:
   const helpers = freeCodeCampConfig.tooling?.['helpers'];
@@ -48,6 +53,7 @@ export async function runTests(ws, projectDashedName) {
     freeCodeCampConfig.curriculum.locales[locale],
     project.dashedName + '.md'
   );
+  let testsState = [];
   try {
     const lesson = await getLessonFromFile(projectFile, lessonNumber);
     const beforeAll = getBeforeAll(lesson);
@@ -67,18 +73,24 @@ export async function runTests(ws, projectDashedName) {
     // toggleLoaderAnimation(ws);
 
     const hintsAndTestsArr = getLessonHintsAndTests(lesson);
-    updateTests(
-      ws,
-      hintsAndTestsArr.reduce((acc, curr, i) => {
-        return [
-          ...acc,
-          { passed: false, testText: curr[0], testId: i, isLoading: true }
-        ];
-      }, [])
-    );
+    testsState = hintsAndTestsArr.reduce((acc, curr, i) => {
+      return [
+        ...acc,
+        {
+          passed: false,
+          testText: curr[0],
+          testId: i,
+          isLoading: !project.blockingTests
+        }
+      ];
+    }, []);
+
+    updateTests(ws, testsState);
     updateConsole(ws, '');
     const testPromises = hintsAndTestsArr.map(([hint, testCode], i) => {
       return async () => {
+        testsState[i].isLoading = true;
+        updateTest(ws, testsState[i]);
         if (beforeEach) {
           try {
             logover.debug('Starting: --before-each-- hook');
@@ -93,27 +105,20 @@ export async function runTests(ws, projectDashedName) {
         }
         try {
           const _testOutput = await eval(`(async () => {${testCode}})();`);
-          updateTest(ws, {
-            passed: true,
-            testText: hint,
-            isLoading: false,
-            testId: i
-          });
+          testsState[i].passed = true;
+          testsState[i].isLoading = false;
+          updateTest(ws, testsState[i]);
         } catch (e) {
           if (!(e instanceof AssertionError)) {
             logover.error(`Test #${i + 1}:`, e);
           }
 
-          const testState = {
-            passed: false,
-            testText: hint,
-            isLoading: false,
-            testId: i
-          };
-          const consoleError = { ...testState, error: e };
+          testsState[i].passed = false;
+          testsState[i].isLoading = false;
+          const consoleError = { ...testsState[i], error: e };
 
           updateConsole(ws, consoleError);
-          updateTest(ws, testState);
+          updateTest(ws, testsState[i]);
           return Promise.reject(`- ${hint}\n`);
         }
         return Promise.resolve();
@@ -181,5 +186,7 @@ export async function runTests(ws, projectDashedName) {
   } catch (e) {
     logover.error('Test Error: ');
     logover.error(e);
+  } finally {
+    updateTests(ws, testsState);
   }
 }
