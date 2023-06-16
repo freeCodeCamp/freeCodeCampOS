@@ -24,6 +24,7 @@ export async function javascriptTest(filePath, test, cb) {
     const ensureFileContents = fileContents.replace(testString, '');
     writeFileSync(PATH_TO_FILE, ensureFileContents, 'utf-8');
     await cb(std.stdout, std.stderr);
+    await new Promise(resolve => setTimeout(resolve, 1500));
   }
 }
 

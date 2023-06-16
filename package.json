@@ -13,15 +13,15 @@
     "postinstall": "npm run build:client"
   },
   "dependencies": {
-    "@babel/core": "7.22.1",
-    "@babel/plugin-syntax-import-assertions": "7.20.0",
-    "@babel/preset-env": "7.22.2",
-    "@babel/preset-react": "7.22.3",
-    "@babel/preset-typescript": "7.21.5",
+    "@babel/core": "7.22.5",
+    "@babel/plugin-syntax-import-assertions": "7.22.5",
+    "@babel/preset-env": "7.22.5",
+    "@babel/preset-react": "7.22.5",
+    "@babel/preset-typescript": "7.22.5",
     "@types/marked": "4.3.1",
-    "@types/node": "18.16.16",
+    "@types/node": "18.16.17",
     "@types/prismjs": "1.26.0",
-    "@types/react": "18.2.7",
+    "@types/react": "18.2.11",
     "@types/react-dom": "18.2.4",
     "babel-loader": "8.3.0",
     "babel-plugin-prismjs": "2.1.0",
@@ -31,7 +31,7 @@
     "dotenv-webpack": "8.0.1",
     "express": "4.18.2",
     "file-loader": "6.2.0",
-    "html-webpack-plugin": "5.5.1",
+    "html-webpack-plugin": "5.5.3",
     "logover": "2.0.0",
     "marked": "4.3.0",
     "nodemon": "2.0.22",
@@ -45,7 +45,7 @@
     "ts-loader": "9.4.3",
     "typescript": "4.9.5",
     "webpack-cli": "4.10.0",
-    "webpack-dev-server": "4.15.0"
+    "webpack-dev-server": "4.15.1"
   },
   "repository": {
     "type": "git",

@@ -229,6 +229,8 @@ function parseMarker(marker, lesson) {
 export function* seedToIterator(seed) {
   const sections = seed.match(new RegExp(`#### --(((?!#### --).)*\n?)`, 'sg'));
   for (const section of sections) {
+    if (isForceFlag(section)) { continue; }
+
     const isFile = section.match(
       new RegExp(`#### --"([^"]+)"--\n(.*?\`\`\`\n)`, 's')
     );

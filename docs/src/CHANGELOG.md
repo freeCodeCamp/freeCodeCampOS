@@ -9,6 +9,7 @@
 ### Fix
 
 - adjust build path
+- set `$HOME` for Gitpod
 
 ### Update
 
