@@ -88,7 +88,7 @@ echo "I should run first"
 #### --cmd--
 
 ```bash
-mkdir learn-x-by-building-y/test
+mkdir -p learn-x-by-building-y/test
 ```
 
 #### --cmd--
