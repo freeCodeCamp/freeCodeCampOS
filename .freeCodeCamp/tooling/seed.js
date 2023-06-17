@@ -13,6 +13,7 @@ import { promisify } from 'util';
 import { exec } from 'child_process';
 import { logover } from './logger.js';
 import { updateError } from './client-socks.js';
+import { watcher } from './hot-reload.js';
 const execute = promisify(exec);
 
 /**
@@ -103,7 +104,10 @@ export async function runLessonSeed(seed, currentLesson) {
         }
       } else {
         const { filePath, fileSeed } = cmdOrFile;
+        // Stop watching file being seeded to prevent triggering tests on hot reload
+        watcher.unwatch(filePath);
         await runSeed(fileSeed, filePath);
+        watcher.add(filePath);
       }
     }
   } catch (e) {

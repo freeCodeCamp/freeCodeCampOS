@@ -2,19 +2,18 @@
 
 ## [Unreleased]
 
-### Add
-
-- add detailed docs (#240)
+## [1.9.2] - 2023-06-17
 
 ### Fix
 
-- adjust build path
-- set `$HOME` for Gitpod
+- remove seeding files from watch during seeding
 
 ### Update
 
-- dependency @types/react to v18.0.38
-- dependency @types/node to v18.15.13
+- react monorepo (#313)
+- github actions (#311)
+- react monorepo
+- dependency @types/node to v18.16.18
 
 ## [1.9.1] - 2023-05-30
 
@@ -22,7 +21,17 @@
 
 - fix `1.9.0` introduced bug of hanging tests
 
+### Update
+
+- dependency @types/react to v18.0.38
+- dependency @types/node to v18.15.13
+
 ## [1.9.0] - 2023-05-20
+
+### Fix
+
+- adjust build path
+- set `$HOME` for Gitpod
 
 ### Add
 
