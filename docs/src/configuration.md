@@ -189,13 +189,15 @@ This configures files, terminals, and previews to open when the course is opened
 - `title`: The human-readable title of the project - `string`
 - `dashedName`: The name of the project corresponding to the `curriculum/locales/<PROJECT_DASHED_NAME>.md` file - `string`
 - `description`: The description of the project shown on the landing page - `string`
-- `isIntegrated`: Whether or not to treat the project as a single-lesson project - `boolean`
-- `isPublic`: Whether or not to enable the project for public viewing. **Note:** the project will still be visible on the landing page, but will be disabled - `boolean`
-- `currentLesson`: The current lesson of the project - `number`
-- `runTestsOnWatch`: Whether or not to run tests on file change - `boolean`
-- `isResetEnabled`: Whether or not to enable the reset button - `boolean`
-- `numLessons`: The number of lessons in the project - `number`[^1]
-- `seedEveryLesson`: Whether or not to run the seed on lesson load - `boolean`
+- `isIntegrated`: Whether or not to treat the project as a single-lesson project - `boolean` (default: `false`)
+- `isPublic`: Whether or not to enable the project for public viewing. **Note:** the project will still be visible on the landing page, but will be disabled - `boolean` (default: `false`)
+- `currentLesson`: The current lesson of the project - `number` (default: `1`)
+- `runTestsOnWatch`: Whether or not to run tests on file change - `boolean` (default: `false`)
+- `isResetEnabled`: Whether or not to enable the reset button - `boolean` (default: `false`)
+- `numberOfLessons`: The number of lessons in the project - `number`[^1]
+- `seedEveryLesson`: Whether or not to run the seed on lesson load - `boolean` (default: `false`)
+- `blockingTests`: Run tests synchronously - `boolean` (default: `false`)
+  - `breakOnFailure`: Stop running tests on the first failure - `boolean` (default: `false`)
 
 [^1]: This is automagically calculated when the app is launched.
 
@@ -225,11 +227,12 @@ This configures files, terminals, and previews to open when the course is opened
     "isIntegrated": false,
     "isPublic": true,
     "currentLesson": 1,
-    "runTestsOnWatch": true,
-    "blockingTests": false,
-    "breakOnFailure": false,
+    "runTestsOnWatch": false,
     "isResetEnabled": true,
-    "numberOfLessons": 10
+    "numberOfLessons": 10,
+    "seedEveryLesson": false,
+    "blockingTests": false,
+    "breakOnFailure": false
   }
 ]
 ```

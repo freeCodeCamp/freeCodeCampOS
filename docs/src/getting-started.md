@@ -144,6 +144,10 @@ mkdir learn-x-by-building-y
 ```txt
 <COURSE_DIR>/
 ├── freecodecamp.conf.json
+├── <PROJECTS_JSON>
+├── <STATE_JSON>
+└── <LOCALE_DIR>/
+    └── <PROJECT_DASHED_NAME>.md
 ```
 If using the `terminal` feature:
 ```txt
@@ -162,6 +166,4 @@ If using the `tooling` feature:
 ```txt
 ├── <CONFIG_TOOLING_HELPERS>
 ```
-
-WIP
 ````
