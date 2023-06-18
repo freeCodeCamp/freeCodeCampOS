@@ -1,12 +1,9 @@
 name: Publish to npm
 
-# Only if `package.json` has a changed `version` field
 on:
   push:
     branches:
-      - main
-    paths:
-      - 'package.json'
+      - prod
 
 jobs:
   publish:
