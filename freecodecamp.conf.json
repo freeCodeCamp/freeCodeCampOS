@@ -46,9 +46,6 @@
   "curriculum": {
     "locales": {
       "english": "./curriculum/locales/english"
-    },
-    "seeds": {
-      "english": "./curriculum/locales/english"
     }
   },
   "hotReload": {

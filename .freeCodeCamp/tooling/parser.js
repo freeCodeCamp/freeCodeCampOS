@@ -19,7 +19,7 @@ const FILE_MARKER_REG = '(?<=#### --")[^"]+(?="--)';
 /**
  * Reads the first line of the file to get the project name
  * @param {string} file - The relative path to the locale file
- * @returns {Promise<string>} The project name
+ * @returns {Promise<{projectTopic: string; currentProject: string}>} The project name
  */
 export async function getProjectTitle(file) {
   const readable = createReadStream(file);
@@ -60,42 +60,49 @@ export async function getProjectTitle(file) {
 export async function getLessonFromFile(file, lessonNumber = 1) {
   const fileContent = await readFile(file, 'utf8');
   const fileContentSansCR = fileContent.replace(/\r/g, '');
-  const mat = fileContentSansCR.match(new RegExp(
+  const mat = fileContentSansCR.match(
+    new RegExp(
       `## ${lessonNumber}\n(.*?)\n## (${lessonNumber + 1}|--fcc-end--)`,
       's'
-    ));
+    )
+  );
   const lesson = mat?.[1];
   if (!lesson) {
     logover.debug(`Lesson ${lessonNumber} not found in ${file}`);
     throw new Error(`Lesson ${lessonNumber} not found in ${file}`);
   }
+
+  // Seed might be in external file, but still needs to be returned
+  // as part of lesson.
   let fileSeedContent;
   try {
     const { locale } = await getState();
     const project = basename(file);
     const seedFile = join(
       ROOT,
-      freeCodeCampConfig.curriculum.seeds[locale],
+      freeCodeCampConfig.curriculum.locales[locale],
       project.replace('.md', '-seed.md')
     );
     fileSeedContent = await readFile(seedFile, 'utf8');
   } catch (e) {
     if (e?.code !== 'ENOENT') {
-      logover.debug(`Error reading external seed for ${lessonNumber}`);
+      logover.debug(`Error reading external seed for lesson ${lessonNumber}`);
       logover.debug(e);
-      throw new Error(`Error reading external seed for ${lessonNumber}`)
+      throw new Error(`Error reading external seed for lesson ${lessonNumber}`);
     }
   }
   if (fileSeedContent) {
     const fileSeedContentSansCR = fileSeedContent.replace(/\r/g, '');
-    const seed = fileSeedContentSansCR.match(new RegExp(
-      `## ${lessonNumber}\n(.*?)\n## (\d+|--fcc-end--)`,
-      's'
-    ))?.[1];
+    const seed = fileSeedContentSansCR.match(
+      // NOTE: For separate seed file, there is no condition for every lesson to
+      // have a seed - lesson numbers are not necessarily sequential.
+      new RegExp(`## ${lessonNumber}\n(.*?)\n## (\d+|--fcc-end--)`, 's')
+    )?.[1];
     if (seed) {
       return lesson + seed;
     }
   }
+
   return lesson;
 }
 
