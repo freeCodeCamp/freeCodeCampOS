@@ -147,7 +147,7 @@ export async function validateCurriculum() {
     if (!project) {
       throw new Error(`Config "${config}" does not have a matching project`);
     }
-    const projectPath = join(ROOT, CURRICULUM_PATH, project);
+    const projectPath = join(CURRICULUM_PATH, project);
     const projectFile = await readFile(projectPath, 'utf8');
     if (!projectFile.trimEnd().endsWith('--fcc-end--')) {
       throw new Error(`Project "${project}" does not end with --fcc-end--`);
@@ -163,7 +163,7 @@ export async function validateCurriculum() {
       file => file.replace('-seed.md', '') === config.dashedName
     );
     if (seed) {
-      const seedPath = join(ROOT, CURRICULUM_PATH, seed);
+      const seedPath = join(CURRICULUM_PATH, seed);
       const seedFile = await readFile(seedPath, 'utf8');
       if (!seedFile.trimEnd().endsWith('--fcc-end--')) {
         throw new Error(`Seed "${seed}" does not end with --fcc-end--`);
@@ -210,10 +210,17 @@ export async function validateCurriculum() {
       }
 
       const seedContents = getLessonSeed(lesson);
-      if (seedContents !== null && seedLessons?.includes(lessonNumber)) {
-        logover.warn(
-          `Seed "${seed}" already exists in project markdown for lesson "${lessonNumber}"`
-        );
+      if (seed) {
+        const seedPath = join(CURRICULUM_PATH, seed);
+        const seedFile = await readFile(seedPath, 'utf8');
+        const seedLessons = [...seedFile.matchAll(/\n## (\d+)/g)]
+          .filter(Boolean)
+          .map(([, num]) => Number(num));
+        if (seedContents !== null && seedLessons?.includes(lessonNumber)) {
+          logover.warn(
+            `Seed "${seed}" already exists in project markdown for lesson "${lessonNumber}"`
+          );
+        }
       }
 
       const hintsAndTests = getLessonHintsAndTests(lesson);
