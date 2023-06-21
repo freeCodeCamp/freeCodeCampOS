@@ -31,12 +31,6 @@ const cb = async () => {
 const result = await __helpers.controlWrapper(cb);
 ```
 
-## `copyDirectory`
-
-## `copyProjectFiles`
-
-## `fileExists`
-
 ## `getBashHistory`
 
 Get the `.logs/.bash_history.log` file contents
@@ -56,6 +50,10 @@ const bashHistory = await __helpers.getBashHistory();
 ## `getCommandOutput`
 
 Returns the output of a command called from the given path relative to the root of the workspace.
+
+```admonish danger title="Safety"
+Throws if path is not a valid POSIX/DOS path, and if promisified `exec` throws.
+```
 
 ```typescript
 function getCommandOutput(
@@ -83,12 +81,6 @@ function getCWD(): Promise<string>;
 ```javascript
 const cwd = await __helpers.getCWD();
 ```
-
-## `getDirectory`
-
-## `getFile`
-
-## `getJsonFile`
 
 ## `getLastCommand`
 
@@ -177,9 +169,3 @@ const { exportedFile } = await __helpers.importSansCache(
   'learn-x-by-building-y/index.js'
 );
 ```
-
-## `makeDirectory`
-
-## `runCommand`
-
-## `writeJsonFile`
