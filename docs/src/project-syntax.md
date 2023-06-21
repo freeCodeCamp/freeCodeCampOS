@@ -105,7 +105,7 @@ npm install
 
 #### `#### --force--`
 
-Any seed marked with the force flag will overwrite the [`seedEveryLesson` configuration option](configuration.md#definitions-1).
+Any seed marked with the force flag will overwrite the [`seedEveryLesson` configuration option](configuration.md#definitions-1). Specifically, the force flag causes the seed to run, if it were not going to, and it prevents the seed from running, if it were going to.
 
 ```markdown
 ### --seed--

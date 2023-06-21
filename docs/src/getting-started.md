@@ -126,20 +126,28 @@ touch curriculum/locales/english/learn-x-by-building-y.md
 ```
 ````
 
+Add the Markdown content to the curricula files. See the [project syntax](./project-syntax.md) page for more details.
+
 Create the project boilerplate/working directory in the root:
 
 ```bash
 mkdir <PROJECT_DASHED_NAME>
 ```
 
-```admonish todo
-WIP
+````admonish example
+```bash
+mkdir learn-x-by-building-y
 ```
+````
 
 ````admonish attention title="Required Files"
 ```txt
 <COURSE_DIR>/
 ├── freecodecamp.conf.json
+├── <PROJECTS_JSON>
+├── <STATE_JSON>
+└── <LOCALE_DIR>/
+    └── <PROJECT_DASHED_NAME>.md
 ```
 If using the `terminal` feature:
 ```txt
@@ -158,6 +166,4 @@ If using the `tooling` feature:
 ```txt
 ├── <CONFIG_TOOLING_HELPERS>
 ```
-
-WIP
 ````

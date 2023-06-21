@@ -1,6 +1,6 @@
 // This file handles the watching of the /curriculum folder for changes
 // and executing the command to run the tests for the next (current) lesson
-import { getState, getProjectConfig, ROOT } from './env.js';
+import { getState, getProjectConfig, ROOT, freeCodeCampConfig } from './env.js';
 import { runLesson } from './lesson.js';
 import { runTests } from './test.js';
 import { watch } from 'chokidar';
@@ -15,17 +15,21 @@ const defaultPathsToIgnore = [
   '/test-ledger/'
 ];
 
+const pathsToIgnore =
+  freeCodeCampConfig.hotReload?.ignore || defaultPathsToIgnore;
+
+export const watcher = watch(ROOT, {
+  ignoreInitial: true,
+  ignored: path => pathsToIgnore.some(p => path.includes(p))
+});
+
 export function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
   logover.info(`Watching for file changes on ${ROOT}`);
   let isWait = false;
   let testsRunning = false;
   let isClearConsole = false;
 
-  watch(ROOT, {
-    ignoreInitial: true
-    // `ignored` appears to do nothing. Have tried multiple permutations
-    // ignored: pathsToIgnore.join('|') //p => pathsToIgnore.includes(p)
-  }).on('all', async (event, name) => {
+  watcher.on('all', async (event, name) => {
     if (name && !pathsToIgnore.find(p => name.includes(p))) {
       if (isWait) return;
       const { currentProject } = await getState();

@@ -15,30 +15,18 @@ const a = 1;
 You should declare a variable named `a`.
 
 ```js
-const test = `console.assert(typeof a);`;
-const filePath = 'learn-x-by-building-y/index.js';
-const cb = (stdout, stderr) => {
-  assert.isEmpty(stderr);
-  assert.exists(stdout);
-};
-await __helpers.javascriptTest(filePath, test, cb);
+assert.fail();
 ```
 
 You should give `a` a value of `1`.
 
 ```js
-const test = `console.assert(a === 1, \`expected \${a} to equal 1\`);`;
-const filePath = 'learn-x-by-building-y/index.js';
-const cb = (stdout, stderr) => {
-  assert.isEmpty(stderr);
-  assert.exists(stdout);
-};
-await __helpers.javascriptTest(filePath, test, cb);
+assert.fail();
 ```
 
 ### --seed--
 
-#### --"index.js"--
+#### --"learn-x-by-building-y/index.js"--
 
 ```js
 // I am an example boilerplate file
@@ -67,7 +55,7 @@ assert.equal(true, true);
 
 ### --seed--
 
-#### --"index.js"--
+#### --"learn-x-by-building-y/index.js"--
 
 ```javascript
 // I am an example boilerplate file
@@ -100,16 +88,16 @@ echo "I should run first"
 #### --cmd--
 
 ```bash
-mkdir test
+mkdir -p learn-x-by-building-y/test
 ```
 
 #### --cmd--
 
 ```bash
-touch test/index.ts
+touch learn-x-by-building-y/test/index.ts
 ```
 
-#### --"test/index.ts"--
+#### --"learn-x-by-building-y/test/index.ts"--
 
 ```ts
 const test: string = 'test';

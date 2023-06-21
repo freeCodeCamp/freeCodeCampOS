@@ -30,13 +30,24 @@
 
 ## [1.8.5] - UNRELEASED
 
-### Add
-
-- add detailed docs (#240)
+## [1.9.2] - 2023-06-17
 
 ### Fix
 
-- adjust build path
+- remove seeding files from watch during seeding
+
+### Update
+
+- react monorepo (#313)
+- github actions (#311)
+- react monorepo
+- dependency @types/node to v18.16.18
+
+## [1.9.1] - 2023-05-30
+
+### Fix
+
+- fix `1.9.0` introduced bug of hanging tests
 
 ### Update
 
@@ -48,6 +59,22 @@
 - dependency @babel/core to v7.21.8
 - babel monorepo to v7.21.5
 - pin dependencies (#241)
+
+## [1.9.0] - 2023-05-20
+
+### Fix
+
+- adjust build path
+- set `$HOME` for Gitpod
+
+### Add
+
+- add `blockingTests` flag
+- add `breakOnFailure` flag
+
+### Bugs
+
+- when `blockingTests && breakOnFailure`, proceeding tests appear to hang in client
 
 ## [1.8.4] - 2023-04-19
 

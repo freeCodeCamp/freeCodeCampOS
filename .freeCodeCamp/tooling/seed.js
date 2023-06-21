@@ -1,39 +1,48 @@
 // This file handles seeding the lesson contents with the seed in markdown.
 import { join } from 'path';
+import { getLessonFromFile, getLessonSeed, seedToIterator } from './parser.js';
 import {
-  getLessonFromFile,
-  getLessonSeed,
-  getCommands,
-  getFilesWithSeed,
-  seedToIterator
-} from './parser.js';
-import { ROOT, getState, freeCodeCampConfig } from './env.js';
+  ROOT,
+  getState,
+  freeCodeCampConfig,
+  getProjectConfig,
+  setState
+} from './env.js';
 import { writeFile } from 'fs/promises';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { logover } from './logger.js';
 import { updateError } from './client-socks.js';
+import { watcher } from './hot-reload.js';
 const execute = promisify(exec);
 
-export async function seedLesson(ws, project) {
+/**
+ * Seeds the current lesson
+ * @param {WebSocket} ws
+ * @param {string} projectDashedName
+ */
+export async function seedLesson(ws, projectDashedName) {
   // TODO: Use ws to display loader whilst seeding
-  const lessonNumber = project.currentLesson;
+  const project = await getProjectConfig(projectDashedName);
+  const { currentLesson, dashedName } = project;
   const { locale } = await getState();
   const projectFile = join(
     ROOT,
     freeCodeCampConfig.curriculum.locales[locale],
-    project.dashedName + '.md'
+    dashedName + '.md'
   );
 
   try {
-    const lesson = await getLessonFromFile(projectFile, lessonNumber);
+    const lesson = await getLessonFromFile(projectFile, currentLesson);
     const seed = getLessonSeed(lesson);
 
-    const commands = getCommands(seed);
-    const filesWithSeed = getFilesWithSeed(seed);
-
-    await runCommands(commands);
-    await runSeedDeprecated(filesWithSeed);
+    await runLessonSeed(seed, currentLesson);
+    await setState({
+      lastSeed: {
+        projectDashedName,
+        lessonNumber: currentLesson
+      }
+    });
   } catch (e) {
     updateError(ws, e);
     logover.error(e);
@@ -72,46 +81,37 @@ export async function runCommand(command, path = '.') {
 }
 
 /**
- * Runs the given array of files with seed
- * @param {[string, string][]} filesWithSeed - [[filePath, fileSeed]]
- *
- * @deprecated Prefer to use `runLessonSeed` instead
+ * Seeds the given path relative to root with the given seed
  */
-export async function runSeedDeprecated(filesWithSeed) {
-  try {
-    for (const [filePath, fileSeed] of filesWithSeed) {
-      const filePathWithRoot = `${filePath}`;
-      await writeFile(filePathWithRoot, fileSeed);
-    }
-  } catch (e) {
-    return Promise.reject(e);
-  }
-  return Promise.resolve();
-}
-/**
- * Runs the given array of files with seed
- */
-export async function runSeed(fileSeed, filePath, projectPath) {
-  const path = join(ROOT, projectPath, filePath);
+export async function runSeed(fileSeed, filePath) {
+  const path = join(ROOT, filePath);
   await writeFile(path, fileSeed);
 }
 
-export async function runLessonSeed(seed, currentProject, lessonNumber) {
+/**
+ * Runs the given seed for the given project and lesson number
+ * @param {string} seed
+ * @param {number} currentLesson
+ */
+export async function runLessonSeed(seed, currentLesson) {
   const seedGenerator = seedToIterator(seed);
   try {
     for (const cmdOrFile of seedGenerator) {
       if (typeof cmdOrFile === 'string') {
-        const { stdout, stderr } = await runCommand(cmdOrFile, currentProject);
+        const { stdout, stderr } = await runCommand(cmdOrFile);
         if (stdout || stderr) {
           logover.debug(stdout, stderr);
         }
       } else {
         const { filePath, fileSeed } = cmdOrFile;
-        await runSeed(fileSeed, filePath, currentProject);
+        // Stop watching file being seeded to prevent triggering tests on hot reload
+        watcher.unwatch(filePath);
+        await runSeed(fileSeed, filePath);
+        watcher.add(filePath);
       }
     }
   } catch (e) {
-    logover.error('Failed to run seed for lesson: ', lessonNumber);
+    logover.error('Failed to run seed for lesson: ', currentLesson);
     throw new Error(e);
   }
 }

@@ -8,7 +8,9 @@
     "isPublic": true,
     "currentLesson": 1,
     "runTestsOnWatch": true,
-    "isResetEnabled": true
+    "seedEveryLesson": true,
+    "isResetEnabled": true,
+    "numberOfLessons": 6
   },
   {
     "id": 1,
@@ -17,6 +19,9 @@
     "isIntegrated": true,
     "description": "In this course, you will build x using y.",
     "isPublic": true,
-    "currentLesson": 1
+    "currentLesson": 1,
+    "numberOfLessons": 1,
+    "blockingTests": true,
+    "breakOnFailure": false
   }
 ]

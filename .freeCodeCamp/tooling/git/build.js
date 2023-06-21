@@ -65,6 +65,7 @@ async function buildProject() {
       const filesWithSeed = getFilesWithSeed(seed);
       try {
         await runCommands(commands);
+        // TODO: Not correct signature
         await runSeed(filesWithSeed);
       } catch (e) {
         logover.error('🔴 Failed to run seed for lesson: ', lessonNumber);
