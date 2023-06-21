@@ -171,3 +171,12 @@ WIP
 ]
 ```
 ````
+
+## `.gitignore`
+
+### Retaining files when step is reset
+
+```admonish warning
+Resetting a step removes all untracked files from the project directory. To prevent this for specific files, add them to a boilerplate `.gitignore` file, or the one in root.
+```
+

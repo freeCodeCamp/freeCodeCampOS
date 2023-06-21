@@ -1,0 +1,37 @@
+name: Check Links
+
+on:
+  # Runs on PRs targeting main
+  pull_request:
+    branches: ['main']
+    paths:
+      - 'docs/**'
+
+  # Allows this workflow to be manually run from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      MDBOOK_VERSION: 0.4.28
+      ADMONISH_VERSION: 1.9.0
+      UNLINK_VERSION: 0.1.0
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3
+      - name: Install mdBook
+        run: |
+          mkdir bin
+          curl -sSL https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/mdbook-v${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz | tar -xz --directory=bin
+      - name: Install mdbook-admonish
+        run: |
+          curl -sSL https://github.com/tommilligan/mdbook-admonish/releases/download/v${ADMONISH_VERSION}/mdbook-admonish-v${ADMONISH_VERSION}-x86_64-unknown-linux-gnu.tar.gz | tar -xz --directory=bin
+      - name: Install mdbook-unlink
+        run: |
+          curl -sSL https://github.com/ShaunSHamilton/mdbook-unlink/releases/download/v${UNLINK_VERSION}/x86_64-unknown-linux-gnu.tar.gz | tar -xz --directory=bin
+          echo "$PWD/bin" >> $GITHUB_PATH
+      - name: Check Links
+        run: cd docs && mdbook build
