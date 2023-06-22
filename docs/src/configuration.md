@@ -28,6 +28,28 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 }
 ```
 
+````admonish example collapsible=true title="Minimum Usable Example"
+```json
+{
+  "path": ".",
+  "version": "0.0.1",
+  "scripts": {
+    "develop-course": "NODE_ENV=development node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js",
+    "run-course": "NODE_ENV=production node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js"
+  },
+  "config": {
+    "projects.json": "./config/projects.json",
+    "state.json": "./config/state.json"
+  },
+  "curriculum": {
+    "locales": {
+      "english": "./curriculum/locales/english"
+    }
+  }
+}
+```
+````
+
 ### Optional Configuration (Features)
 
 #### `prepare`
@@ -84,21 +106,10 @@ This configures files, terminals, and previews to open when the course is opened
 ```
 ````
 
-#### `bash`
+#### `bashrc`
 
-- `.bashrc`: path relative to the root of the course - `string`
-- `sourcerer.sh`: path relative to the root of the course - `string`
-
-````admonish example
-```json
-{
-  "bash": {
-    ".bashrc": "./bash/.bashrc",
-    "sourcerer.sh": "./bash/sourcerer.sh"
-  }
-}
-```
-````
+- `enabled`: whether or not source the `.bashrc` file - `boolean`
+- `path`: path relative to the root of the course - `string`
 
 #### `client`
 
@@ -152,6 +163,10 @@ This configures files, terminals, and previews to open when the course is opened
 }
 ```
 ````
+
+```admonish attention
+Currently, `english` is a required locale, and is used as the default.
+```
 
 #### `hotReload`
 
@@ -225,10 +240,10 @@ This configures files, terminals, and previews to open when the course is opened
     "dashedName": "learn-x-by-building-y",
     "description": "In this project, you'll learn X by building Y",
     "isIntegrated": false,
-    "isPublic": true,
+    "isPublic": false,
     "currentLesson": 1,
     "runTestsOnWatch": false,
-    "isResetEnabled": true,
+    "isResetEnabled": false,
     "numberOfLessons": 10,
     "seedEveryLesson": false,
     "blockingTests": false,
@@ -240,7 +255,7 @@ This configures files, terminals, and previews to open when the course is opened
 
 ## `.gitignore`
 
-### Retaining files when step is reset
+### Retaining Files When a Step is Reset
 
 ```admonish warning
 Resetting a step removes all untracked files from the project directory. To prevent this for specific files, add them to a boilerplate `.gitignore` file, or the one in root.

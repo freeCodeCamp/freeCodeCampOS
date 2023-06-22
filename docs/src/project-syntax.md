@@ -129,6 +129,7 @@ An EOF discriminator.
 
 ## Example
 
+`````admonish example collapsible=true title="<code>curriculum/locales/english/learn-x-by-building-y.md</code>"
 ````markdown
 # freeCodeCampOS - Learn X by Building Y
 
@@ -294,3 +295,26 @@ assert.equal(1, 1);
 
 ## --fcc-end--
 ````
+`````
+
+It is also possible to add the seed for a lesson in a separate file named `<PROJECT_DASHED_NAME>-seed.md` within the `locales` directory.
+
+`````admonish example collapsible=true title="<code>curriculum/locales/english/learn-x-by-building-y-seed.md</code>"
+````markdown
+## 1
+
+### --seed--
+
+#### --"index.js"--
+
+```javascript
+// Seed in a separate file
+```
+
+## --fcc-end--
+````
+`````
+
+```admonish note
+If seed for the same lesson is included in both the project file and a seed file, the seed in the project file will be used.
+```

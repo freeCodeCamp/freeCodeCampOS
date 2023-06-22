@@ -48,6 +48,8 @@ const CONFIG_PATH = join(ROOT, freeCodeCampConfig.config['projects.json']);
  * - Any `runTestsOnWatch` field is a boolean
  * - Any `isResetEnabled` field is a boolean
  * - Any `seedEveryLesson` field is a boolean
+ * - Any `blockingTests` field is a boolean
+ * - Any `breakOnFailure` filed is a boolean
  *
  * ### Seeds
  *
@@ -66,6 +68,7 @@ const CONFIG_PATH = join(ROOT, freeCodeCampConfig.config['projects.json']);
  *
  * - Each config has a `description` field
  * - Each config has a `title` field
+ * - If `breakOnFailure` is true, `blockingTests` is also true
  *
  * ### Seeds
  *
@@ -133,6 +136,23 @@ export async function validateCurriculum() {
       typeof config.seedEveryLesson !== 'boolean'
     ) {
       throw new Error(`Config "${config}" has a non-boolean seedEveryLesson`);
+    }
+    if (
+      config.blockingTests !== undefined &&
+      typeof config.blockingTests !== 'boolean'
+    ) {
+      throw new Error(`Config "${config}" has a non-boolean blockingTests`);
+    }
+    if (
+      config.breakOnFailure !== undefined &&
+      typeof config.breakOnFailure !== 'boolean'
+    ) {
+      throw new Error(`Config "${config}" has a non-boolean breakOnFailure`);
+    }
+    if (config.breakOnFailure && !config.blockingTests) {
+      logover.warn(
+        `Config "${config}" has breakOnFailure=true but blockingTests=false. The breakOnFailure feature has no effect without blockingTests=true`
+      );
     }
     if (!config.description) {
       logover.warn(`Config "${config}" does not have a description`);

@@ -5,6 +5,7 @@
 - [Examples](./examples.md)
 - [Configuration](./configuration.md)
 - [Project Syntax](./project-syntax.md)
+- [freeCodeCamp - Courses](./freecodecamp-courses.md)
 - [Lessoning]()
   - [Lifecycle](./lessoning/lifecycle.md)
   - [Lesson](./lessoning/lesson.md)
