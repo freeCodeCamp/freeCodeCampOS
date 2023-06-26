@@ -22,7 +22,7 @@ Disposes all terminals, and closes the visible text editors.
 
 `freeCodeCamp: Create New Course`
 
-Within an empty directory, sets up the boilerplate for a new course.
+Within an empty directory, this sets up the boilerplate for a new course.
 
 `freeCodeCamp: Open Course`
 
