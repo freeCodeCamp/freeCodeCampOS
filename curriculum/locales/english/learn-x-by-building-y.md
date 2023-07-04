@@ -4,77 +4,93 @@
 
 ### --description--
 
-Declare a variable `a` with value `1`, in `index.js`.
+Welcome to freeCodeCampOS! 👋
 
-```javascript
-const a = 1;
-```
+This example project will walk you through some of the features of freeCodeCampOS, and how to use them for your own course.
+
+Start by opening the `curriculum/locales/english/learn-x-by-building-y.md` file in your editor. Then, click the `Run Tests` button to go to the next lesson.
+
+<details>
+  <summary>Tidbit</summary>
+
+Did you know the "OS" in freeCodeCampOS stands for "Open Source"?
+
+</details>
 
 ### --tests--
 
-You should declare a variable named `a`.
+This is a test that will always pass.
 
 ```js
-assert.fail();
-```
-
-You should give `a` a value of `1`.
-
-```js
-assert.fail();
-```
-
-### --seed--
-
-#### --"learn-x-by-building-y/index.js"--
-
-```js
-// I am an example boilerplate file
+assert(true);
 ```
 
 ## 2
 
 ### --description--
 
-Create a new directory named `test`, and create a file `test/index.ts`.
+The `learn-x-by-building-y.md` file is a markdown file that contains the content for your course. You will learn more about this later. For now, learn how to use the UI.
 
-Then add the following:
-
-```ts
-const test: string = 'test';
-```
+Click the `Run Tests` button again. Then, click the `Console` tab in the bottom panel, expand the test `details`, and follow the instructions.
 
 ### --tests--
 
-You should ...
+This is a test that will always fail.
 
 ```js
-await new Promise(resolve => setTimeout(resolve, 2000));
-assert.equal(true, true);
-```
-
-### --seed--
-
-#### --"learn-x-by-building-y/index.js"--
-
-```javascript
-// I am an example boilerplate file
-const a = 1;
+assert.fail(
+  'This is a custom test assertion message. Click the > button to go to the next lesson'
+);
 ```
 
 ## 3
 
 ### --description--
 
-Description.
+Click the `Run Tests` button to see two failed tests.
+
+Then, change the sentence `Welcome to freeCodeCampOS!` in the `learn-x-by-building-y.md` file to anything you want to see one test pass.
+
+Finally, check the `Console` tab for further instructions.
 
 ### --tests--
 
-You should ...
+You should edit the `Welcome to freeCodeCampOS!` sentence in the `curriculum/locales/english/learn-x-by-building-y.md` file to anything you want.
 
 ```js
-await new Promise(resolve => setTimeout(resolve, 2000));
-assert.equal(true, true);
+const { readFile } = await import('fs/promises');
+const file = await readFile(
+  'curriculum/locales/english/learn-x-by-building-y.md',
+  'utf-8'
+);
+assert.notIncludes(file, 'Welcome to freeCodeCampOS!');
+```
+
+I always fail 🙃
+
+```js
+assert.fail('Click the > button to go to the next lesson');
+```
+
+## 4
+
+### --description--
+
+You changed something you should not have 😱, and you do not know how to continue.
+
+Fret not! Press the `Reset Project` button to run the <dfn title="starting state for a lesson">seed</dfn>
+
+### --tests--
+
+The `curriculum/locales/english/learn-x-by-building-y.md` file should contain the sentence `Welcome to freeCodeCampOS!`.
+
+```js
+const { readFile } = await import('fs/promises');
+const file = await readFile(
+  'curriculum/locales/english/learn-x-by-building-y.md',
+  'utf-8'
+);
+assert.includes(file, 'Welcome to freeCodeCampOS!');
 ```
 
 ### --seed--
@@ -82,70 +98,11 @@ assert.equal(true, true);
 #### --cmd--
 
 ```bash
-echo "I should run first"
-```
-
-#### --cmd--
-
-```bash
-mkdir -p learn-x-by-building-y/test
-```
-
-#### --cmd--
-
-```bash
-touch learn-x-by-building-y/test/index.ts
-```
-
-#### --"learn-x-by-building-y/test/index.ts"--
-
-```ts
-const test: string = 'test';
-```
-
-## 4
-
-### --description--
-
-Description.
-
-### --tests--
-
-You should ...
-
-```js
-await new Promise(resolve => setTimeout(resolve, 2000));
-assert.equal(true, true);
+git restore curriculum/locales/english/learn-x-by-building-y.md
 ```
 
 ## 5
 
 ### --description--
-
-Description.
-
-### --tests--
-
-You should ...
-
-```js
-await new Promise(resolve => setTimeout(resolve, 2000));
-assert.equal(true, true);
-```
-
-## 6
-
-### --description--
-
-Description.
-
-### --tests--
-
-This test will pass after 5 seconds.
-
-```js
-await new Promise(resolve => setTimeout(resolve, 5000));
-assert.equal(1, 1);
-```
 
 ## --fcc-end--
