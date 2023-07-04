@@ -134,7 +134,6 @@ export async function runTests(ws, projectDashedName) {
             const val = await testPromise();
             results.push({ status: 'fulfilled', value: val });
           } catch (e) {
-            passed = false;
             results.push({ status: 'rejected', reason: e });
             if (project.breakOnFailure) {
               break;
@@ -143,8 +142,8 @@ export async function runTests(ws, projectDashedName) {
         }
       } else {
         results = await Promise.allSettled(testPromises.map(p => p()));
-        passed = results.every(r => r.status === 'fulfilled');
       }
+      passed = results.every(r => r.status === 'fulfilled');
 
       if (passed) {
         if (project.isIntegrated || lessonNumber === project.numberOfLessons) {
