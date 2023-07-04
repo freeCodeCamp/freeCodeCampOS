@@ -19,11 +19,11 @@
     "@babel/preset-react": "7.22.5",
     "@babel/preset-typescript": "7.22.5",
     "@types/marked": "4.3.1",
-    "@types/node": "18.16.18",
+    "@types/node": "18.16.19",
     "@types/prismjs": "1.26.0",
     "babel-loader": "9.1.2",
-    "@types/react": "18.2.12",
-    "@types/react-dom": "18.2.5",
+    "@types/react": "18.2.14",
+    "@types/react-dom": "18.2.6",
     "babel-plugin-prismjs": "2.1.0",
     "chai": "4.3.7",
     "chokidar": "3.5.3",
@@ -44,7 +44,7 @@
     "typescript": "5.0.4",
     "webpack-cli": "5.1.1",
     "style-loader": "3.3.3",
-    "ts-loader": "9.4.3",
+    "ts-loader": "9.4.4",
     "webpack-dev-server": "4.15.1"
   },
   "repository": {
