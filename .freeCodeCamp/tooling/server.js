@@ -12,11 +12,7 @@ import {
 
 import { WebSocketServer } from 'ws';
 import { runLesson } from './lesson.js';
-import {
-  updateProjects,
-  updateFreeCodeCampConfig,
-  resetBottomPanel
-} from './client-socks.js';
+import { updateProjects, updateFreeCodeCampConfig } from './client-socks.js';
 import { hotReload } from './hot-reload.js';
 import { hideAll, showFile, showAll } from './utils.js';
 import { join } from 'path';
@@ -61,7 +57,6 @@ async function handleGoToNextLesson(ws, data) {
   if (nextLesson > 0 && nextLesson <= project.numberOfLessons) {
     await setProjectConfig(currentProject, { currentLesson: nextLesson });
     await runLesson(ws, project.dashedName);
-    resetBottomPanel(ws);
   }
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
@@ -74,7 +69,6 @@ async function handleGoToPreviousLesson(ws, data) {
   if (prevLesson > 0 && prevLesson <= project.numberOfLessons) {
     await setProjectConfig(currentProject, { currentLesson: prevLesson });
     await runLesson(ws, project.dashedName);
-    resetBottomPanel(ws);
   }
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }

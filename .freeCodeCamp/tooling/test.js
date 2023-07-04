@@ -158,7 +158,6 @@ export async function runTests(ws, projectDashedName) {
             currentLesson: lessonNumber + 1
           });
           await runLesson(ws, projectDashedName);
-          resetBottomPanel(ws);
         }
       } else {
         // TODO: Parse hints from markdown
@@ -189,6 +188,6 @@ export async function runTests(ws, projectDashedName) {
     logover.error('Test Error: ');
     logover.error(e);
   } finally {
-    updateTests(ws, testsState);
+    // updateTests(ws, testsState);
   }
 }

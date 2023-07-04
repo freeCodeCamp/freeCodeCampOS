@@ -63,7 +63,7 @@ const file = await readFile(
   'curriculum/locales/english/learn-x-by-building-y.md',
   'utf-8'
 );
-assert.notIncludes(file, 'Welcome to freeCodeCampOS!');
+assert.notInclude(file, 'Welcome to freeCodeCampOS!');
 ```
 
 I always fail 🙃
@@ -90,7 +90,7 @@ const file = await readFile(
   'curriculum/locales/english/learn-x-by-building-y.md',
   'utf-8'
 );
-assert.includes(file, 'Welcome to freeCodeCampOS!');
+assert.include(file, 'Welcome to freeCodeCampOS!');
 ```
 
 ### --seed--
