@@ -24,7 +24,8 @@ import {
   updateTests,
   updateConsole,
   updateHints,
-  handleProjectFinish
+  handleProjectFinish,
+  resetBottomPanel
 } from './client-socks.js';
 import { join } from 'path';
 import { logover } from './logger.js';
@@ -150,15 +151,17 @@ export async function runTests(ws, projectDashedName) {
           await setProjectConfig(project.dashedName, {
             completedDate: Date.now()
           });
+          resetBottomPanel(ws);
           handleProjectFinish(ws);
         } else {
           await setProjectConfig(project.dashedName, {
             currentLesson: lessonNumber + 1
           });
           await runLesson(ws, projectDashedName);
-          updateHints(ws, '');
+          resetBottomPanel(ws);
         }
       } else {
+        // TODO: Parse hints from markdown
         updateHints(
           ws,
           results

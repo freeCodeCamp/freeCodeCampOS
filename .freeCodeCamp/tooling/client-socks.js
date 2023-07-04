@@ -89,7 +89,7 @@ export function updateHints(ws, hints) {
 /**
  *
  * @param {WebSocket} ws WebSocket connection to the client
- * @param {*} cons
+ * @param {{error: string; testText: string; passed: boolean;isLoading: boolean;testId: number;}} cons
  */
 export function updateConsole(ws, cons) {
   ws.send(parse({ event: 'update-console', data: { cons } }));
@@ -114,4 +114,14 @@ export function handleProjectFinish(ws) {
 
 export function parse(obj) {
   return JSON.stringify(obj);
+}
+
+/**
+ * Resets the bottom panel (Tests, Console, Hints) of the client to empty state
+ * @param {WebSocket} ws WebSocket connection to the client
+ */
+export function resetBottomPanel(ws) {
+  updateHints(ws, '');
+  updateTests(ws, []);
+  updateConsole(ws, {});
 }
