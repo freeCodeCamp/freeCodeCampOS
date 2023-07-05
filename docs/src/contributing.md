@@ -2,13 +2,12 @@
 
 ## Local Development
 
-1. Add `@freecodecamp/freecodecamp-os` to `package.json > dependencies`, pointing to the current directory:
+1. Link `@freecodecamp/freecodecamp-os` to itself:
 
-```json
-"@freecodecamp/freecodecamp-os": "."
+```bash
+npm link
+npm link @freecodecamp/freecodecamp-os
 ```
-
-**Note:** This is temporary, as the package should not reference itself as a dependency when published.
 
 2. Install tooling:
 
@@ -19,7 +18,7 @@ npm i
 3. Start the development server:
 
 - Open the command pallete (Ctrl+Shift+P)
-- `freeCodeCamp: Run Develop`
+- `freeCodeCamp: Develop Course`
 
 ## Gitpod
 

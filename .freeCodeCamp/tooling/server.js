@@ -31,11 +31,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const app = express();
 
-app.use(
-  express.static(
-    join(ROOT, 'node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/dist')
-  )
-);
+app.use(express.static(join('.freeCodeCamp/dist')));
 
 async function handleRunTests(ws, data) {
   const { currentProject } = await getState();

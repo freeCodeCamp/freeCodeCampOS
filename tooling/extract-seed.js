@@ -9,8 +9,12 @@
 
 import { copyFile, readFile, rm, writeFile } from 'fs/promises';
 import { Logger } from 'logover';
-import { freeCodeCampConfig } from '../node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/env.js';
-import { getLessonFromFile, getLessonSeed, getProjectTitle } from '../node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/parser.js';
+import { freeCodeCampConfig } from '@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/env.js';
+import {
+  getLessonFromFile,
+  getLessonSeed,
+  getProjectTitle
+} from '@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/parser.js';
 import { constants } from 'fs';
 
 const CONFIG_PATH = freeCodeCampConfig.config['projects.json'];
@@ -21,14 +25,18 @@ const SEED_MARKER = '### --seed--';
 const path = process.argv[2];
 const noBackup = process.argv[3] === '--nobackup';
 
-const logover = new Logger({level: 'debug'});
+const logover = new Logger({ level: 'debug' });
 
 async function main(filePath, noBackup = false) {
   const { projectTopic, currentProject } = await getProjectTitle(filePath);
   const projectsConfig = JSON.parse(await readFile(CONFIG_PATH, 'utf8'));
-  const projectConfig = projectsConfig.find(({ title }) => title === currentProject);
+  const projectConfig = projectsConfig.find(
+    ({ title }) => title === currentProject
+  );
   if (!projectConfig) {
-    throw new Error(`No project in ${CONFIG_PATH} associated with "${filePath}".`)
+    throw new Error(
+      `No project in ${CONFIG_PATH} associated with "${filePath}".`
+    );
   }
   const seedFile = filePath.replace('.md', '-seed.md');
   try {
@@ -54,7 +62,10 @@ async function main(filePath, noBackup = false) {
         seedContents.push(`## ${lessonNumber}\n\n${SEED_MARKER}`);
         seedContents.push(`${seed.trimEnd('\n')}\n`);
       }
-      const lessonWithoutSeed = lesson.replace(new RegExp(`${SEED_MARKER}\n*${seed}`), '');
+      const lessonWithoutSeed = lesson.replace(
+        new RegExp(`${SEED_MARKER}\n*${seed}`),
+        ''
+      );
       projectWithoutSeed.push(`## ${lessonNumber}\n`);
       projectWithoutSeed.push(`${lessonWithoutSeed.trimEnd('\n')}\n`);
       lessonNumber++;
@@ -95,5 +106,7 @@ if (path) {
     logover.debug(err);
   }
 } else {
-  logover.info(`Usage: node tooling/extract-seed.js path/to/curriculum/markdown/file/learn.md [--nobackup]`);
+  logover.info(
+    `Usage: node tooling/extract-seed.js path/to/curriculum/markdown/file/learn.md [--nobackup]`
+  );
 }
