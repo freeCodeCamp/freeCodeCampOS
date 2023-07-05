@@ -98,7 +98,6 @@ async function handleSelectProject(ws, data) {
   // for the case where the Camper has navigated to the landing page.
   await setState({ currentProject: selectedProject?.dashedName ?? null });
   if (!selectedProject && !data?.data?.id) {
-    logover.warn('Selected project does not exist: ', data);
     return ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
   }
 
