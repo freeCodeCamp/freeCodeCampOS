@@ -24,7 +24,7 @@ export async function resetProject(ws) {
     project.dashedName + '.md'
   );
 
-  let lessonNumber = 1;
+  let lessonNumber = 0;
   try {
     let lesson = await getLessonFromFile(FILE, lessonNumber);
 

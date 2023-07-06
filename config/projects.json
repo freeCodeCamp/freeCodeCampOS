@@ -1,16 +1,16 @@
 [
   {
     "id": 0,
-    "title": "Learn X by Building Y",
-    "dashedName": "learn-x-by-building-y",
+    "title": "Learn freeCodeCampOS",
+    "dashedName": "learn-freecodecamp-os",
     "isIntegrated": false,
-    "description": "In this course, you will learn X by building Y.",
+    "description": "In this course, you will learn how to use the @freecodecamp/freecodecamp-os package to develop courses.",
     "isPublic": true,
-    "currentLesson": 1,
+    "currentLesson": 0,
     "runTestsOnWatch": true,
     "seedEveryLesson": true,
     "isResetEnabled": true,
-    "numberOfLessons": 6
+    "numberOfLessons": 5
   },
   {
     "id": 1,
@@ -19,7 +19,7 @@
     "isIntegrated": true,
     "description": "In this course, you will build x using y.",
     "isPublic": true,
-    "currentLesson": 1,
+    "currentLesson": 0,
     "numberOfLessons": 1,
     "blockingTests": true,
     "breakOnFailure": false

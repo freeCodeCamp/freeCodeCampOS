@@ -4,10 +4,6 @@ The test utilities are exported/global objects available in the test runner. The
 
 Many of the exported functions are _convinience wrappers_ around Nodejs' `fs` and `child_process` modules. Specifically, they make use of the global `ROOT` variable to run the functions relative to the root of the workspace.
 
-```admonish attention
-Many of these functions are expected to be removed in future versions.
-```
-
 ## `controlWrapper`
 
 Wraps a function in an interval to retry until it does not throw or times out.

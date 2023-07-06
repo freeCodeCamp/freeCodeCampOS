@@ -7,8 +7,9 @@ import { freeCodeCampConfig, getState, ROOT } from './env.js';
 import { logover } from './logger.js';
 
 const DESCRIPTION_MARKER = '### --description--';
-const TEST_MARKER = '### --tests--';
+const TESTS_MARKER = '### --tests--';
 const SEED_MARKER = '### --seed--';
+const HINTS_MARKER = `### --hints--`;
 const BEFORE_ALL_MARKER = '### --before-all--';
 const AFTER_ALL_MARKER = '### --after-all--';
 const BEFORE_EACH_MARKER = '### --before-each--';
@@ -44,11 +45,11 @@ export async function getProjectTitle(file) {
       });
   });
   readable.close();
-  const proj = firstLine.replace('# ', '').split(' - ');
-  if (!proj[0] || !proj[1]) {
+  const proj = firstLine.replace('# ', '');
+  if (!proj) {
     throw new Error('Invalid project title. See example format.');
   }
-  return { projectTopic: proj[0], currentProject: proj[1] };
+  return proj;
 }
 
 /**
@@ -57,7 +58,7 @@ export async function getProjectTitle(file) {
  * @param {number} lessonNumber - The number of the lesson
  * @returns {Promise<string | undefined>} The content of the lesson
  */
-export async function getLessonFromFile(file, lessonNumber = 1) {
+export async function getLessonFromFile(file, lessonNumber = 0) {
   const fileContent = await readFile(file, 'utf8');
   const fileContentSansCR = fileContent.replace(/\r/g, '');
   const mat = fileContentSansCR.match(
@@ -117,22 +118,22 @@ export function getLessonDescription(lesson) {
 }
 
 /**
- * Gets the hints and tests of the lesson
+ * Gets the test text and tests of the lesson
  * @param {string} lesson - The lesson content
- * @returns {[string, string]} An array of [hint, test]
+ * @returns {[string, string]} An array of [text, test]
  */
-export function getLessonHintsAndTests(lesson) {
-  const testsString = parseMarker(TEST_MARKER, lesson);
-  const hintsAndTestsArr = [];
-  const hints = testsString?.match(/^(.*?)$(?=\n+```js)/gm)?.filter(Boolean);
+export function getLessonTextsAndTests(lesson) {
+  const testsString = parseMarker(TESTS_MARKER, lesson);
+  const textsAndTestsArr = [];
+  const texts = testsString?.match(/^(.*?)$(?=\n+```js)/gm)?.filter(Boolean);
   const tests = testsString?.match(/(?<=```js\n).*?(?=```)/gms);
 
-  if (hints?.length) {
-    for (let i = 0; i < hints.length; i++) {
-      hintsAndTestsArr.push([hints[i], tests[i]]);
+  if (texts?.length) {
+    for (let i = 0; i < texts.length; i++) {
+      textsAndTestsArr.push([texts[i], tests[i]]);
     }
   }
-  return hintsAndTestsArr;
+  return textsAndTestsArr;
 }
 
 /**
@@ -143,6 +144,17 @@ export function getLessonHintsAndTests(lesson) {
 export function getLessonSeed(lesson) {
   const seed = parseMarker(SEED_MARKER, lesson);
   return seed ?? null;
+}
+
+/**
+ * Gets the hints of the lesson. If none are found, returns `null`.
+ * @param {string} lesson - The lesson content
+ * @returns {string[] | null} The hints of the lesson
+ */
+export function getLessonHints(lesson) {
+  const hints = parseMarker(HINTS_MARKER, lesson);
+  const hintsArr = hints.split(/\n#### \d+/);
+  return hintsArr.filter(Boolean).map(h => h.trim());
 }
 
 /**
@@ -263,7 +275,9 @@ function parseMarker(marker, lesson) {
 export function* seedToIterator(seed) {
   const sections = seed.match(new RegExp(`#### --(((?!#### --).)*\n?)`, 'sg'));
   for (const section of sections) {
-    if (isForceFlag(section)) { continue; }
+    if (isForceFlag(section)) {
+      continue;
+    }
 
     const isFile = section.match(
       new RegExp(`#### --"([^"]+)"--\n(.*?\`\`\`\n)`, 's')

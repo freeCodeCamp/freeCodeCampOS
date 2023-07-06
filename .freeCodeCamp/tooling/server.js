@@ -50,7 +50,7 @@ async function handleGoToNextLesson(ws, data) {
   const project = await getProjectConfig(currentProject);
   const nextLesson = project.currentLesson + 1;
 
-  if (nextLesson > 0 && nextLesson <= project.numberOfLessons) {
+  if (nextLesson > 0 && nextLesson <= project.numberOfLessons - 1) {
     await setProjectConfig(currentProject, { currentLesson: nextLesson });
     await runLesson(ws, project.dashedName);
   }
@@ -62,7 +62,7 @@ async function handleGoToPreviousLesson(ws, data) {
   const project = await getProjectConfig(currentProject);
   const prevLesson = project.currentLesson - 1;
 
-  if (prevLesson > 0 && prevLesson <= project.numberOfLessons) {
+  if (prevLesson >= 0 && prevLesson <= project.numberOfLessons - 1) {
     await setProjectConfig(currentProject, { currentLesson: prevLesson });
     await runLesson(ws, project.dashedName);
   }

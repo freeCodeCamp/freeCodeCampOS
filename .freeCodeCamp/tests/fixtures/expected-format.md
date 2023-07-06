@@ -1,6 +1,6 @@
 # Title - Project
 
-## 1
+## 0
 
 ### --description--
 
@@ -41,6 +41,20 @@ const file = 'some';
 
 ```bash
 echo "I am bash seed"
+```
+
+### --hints--
+
+#### 0
+
+Hint 1.
+
+#### 1
+
+Hint 2, with multiple lines.
+
+```js
+const a = 0;
 ```
 
 ### --before-all--

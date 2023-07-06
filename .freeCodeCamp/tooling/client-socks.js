@@ -81,7 +81,7 @@ export function updateFreeCodeCampConfig(ws, config) {
 /**
  * Update hints
  * @param {WebSocket} ws WebSocket connection to the client
- * @param {string} hints `\n` separated string
+ * @param {string[]} hints Markdown strings
  */
 export function updateHints(ws, hints) {
   ws.send(parse({ event: 'update-hints', data: { hints } }));

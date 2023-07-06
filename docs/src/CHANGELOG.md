@@ -4,6 +4,8 @@
 
 ### Add
 
+- make `watcher` global
+
 ### Change
 
 - remove `__helpers.makeDirectory`
@@ -16,6 +18,7 @@
 - remove `__helpers.copyProjectFiles`
 - remove `__helpers.fileExists`
 - update `controlWrapper` to match documented API
+- start lessons at `0` instead of `1`
 
 ### Update
 
@@ -27,6 +30,7 @@
 ### Migration Guide
 
 1. Refactor tests to use Nodejs API instead of removed `__helpers` functions.
+2. Change all lesson numbers to be zero-based (start at `0`)
 
 ## [1.8.5] - UNRELEASED
 

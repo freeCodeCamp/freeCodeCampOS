@@ -5,7 +5,7 @@ import { logover } from './logger.js';
 import {
   getLessonDescription,
   getLessonFromFile,
-  getLessonHintsAndTests,
+  getLessonTextsAndTests,
   getLessonSeed,
   getProjectTitle
 } from './parser.js';
@@ -34,15 +34,15 @@ const CONFIG_PATH = join(ROOT, freeCodeCampConfig.config['projects.json']);
  * - Each project has an H1 heading
  * - Each project is associated with a boilerplate
  * - Each project has congruent lesson numbers
- *   - First lesson is 1
+ *   - First lesson is 0
  * - Each project ends in `--fcc-end--`
  *
  * ### Configs
  *
  * - All configs have `dashedName` and `id` fields
  * - All configs have a matching project by the `dashedName` field
- * - Any `currentLesson` field is >= 1
- * - Any `currentLesson` field is <= the number of lessons in the project
+ * - Any `currentLesson` field is >= 0
+ * - Any `currentLesson` field is < the number of lessons in the project
  * - Any `isIntegrated` field is a boolean
  * - Any `isPublic` field is a boolean
  * - Any `runTestsOnWatch` field is a boolean
@@ -53,7 +53,7 @@ const CONFIG_PATH = join(ROOT, freeCodeCampConfig.config['projects.json']);
  *
  * ### Seeds
  *
- * - All seed lesson numbers are greater than 0
+ * - All seed lesson numbers are >= 0
  *
  * ## Warnings
  *
@@ -73,7 +73,7 @@ const CONFIG_PATH = join(ROOT, freeCodeCampConfig.config['projects.json']);
  * ### Seeds
  *
  * - Seed already exists in lesson
- * - No seed lesson number is greater than the number of lessons in the project
+ * - No seed lesson number is greater than the number of lessons in the project - 1
  * - Lesson numbers are ordered
  */
 export async function validateCurriculum() {
@@ -102,12 +102,12 @@ export async function validateCurriculum() {
     if (!config.dashedName) {
       throw new Error(`Config "${config}" does not have a dashedName`);
     }
-    if (config.currentLesson && config.currentLesson < 1) {
-      throw new Error(`Config "${config}" has a currentLesson less than 1`);
+    if (config?.currentLesson < 0) {
+      throw new Error(`Config "${config}" has a currentLesson less than 0`);
     }
-    if (config.currentLesson && config.currentLesson > config.numberOfLessons) {
+    if (config?.currentLesson >= config.numberOfLessons) {
       throw new Error(
-        `Config "${config}" has a currentLesson greater than the number of lessons`
+        `Config "${config}" has a currentLesson >= than the number of lessons`
       );
     }
     if (
@@ -196,14 +196,14 @@ export async function validateCurriculum() {
         throw new Error(`Seed "${seed}" does not have any lessons`);
       }
       for (const lessonNumber of seedLessons) {
-        if (lessonNumber <= 0) {
+        if (lessonNumber < 0) {
           throw new Error(
-            `Seed "${seed}" should not have a lesson number less than 1`
+            `Seed "${seed}" should not have a lesson number less than 0`
           );
         }
-        if (lessonNumber > config.numberOfLessons) {
+        if (lessonNumber >= config.numberOfLessons) {
           throw new Error(
-            `Seed "${seed}" has a lesson number greater than the number of lessons`
+            `Seed "${seed}" has a lesson number >= than the number of lessons`
           );
         }
       }
@@ -214,7 +214,7 @@ export async function validateCurriculum() {
       }
     }
 
-    let expectedLessonNumber = 1;
+    let expectedLessonNumber = 0;
     for (const lessonNumber of projectLessons) {
       if (lessonNumber !== expectedLessonNumber) {
         throw new Error(
@@ -243,13 +243,13 @@ export async function validateCurriculum() {
         }
       }
 
-      const hintsAndTests = getLessonHintsAndTests(lesson);
-      if (!hintsAndTests.length) {
+      const textsAndTests = getLessonTextsAndTests(lesson);
+      if (!textsAndTests.length) {
         logover.warn(
           `Project "${project}" has no tests for lesson "${lessonNumber}"`
         );
       }
-      for (const [hint, test] of hintsAndTests) {
+      for (const [hint, test] of textsAndTests) {
         if (!hint || !hint.trim()) {
           logover.warn(
             `Project "${project}" has no test text for lesson "${lessonNumber}"`
@@ -266,10 +266,8 @@ export async function validateCurriculum() {
     }
 
     const projectTitle = await getProjectTitle(projectPath);
-    if (!projectTitle.projectTopic || !projectTitle.currentProject) {
-      throw new Error(
-        `Project "${project}" has a malformed title: '${projectTitle}'`
-      );
+    if (!projectTitle) {
+      throw new Error(`Project "${project}" has no title: '${projectTitle}'`);
     }
   }
 
