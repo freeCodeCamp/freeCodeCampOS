@@ -29,7 +29,6 @@ const App = () => {
   const [freeCodeCampConfig, setFreeCodeCampConfig] =
     useState<FreeCodeCampConfigI>({});
   const [project, setProject] = useState<ProjectI | null>(null);
-  const [topic, setTopic] = useState('');
 
   const [lessonNumber, setLessonNumber] = useState(1);
   const [description, setDescription] = useState('');
@@ -113,14 +112,7 @@ const App = () => {
     setProject(project);
   }
 
-  function updateProjectHeading({
-    projectTopic,
-    lessonNumber
-  }: {
-    projectTopic: string;
-    lessonNumber: number;
-  }) {
-    setTopic(projectTopic);
+  function updateProjectHeading({ lessonNumber }: { lessonNumber: number }) {
     setLessonNumber(lessonNumber);
   }
 
@@ -202,7 +194,6 @@ const App = () => {
           <Project
             {...{
               project,
-              topic,
               lessonNumber,
               description,
               tests,
@@ -216,7 +207,7 @@ const App = () => {
             }}
           />
         ) : (
-          <Landing {...{ topic, sock, projects, freeCodeCampConfig }} />
+          <Landing {...{ sock, projects, freeCodeCampConfig }} />
         )}
       </Suspense>
     </>

@@ -11,7 +11,7 @@ module.exports = {
   },
   watch: process.env.NODE_ENV === 'development',
   watchOptions: {
-    ignored: ['**/node_modules', 'config']
+    ignored: ['**/node_modules', '**/config']
   },
   module: {
     rules: [

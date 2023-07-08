@@ -222,9 +222,7 @@ Currently, `english` is a required locale, and is used as the default.
 [
   {
     "id": 0, // Unique ID
-    "title": "<PROJECT_TITLE>",
-    "dashedName": "<PROJECT_DASHED_NAME>",
-    "description": "<PROJECT_DESCRIPTION>"
+    "dashedName": "<PROJECT_DASHED_NAME>"
   }
 ]
 ```

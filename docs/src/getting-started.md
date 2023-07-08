@@ -90,9 +90,7 @@ Create the `projects.json` file:
 [
   {
     "id": 0,
-    "title": "<PROJECT_TITLE>",
-    "dashedName": "<PROJECT_DASHED_NAME>",
-    "description": "<PROJECT_DESCRIPTION>"
+    "dashedName": "<PROJECT_DASHED_NAME>"
   }
 ]
 ```
@@ -104,10 +102,7 @@ There are many more configuration options available. See the [configuration](./c
 Create the `state.json` file:
 
 ```json
-{
-  "currentProject": null,
-  "locale": "<LOCALE>"
-}
+{}
 ```
 
 Initialise this file with the initial state of the course. If you want the course to start on a project (instead of the landing page), replace `null` with the `dashedName` of the project.

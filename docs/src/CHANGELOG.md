@@ -19,6 +19,7 @@
 - remove `__helpers.fileExists`
 - update `controlWrapper` to match documented API
 - start lessons at `0` instead of `1`
+- remove landing page topic (`h2`)
 
 ### Update
 

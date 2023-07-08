@@ -27,9 +27,9 @@ export const Block = ({
     lessonsCompleted = numberOfLessons;
   } else {
     lessonsCompleted =
-      !isIntegrated && currentLesson === numberOfLessons
-        ? currentLesson
-        : currentLesson - 1;
+      !isIntegrated && currentLesson === numberOfLessons - 1
+        ? currentLesson + 1
+        : currentLesson;
   }
   return (
     <li className='block'>
@@ -40,8 +40,8 @@ export const Block = ({
         style={
           !isPublic
             ? {
-              cursor: 'not-allowed'
-            }
+                cursor: 'not-allowed'
+              }
             : {}
         }
       >
@@ -53,7 +53,11 @@ export const Block = ({
 
         <h2>
           {title}
-          {completedDate ? <span className='block-checkmark'><Checkmark /></span> : null}
+          {completedDate ? (
+            <span className='block-checkmark'>
+              <Checkmark />
+            </span>
+          ) : null}
         </h2>
         <div className='block-info'>
           <p>{description}</p>
