@@ -153,7 +153,7 @@ export function getLessonSeed(lesson) {
  */
 export function getLessonHints(lesson) {
   const hints = parseMarker(HINTS_MARKER, lesson);
-  const hintsArr = hints.split(/\n#### \d+/);
+  const hintsArr = hints?.split(/\n#### \d+/);
   return hintsArr.filter(Boolean).map(h => h.trim());
 }
 
