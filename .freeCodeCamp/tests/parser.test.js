@@ -56,7 +56,7 @@ try {
 
   const lessonHints = getLessonHints(lesson);
 
-  assert.equal(lessonHints?.length, 2);
+  assert.equal(lessonHints.length, 2);
   assert.equal(lessonHints.at(0), 'Hint 1.');
   assert.equal(
     lessonHints.at(1),

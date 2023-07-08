@@ -149,12 +149,12 @@ export function getLessonSeed(lesson) {
 /**
  * Gets the hints of the lesson. If none are found, returns `null`.
  * @param {string} lesson - The lesson content
- * @returns {string[] | null} The hints of the lesson
+ * @returns {string[]} The hints of the lesson
  */
 export function getLessonHints(lesson) {
   const hints = parseMarker(HINTS_MARKER, lesson);
   const hintsArr = hints?.split(/\n#### \d+/);
-  return hintsArr.filter(Boolean).map(h => h.trim());
+  return hintsArr?.filter(Boolean).map(h => h.trim()) ?? [];
 }
 
 /**
