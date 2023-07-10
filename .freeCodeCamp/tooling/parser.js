@@ -250,7 +250,7 @@ export function extractStringFromCode(code) {
  */
 export async function getTotalLessons(file) {
   const fileContent = await readFile(file, 'utf-8');
-  const lessonNumbers = fileContent.match(/## \d+/g);
+  const lessonNumbers = fileContent.match(/\n## \d+/g);
   const numberOfLessons = lessonNumbers.length;
   return numberOfLessons;
 }
