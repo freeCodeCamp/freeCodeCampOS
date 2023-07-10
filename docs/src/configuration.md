@@ -10,7 +10,6 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 
 ```json
 {
-  "path": ".",
   "version": "0.0.1",
   "scripts": {
     "develop-course": "",
@@ -31,7 +30,6 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 ````admonish example collapsible=true title="Minimum Usable Example"
 ```json
 {
-  "path": ".",
   "version": "0.0.1",
   "scripts": {
     "develop-course": "NODE_ENV=development node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js",
@@ -51,6 +49,18 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 ````
 
 ### Optional Configuration (Features)
+
+#### `path`
+
+This is a string representing the relative path to the course directory from the root of the workspace.
+
+````admonish example
+```json
+{
+  "path": "./courses/my-course"
+}
+```
+````
 
 #### `prepare`
 

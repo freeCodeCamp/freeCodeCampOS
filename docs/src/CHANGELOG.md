@@ -5,6 +5,7 @@
 ### Add
 
 - make `watcher` global
+- `process.env.FCC_OS_PORT || 8080` for server listen port
 
 ### Change
 
@@ -20,6 +21,7 @@
 - update `controlWrapper` to match documented API
 - start lessons at `0` instead of `1`
 - remove landing page topic (`h2`)
+- `config.path` is no longer required
 
 ### Update
 
