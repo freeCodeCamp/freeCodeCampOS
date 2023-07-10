@@ -368,8 +368,8 @@ try {
 
 Add a title to the `learn-freecodecamp-os.md` file.
 
-```markdown
-# freeCodeCampOS Title
+```text
+  # freeCodeCampOS Title
 ```
 
 ### --tests--
@@ -392,12 +392,12 @@ assert(file.startsWith(), '# freeCodeCampOS Title');
 
 ### --description--
 
-Add the first lesson to the `learn-freecodecamp-os.md` file, with a description heading.
+Add the first lesson to the `learn-freecodecamp-os.md` file, with a description heading:
 
-```markdown
-\\ ## 0
+```text
+  ## 0
 
-\\ ### --description--
+  ### --description--
 ```
 
 ### --tests--
@@ -413,7 +413,7 @@ const file = await readFile(
   ),
   'utf-8'
 );
-assert(file.includes('## 0'));
+assert(file.includes('\n## 0'));
 ```
 
 The lesson should have a description heading.
@@ -427,10 +427,469 @@ const file = await readFile(
   ),
   'utf-8'
 );
-assert(file.includes('### --description--'));
+assert(file.includes('\n### --description--'));
 ```
 
 ## 14
+
+### --description--
+
+Signify the end of the file, by adding the following:
+
+```text
+  ## --fcc-end--
+```
+
+### --tests--
+
+The `learn-freecodecamp-os.md` file should contain the `--fcc-end--` marker.
+
+```js
+const { readFile } = await import('fs/promises');
+const file = await readFile(
+  join(
+    project.dashedName,
+    'curriculum/locales/english/learn-freecodecamp-os.md'
+  ),
+  'utf-8'
+);
+assert(file.includes('\n## --fcc-end--'));
+```
+
+## 15
+
+### --description--
+
+Within `learn-freecodecamp-os/`, create a `freecodecamp.conf.json` file.
+
+### --tests--
+
+You should have a `freecodecamp.conf.json` file.
+
+```js
+const { access, constants } = await import('fs/promises');
+try {
+  await access(join(project.dashedName, 'freecodecamp.conf.json'));
+} catch (e) {
+  assert.fail(e);
+}
+```
+
+## 16
+
+### --description--
+
+Within the `freecodecamp.conf.json` file, add the following:
+
+```json
+{
+  "version": "0.0.1",
+  "scripts": {
+    "develop-course": "",
+    "run-course": ""
+  },
+  "config": {
+    "projects.json": "<PROJECTS_JSON>",
+    "state.json": "<STATE_JSON>"
+  },
+  "curriculum": {
+    "locales": {
+      "<LOCALE>": "<LOCALE_DIR>"
+    }
+  }
+}
+```
+
+### --tests--
+
+The `freecodecamp.conf.json` file should contain the `version` property.
+
+```js
+assert.hasAllKeys(__conf, ['version']);
+```
+
+The `version` property should be `0.0.1`.
+
+```js
+assert.equal(__conf.version, '0.0.1');
+```
+
+The `freecodecamp.conf.json` file should contain the `scripts` property.
+
+```js
+assert.hasAllKeys(__conf, ['scripts']);
+```
+
+The `scripts` property should be an object.
+
+```js
+assert.isObject(__conf.scripts);
+```
+
+The `scripts` property should contain the `develop-course` property.
+
+```js
+assert.hasAllKeys(__conf.scripts, ['develop-course']);
+```
+
+The `develop-course` property should be a string.
+
+```js
+assert.isString(__conf.scripts['develop-course']);
+```
+
+The `scripts` property should contain the `run-course` property.
+
+```js
+assert.hasAllKeys(__conf.scripts, ['run-course']);
+```
+
+The `run-course` property should be a string.
+
+```js
+assert.isString(__conf.scripts['run-course']);
+```
+
+The `freecodecamp.conf.json` file should contain the `config` property.
+
+```js
+assert.hasAllKeys(__conf, ['config']);
+```
+
+The `config` property should be an object.
+
+```js
+assert.isObject(__conf.config);
+```
+
+The `config` property should contain the `projects.json` property.
+
+```js
+assert.hasAllKeys(__conf.config, ['projects.json']);
+```
+
+The `projects.json` property should be a string.
+
+```js
+assert.isString(__conf.config['projects.json']);
+```
+
+The `config` property should contain the `state.json` property.
+
+```js
+assert.hasAllKeys(__conf.config, ['state.json']);
+```
+
+The `state.json` property should be a string.
+
+```js
+assert.isString(__conf.config['state.json']);
+```
+
+The `freecodecamp.conf.json` file should contain the `curriculum` property.
+
+```js
+assert.hasAllKeys(__conf, ['curriculum']);
+```
+
+The `curriculum` property should be an object.
+
+```js
+assert.isObject(__conf.curriculum);
+```
+
+The `curriculum` property should contain the `locales` property.
+
+```js
+assert.hasAllKeys(__conf.curriculum, ['locales']);
+```
+
+The `locales` property should be an object.
+
+```js
+assert.isObject(__conf.curriculum.locales);
+```
+
+The `locales` property should contain the `<LOCALE>` property.
+
+```js
+assert.hasAllKeys(__conf.curriculum.locales, ['<LOCALE>']);
+```
+
+The `<LOCALE>` property should be a string.
+
+```js
+assert.isString(__conf.curriculum.locales['<LOCALE>']);
+```
+
+The `locales` property should contain the `<LOCALE_DIR>` property.
+
+```js
+assert.hasAllKeys(__conf.curriculum.locales, ['<LOCALE_DIR>']);
+```
+
+The `<LOCALE_DIR>` property should be a string.
+
+```js
+assert.isString(__conf.curriculum.locales['<LOCALE_DIR>']);
+```
+
+### --before-all--
+
+```js
+const { readFile } = await import('fs/promises');
+const conf = await readFile(
+  join(project.dashedName, 'freecodecamp.conf.json'),
+  'utf-8'
+);
+const __conf = JSON.parse(conf);
+global.__conf = __conf;
+```
+
+### --after-all--
+
+```js
+delete global.__conf;
+```
+
+## 17
+
+### --description--
+
+Within the `freecodecamp.conf.json` file, replace the `<PROJECTS_JSON>` placeholder with the relative path to the `projects.json` file. _Relative to your courses root_.
+
+### --tests--
+
+The `projects.json` property should be a relative path to the `projects.json` file.
+
+```js
+assert.equal(__conf.config['projects.json'], 'config/projects.json');
+```
+
+## 18
+
+### --description--
+
+Within the `freecodecamp.conf.json` file, replace the `<STATE_JSON>` placeholder with the relative path to the `state.json` file. _Relative to your courses root_.
+
+### --tests--
+
+The `state.json` property should be a relative path to the `state.json` file.
+
+```js
+assert.equal(__conf.config['state.json'], 'config/state.json');
+```
+
+## 19
+
+### --description--
+
+Within the `freecodecamp.conf.json` file, replace the `<LOCALE>` placeholder with `english`. Then, replace the `<LOCALE_DIR>` placeholder with `curriculum/locales/english/`.
+
+**Note:** Currently, `english` is a required locale, and is used as the default.
+
+### --tests--
+
+The `<LOCALE>` property should point to the locale of your course.
+
+```js
+assert.include(
+  __conf.curriculum.locales['english'],
+  'curriculum/locales/english'
+);
+```
+
+## 20
+
+Those are all the pre-requisites to start the development server:
+
+```bash
+npm run develop
+```
+
+### --tests--
+
+The development server should be running.
+
+```js
+await fetch('http://localhost:8080');
+```
+
+## 21
+
+### --description--
+
+The development server runs at the port number defined by the `FCC_OS_PORT` env var, but defaults to `8080`. Open `http://localhost:8080` in your browser to see the course.
+
+Also, take a look at the terminal output; in development, your config is validated - errors and warnings are logged to the terminal if something is not quite right.
+
+To move on, click the `Run Tests` button.
+
+### --hints--
+
+#### 0
+
+In VSCode, you can open a webpage within the editor by:
+
+- Clicking `Ctrl/Cmd + Shift + P`
+- Typing and selecting `Simple Browser: Show`
+- Inputing the localhost URL
+
+#### 1
+
+Notice this course teaching you how to create a course is itself a course, and is running on port `8081`.
+
+### --tests--
+
+This test always passes.
+
+```js
+assert(true);
+```
+
+## 22
+
+### --description--
+
+The terminal should have a warning about the first lesson description being empty.
+
+Fix this by adding the following text:
+
+```markdown
+Welcome to freeCodeCampOS! 👋
+
+This example project will walk you through some of the features of freeCodeCampOS, and how to use them for your own course.
+
+Start by opening the `curriculum/locales/english/learn-freecodecamp-os.md` file in your editor. Then, click the `Run Tests` button to go to the next lesson.
+
+<details>
+  <summary>Tidbit</summary>
+
+Did you know the "OS" in freeCodeCampOS stands for "Open Source"?
+
+</details>
+```
+
+### --hints--
+
+#### 0
+
+Notice the description can accept any text, and will parse it as GFM (GitHub Flavored Markdown).
+
+### --tests--
+
+You should add the provided text to the `learn-freecodecamp-os.md` file.
+
+```js
+const { readFile } = await import('fs/promises');
+const file = await readFile(
+  join(
+    project.dashedName,
+    'curriculum/locales/english/learn-freecodecamp-os.md'
+  ),
+  'utf-8'
+);
+assert.include(
+  file,
+  `Welcome to freeCodeCampOS! 👋
+
+This example project will walk you through some of the features of freeCodeCampOS, and how to use them for your own course.
+
+Start by opening the \`curriculum/locales/english/learn-freecodecamp-os.md\` file in your editor. Then, click the \`Run Tests\` button to go to the next lesson.
+
+<details>
+  <summary>Tidbit</summary>
+
+Did you know the "OS" in freeCodeCampOS stands for "Open Source"?
+
+</details>`
+);
+```
+
+## 23
+
+### --description--
+
+Also, there should be a warning about the first lesson not having any tests.
+
+Add a test by placing the 3rd-level heading `### --tests--` within the 2nd-level heading `## 0`:
+
+````txt
+  ### --tests--
+
+  This is a test that will always fail.
+
+  ```js
+  assert.fail(
+    'This is a custom test assertion message. Click the > button to go to the next lesson'
+  );
+  ```
+````
+
+### --hints--
+
+#### 0
+
+Tests take the form:
+
+````text
+  ### --tests--
+
+  <TEST_TEXT>
+
+  ```js
+  <TEST_CODE>
+  ```
+
+  <SECOND_TEST_TEXT>
+
+  ```js
+  <TEST_CODE>
+  ```
+````
+
+#### 1
+
+The test code is evaluted in a Nodejs context. So, any Nodejs code is valid.
+
+#### 2
+
+Notice the use of `assert.fail` in the test code. There are many global variables available to you in the test code.
+
+Read the docs to learn more.
+
+## --tests--
+
+You should add the provided test to the `learn-freecodecamp-os.md` file.
+
+```js
+const { readFile } = await import('fs/promises');
+const file = await readFile(
+  join(
+    project.dashedName,
+    'curriculum/locales/english/learn-freecodecamp-os.md'
+  ),
+  'utf-8'
+);
+assert.include(
+  file,
+  `### --tests--
+
+This is a test that will always fail.
+
+\`\`\`js
+assert.fail(
+  'This is a custom test assertion message. Click the > button to go to the next lesson'
+);
+\`\`\``
+);
+```
+
+## 24
+
+### --description--
+
+## 25
 
 ### --description--
 
@@ -438,27 +897,27 @@ assert(file.includes('### --description--'));
 
 You have learnt how to:
 
-- install freecodecamp-os
-- add required files
+- [x] install freecodecamp-os
+- [x] add required files
 - use the Markdown syntax to:
-  - add a title
-  - add a lesson
-  - add a description
-  - add tests
-  - add seed
-  - add hints
-- use the `tooling` feature
-- use the reset feature
-- use the `terminal` feature
-- use the various project flags:
-  - `isPublic`
-  - `isIntegrated`
-  - `blockingTests`
-  - `breakOnFailure`
-  - `runTestsOnWatch`
-  - `seedEveryLesson`
-  - `isResetEnabled`
-- ignore directories for the hot-reload feature
+  - [x] add a title
+  - [x] add a lesson
+  - [x] add a description
+  - [x] add tests
+  - [ ] add seed
+  - [ ] add hints
+- [ ] use the `tooling` feature
+- [ ] use the reset feature
+- [ ] use the `terminal` feature
+- [ ] use the various project flags:
+  - [ ] `isPublic`
+  - [ ] `isIntegrated`
+  - [ ] `blockingTests`
+  - [ ] `breakOnFailure`
+  - [ ] `runTestsOnWatch`
+  - [ ] `seedEveryLesson`
+  - [ ] `isResetEnabled`
+- [ ] ignore directories for the hot-reload feature
 
 ### --tests--
 
