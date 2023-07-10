@@ -125,8 +125,10 @@ async function handleRequestData(ws, data) {
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
 
-const server = app.listen(8080, () => {
-  logover.info('Listening on port 8080');
+const PORT = process.env.FCC_OS_PORT || 8080;
+
+const server = app.listen(PORT, () => {
+  logover.info(`Server listening on port ${PORT}`);
 });
 
 const handle = {

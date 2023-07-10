@@ -80,7 +80,8 @@ module.exports = {
     new DefinePlugin({
       'process.env.GITPOD_WORKSPACE_URL': JSON.stringify(
         process.env.GITPOD_WORKSPACE_URL
-      )
+      ),
+      'process.env.FCC_OS_PORT': JSON.stringify(process.env.FCC_OS_PORT)
     })
   ]
 };

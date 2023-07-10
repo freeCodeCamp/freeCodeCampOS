@@ -16,12 +16,14 @@ import './styles.css';
 import { E44o5 } from './components/error';
 
 let socket: WebSocket;
+const PORT = process.env.FCC_OS_PORT || 8080;
 if (process.env.GITPOD_WORKSPACE_URL) {
   socket = new WebSocket(
-    process.env.GITPOD_WORKSPACE_URL.replace(/^https:\/\//, 'wss://8080-') + ''
+    process.env.GITPOD_WORKSPACE_URL.replace(/^https:\/\//, `wss://${PORT}-`) +
+      ''
   );
 } else {
-  socket = new WebSocket('ws://localhost:8080');
+  socket = new WebSocket(`ws://localhost:${PORT}`);
 }
 
 const App = () => {
