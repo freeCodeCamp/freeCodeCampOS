@@ -293,6 +293,23 @@ delete global.__projects;
 
 ### --description--
 
+Every project defined in the `projects.json` file needs a directory in the root of the workspace with the same name as the project `dashedName`.
+
+Create a directory within `learn-freecodecamp-os/` that matches the `dashedName` of the project in `learn-freecodecamp-os/config/projects.json`.
+
+### --tests--
+
+You should have a `learn-freecodecamp-os/learn-freecodecamp-os/` directory.
+
+```js
+const { access, constants } = await import('fs/promises');
+await access(join(project.dashedName, 'learn-freecodecamp-os'));
+```
+
+## 10
+
+### --description--
+
 Create a `curriculum/locales/english/` directory to hold your course content.
 
 <details>
