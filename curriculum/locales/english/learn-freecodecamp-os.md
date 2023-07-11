@@ -306,7 +306,7 @@ const { access, constants } = await import('fs/promises');
 await access(join(project.dashedName, 'learn-freecodecamp-os'));
 ```
 
-## 10
+## 11
 
 ### --description--
 
@@ -355,7 +355,7 @@ try {
 }
 ```
 
-## 11
+## 12
 
 ### --description--
 
@@ -379,7 +379,7 @@ try {
 }
 ```
 
-## 12
+## 13
 
 ### --description--
 
@@ -405,7 +405,7 @@ const file = await readFile(
 assert(file.startsWith(), '# freeCodeCampOS Title');
 ```
 
-## 13
+## 14
 
 ### --description--
 
@@ -447,7 +447,7 @@ const file = await readFile(
 assert(file.includes('\n### --description--'));
 ```
 
-## 14
+## 15
 
 ### --description--
 
@@ -473,7 +473,7 @@ const file = await readFile(
 assert(file.includes('\n## --fcc-end--'));
 ```
 
-## 15
+## 16
 
 ### --description--
 
@@ -492,7 +492,7 @@ try {
 }
 ```
 
-## 16
+## 17
 
 ### --description--
 
@@ -669,7 +669,7 @@ global.__conf = __conf;
 delete global.__conf;
 ```
 
-## 17
+## 18
 
 ### --description--
 
@@ -683,7 +683,7 @@ The `projects.json` property should be a relative path to the `projects.json` fi
 assert.equal(__conf.config['projects.json'], 'config/projects.json');
 ```
 
-## 18
+## 19
 
 ### --description--
 
@@ -697,7 +697,7 @@ The `state.json` property should be a relative path to the `state.json` file.
 assert.equal(__conf.config['state.json'], 'config/state.json');
 ```
 
-## 19
+## 20
 
 ### --description--
 
@@ -716,12 +716,14 @@ assert.include(
 );
 ```
 
-## 20
+## 21
 
-Those are all the pre-requisites to start the development server:
+### --description--
+
+Those are all the pre-requisites to start the development server. Within the `learn-freecodecamp-os/` directory, run:
 
 ```bash
-npm run develop
+NODE_ENV=development node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js
 ```
 
 ### --tests--
@@ -732,7 +734,7 @@ The development server should be running.
 await fetch('http://localhost:8080');
 ```
 
-## 21
+## 22
 
 ### --description--
 
@@ -764,7 +766,7 @@ This test always passes.
 assert(true);
 ```
 
-## 22
+## 23
 
 ### --description--
 
@@ -823,7 +825,7 @@ Did you know the "OS" in freeCodeCampOS stands for "Open Source"?
 );
 ```
 
-## 23
+## 24
 
 ### --description--
 
@@ -871,7 +873,7 @@ The test code is evaluted in a Nodejs context. So, any Nodejs code is valid.
 
 #### 2
 
-Notice the use of `assert.fail` in the test code. There are many global variables available to you in the test code.
+Notice the use of `assert.fail` in the test code. There are many globals available to you in the test code.
 
 Read the docs to learn more.
 
@@ -902,11 +904,47 @@ assert.fail(
 );
 ```
 
-## 24
+## 25
 
 ### --description--
 
-## 25
+To run the tests, you could click the `Run Tests` button again, but there is a better way. A project can be configured to run tests on file change with the `runTestsOnWatch` flag.
+
+Add `"runTestsOnWatch": true` to the project in the `projects.json` file.
+
+### --tests--
+
+The `projects.json` file should contain the `runTestsOnWatch` property.
+
+```js
+assert.hasAllKeys(__projects[0], ['runTestsOnWatch']);
+```
+
+The `runTestsOnWatch` property should have a value of `true`.
+
+```js
+assert.isTrue(__projects[0].runTestsOnWatch);
+```
+
+### --before-all--
+
+```js
+const { readFile } = await import('fs/promises');
+const file = await readFile(
+  join(project.dashedName, 'config/projects.json'),
+  'utf-8'
+);
+const __projects = JSON.parse(file);
+global.__projects = __projects;
+```
+
+### --after-all--
+
+```js
+delete global.__projects;
+```
+
+## 26
 
 ### --description--
 
@@ -931,7 +969,7 @@ You have learnt how to:
   - [ ] `isIntegrated`
   - [ ] `blockingTests`
   - [ ] `breakOnFailure`
-  - [ ] `runTestsOnWatch`
+  - [x] `runTestsOnWatch`
   - [ ] `seedEveryLesson`
   - [ ] `isResetEnabled`
 - [ ] ignore directories for the hot-reload feature
