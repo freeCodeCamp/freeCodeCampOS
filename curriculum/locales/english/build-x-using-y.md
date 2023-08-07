@@ -12,6 +12,10 @@ fn main() {
 }
 ```
 
+Here is an image:
+
+<img src="../../images/fcc_primary_large.png" width="300px" />
+
 ### --tests--
 
 First test using Chai.js `assert`.

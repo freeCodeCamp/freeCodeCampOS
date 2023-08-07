@@ -6,6 +6,7 @@
 
 - make `watcher` global
 - `process.env.FCC_OS_PORT || 8080` for server listen port
+- `config.client.static` to serve files (e.g. images) in client
 
 ### Change
 

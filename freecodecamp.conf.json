@@ -18,7 +18,7 @@
     "previews": [
       {
         "open": true,
-        "url": "http://localhost:8080",
+        "url": "http://localhost:8081",
         "showLoader": true,
         "timeout": 4000
       }
@@ -37,6 +37,9 @@
       "description": "Placeholder description",
       "faq-link": "https://freecodecamp.org",
       "faq-text": "Link to FAQ related to course"
+    },
+    "static": {
+      "/images": "./curriculum/images"
     }
   },
   "config": {

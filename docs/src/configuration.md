@@ -128,6 +128,7 @@ This configures files, terminals, and previews to open when the course is opened
 - `landing.description`: description of the course shown on the landing page - `string`
 - `landing.faq-link`: link to the FAQ page - `string`
 - `landing.faq-text`: text to display for the FAQ link - `string`
+- `static`: static resources to serve - `string | string[] | Record<string, string> | Record<string, string>[]`
 
 ````admonish example
 ```json
@@ -136,7 +137,8 @@ This configures files, terminals, and previews to open when the course is opened
     "assets": {
       "header": "./client/assets/header.png",
       "favicon": "./client/assets/favicon.ico"
-    }
+    },
+    "static": ["./curriculum/", { "/images": "./curriculum/images" }]
   }
 }
 ```
