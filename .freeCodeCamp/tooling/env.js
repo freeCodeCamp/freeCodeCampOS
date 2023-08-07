@@ -6,7 +6,20 @@ export const ROOT = process.env.INIT_CWD || process.cwd();
 
 export async function getConfig() {
   const config = await readFile(join(ROOT, 'freecodecamp.conf.json'), 'utf-8');
-  return JSON.parse(config);
+  const conf = JSON.parse(config);
+  const defaultConfig = {
+    curriculum: {
+      path: 'curriculum',
+      locales: {
+        english: 'curriculum/locales/english'
+      }
+    },
+    config: {
+      'projects.json': 'config/projects.json',
+      'state.json': 'config/state.json'
+    }
+  };
+  return { ...defaultConfig, ...conf };
 }
 
 export const freeCodeCampConfig = await getConfig();
