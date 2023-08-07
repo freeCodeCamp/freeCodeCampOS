@@ -964,6 +964,7 @@ You have learnt how to:
 - [ ] use the `tooling` feature
 - [ ] use the reset feature
 - [ ] use the `terminal` feature
+- [ ] use the `static` feature
 - [ ] use the various project flags:
   - [ ] `isPublic`
   - [ ] `isIntegrated`
