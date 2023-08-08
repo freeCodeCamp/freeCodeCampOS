@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.10.0] - 2023-08-08
+
+### Add
+
+- `config.client.static` to serve files (e.g. images) in client
+
 ## [1.9.2] - 2023-06-17
 
 ### Fix
