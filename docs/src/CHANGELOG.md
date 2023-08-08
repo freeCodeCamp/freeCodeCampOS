@@ -6,7 +6,6 @@
 
 - make `watcher` global
 - `process.env.FCC_OS_PORT || 8080` for server listen port
-- `config.client.static` to serve files (e.g. images) in client
 
 ### Change
 
@@ -37,6 +36,12 @@
 2. Change all lesson numbers to be zero-based (start at `0`)
 
 ## [1.8.5] - UNRELEASED
+
+## [1.10.0] - 2023-08-08
+
+### Add
+
+- `config.client.static` to serve files (e.g. images) in client
 
 ## [1.9.2] - 2023-06-17
 

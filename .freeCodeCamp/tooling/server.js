@@ -53,6 +53,26 @@ if (Array.isArray(staticDir)) {
   }
 }
 
+// Serve static dir(s)
+const staticDir = freeCodeCampConfig.client?.static;
+if (Array.isArray(staticDir)) {
+  for (const dir of staticDir) {
+    if (typeof dir === 'object') {
+      for (const [route, dir] of Object.entries(dir)) {
+        app.use(route, express.static(join(ROOT, dir)));
+      }
+    } else if (typeof dir === 'string') {
+      app.use(express.static(join(ROOT, dir)));
+    }
+  }
+} else if (typeof staticDir === 'string') {
+  app.use(express.static(join(ROOT, staticDir)));
+} else if (typeof staticDir === 'object') {
+  for (const [route, dir] of Object.entries(staticDir)) {
+    app.use(route, express.static(join(ROOT, dir)));
+  }
+}
+
 async function handleRunTests(ws, data) {
   const { currentProject } = await getState();
   await runTests(ws, currentProject);
