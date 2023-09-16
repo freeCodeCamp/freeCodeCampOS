@@ -26,7 +26,8 @@
 ### Update
 
 - dependency babel-loader to v9.1.2
-- dependency marked to v5.0.1
+- dependency marked to v9
+  - Markedjs had multiple major releases within 2 months
 - dependency typescript to v5.0.4
 - dependency webpack-cli to v5.1.1
 

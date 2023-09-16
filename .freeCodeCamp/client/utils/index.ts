@@ -14,11 +14,6 @@ marked.use(
   })
 );
 
-marked.use({
-  mangle: false,
-  headerIds: false
-});
-
 export function parseMarkdown(markdown: string) {
   return marked.parse(markdown, { gfm: true });
 }
