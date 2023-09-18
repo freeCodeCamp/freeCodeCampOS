@@ -22,6 +22,7 @@
 - start lessons at `0` instead of `1`
 - remove landing page topic (`h2`)
 - `config.path` is no longer required
+- Remove `postinstall` script
 
 ### Update
 
@@ -35,6 +36,7 @@
 
 1. Refactor tests to use Nodejs API instead of removed `__helpers` functions.
 2. Change all lesson numbers to be zero-based (start at `0`)
+3. Manually build client before running tooling server (`npm run build:client`)
 
 ## [1.8.5] - UNRELEASED
 
