@@ -1,9 +1,9 @@
-FROM gitpod/workspace-full:latest
+FROM gitpod/workspace-full:2023-09-17-06-15-08
 
 ARG REPO_NAME=freeCodeCampOS
-ARG HOMEDIR=/workspace/$REPO_NAME
+ARG WORKSPACE_DIR=/workspace/$REPO_NAME
 
-WORKDIR ${HOMEDIR}
+WORKDIR ${WORKSPACE_DIR}
 
 RUN bash -c 'VERSION="18" \
     && source $HOME/.nvm/nvm.sh && nvm install $VERSION \
@@ -12,4 +12,3 @@ RUN bash -c 'VERSION="18" \
 RUN echo "nvm use default &>/dev/null" >> ~/.bashrc.d/51-nvm-fix
 
 RUN sudo apt-get update && sudo apt-get upgrade -y
-ENV HOME=${HOMEDIR}
