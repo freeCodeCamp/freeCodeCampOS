@@ -120,11 +120,9 @@ PS1='\[[01;32m\]\u\[[00m\] \[[01;34m\]\w\[[00m\]$(__git_ps1 " (%s)") $ '
 
 for i in $(ls -A $HOME/.bashrc.d/); do source $HOME/.bashrc.d/$i; done
 
-. "$HOME/.cargo/env"
 
 # freeCodeCamp - Needed for most tests to work
-
-WD=~/freeCodeCampOS
+WD=/workspace/freeCodeCampOS
 
 PROMPT_COMMAND='>| $WD/.logs/.terminal-out.log && cat $WD/.logs/.temp.log >| $WD/.logs/.terminal-out.log && truncate -s 0 $WD/.logs/.temp.log; echo $PWD >> $WD/.logs/.cwd.log; history -a $WD/.logs/.bash_history.log; echo $PWD\$ $(history | tail -n 1) >> $WD/.logs/.history_cwd.log;'
 exec > >(tee -ia $WD/.logs/.temp.log) 2>&1
