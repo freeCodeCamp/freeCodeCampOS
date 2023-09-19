@@ -23,9 +23,10 @@ export const Heading = ({
     setTimeout(() => setAnim(''), 1000);
   }, [lessonNumber]);
 
-  const canGoBack = lessonNumber && lessonNumber > 0;
+  const lessonNumberExists = typeof lessonNumber !== 'undefined';
+  const canGoBack = lessonNumberExists && lessonNumber > 0;
   const canGoForward =
-    lessonNumber && numberOfLessons && lessonNumber < numberOfLessons - 1;
+    lessonNumberExists && numberOfLessons && lessonNumber < numberOfLessons - 1;
 
   return (
     <nav className='heading'>
@@ -41,7 +42,7 @@ export const Heading = ({
       )}
       <h1 id='project-heading' className={anim}>
         {title}
-        {lessonNumber && ' - Lesson ' + lessonNumber}
+        {lessonNumberExists && ' - Lesson ' + lessonNumber}
       </h1>
       {goToNextLesson && (
         <button

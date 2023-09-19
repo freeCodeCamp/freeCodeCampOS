@@ -6,6 +6,7 @@
 
 - make `watcher` global
 - `process.env.FCC_OS_PORT || 8080` for server listen port
+- working `hints`
 
 ### Change
 
@@ -37,6 +38,7 @@
 1. Refactor tests to use Nodejs API instead of removed `__helpers` functions.
 2. Change all lesson numbers to be zero-based (start at `0`)
 3. Manually build client before running tooling server (`npm run build:client`)
+   1. **Suggestion:** Add `cd ./node_modules/@freecodecamp/freecodecamp-os/ && npm run build:client` to `freecodecamp.conf.json > prepare`
 
 ## [1.8.5] - UNRELEASED
 

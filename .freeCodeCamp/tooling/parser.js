@@ -263,7 +263,7 @@ export async function getTotalLessons(file) {
  */
 function parseMarker(marker, lesson) {
   const mat = lesson.match(
-    new RegExp(`${marker}\n(((?!${NEXT_MARKER_REG}).)*\n?)`, 's')
+    new RegExp(`\n${marker}\n(((?!${NEXT_MARKER_REG}).)*\n?)`, 's')
   );
   return mat?.[1];
 }

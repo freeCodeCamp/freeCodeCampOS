@@ -774,7 +774,7 @@ The terminal should have a warning about the first lesson description being empt
 
 Fix this by adding the following text:
 
-```markdown
+```text
 Welcome to freeCodeCampOS! 👋
 
 This example project will walk you through some of the features of freeCodeCampOS, and how to use them for your own course.
@@ -877,7 +877,7 @@ Notice the use of `assert.fail` in the test code. There are many globals availab
 
 Read the docs to learn more.
 
-## --tests--
+### --tests--
 
 You should add the provided test to the `learn-freecodecamp-os.md` file.
 
