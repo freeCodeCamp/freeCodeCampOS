@@ -270,3 +270,9 @@ Currently, `english` is a required locale, and is used as the default.
 ```admonish warning
 Resetting a step removes all untracked files from the project directory. To prevent this for specific files, add them to a boilerplate `.gitignore` file, or the one in root.
 ```
+
+## Environment
+
+### `FCC_OS_PORT`
+
+By default, the server and client communicate over port `8080`. If this is undesirable, the `FCC_OS_PORT` environment variable can be set.
