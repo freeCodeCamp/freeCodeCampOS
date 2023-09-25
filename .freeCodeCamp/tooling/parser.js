@@ -154,7 +154,7 @@ export function getLessonSeed(lesson) {
 export function getLessonHints(lesson) {
   const hints = parseMarker(HINTS_MARKER, lesson);
   const hintsArr = hints?.split(/\n#### \d+/);
-  return hintsArr?.filter(Boolean).map(h => h.trim()) ?? [];
+  return hintsArr?.map(h => h.trim()).filter(Boolean) ?? [];
 }
 
 /**
@@ -260,10 +260,16 @@ export async function getTotalLessons(file) {
  * @param {string} marker
  * @param {string} lesson
  * @returns {string | undefined} content or `undefined`
+ *
+ * **NOTE:** Immutably prepends lesson with `\n` if one does not already exist
  */
 function parseMarker(marker, lesson) {
-  const mat = lesson.match(
-    new RegExp(`\n${marker}\n(((?!${NEXT_MARKER_REG}).)*\n?)`, 's')
+  // Lesson must start with a new line, for RegExp to work,
+  // and `\n` in RegExp cannot be removed, because it prevents
+  // markers from being matched **within** rendered Markdown
+  const lessonWithSlashN = lesson[0] === '\n' ? lesson : '\n' + lesson;
+  const mat = lessonWithSlashN.match(
+    new RegExp(`\n${marker}(((?!${NEXT_MARKER_REG}).)*\n?)`, 's')
   );
   return mat?.[1];
 }

@@ -28,12 +28,12 @@ const POOR_PATH = '.freeCodeCamp/tests/fixtures/valid-poor-format.md';
 try {
   const projectTitle = await getProjectTitle(EXPECTED_PATH);
   assert.deepEqual(projectTitle, 'Title - Project');
-  const lesson = await getLessonFromFile(EXPECTED_PATH);
+  const lesson = await getLessonFromFile(EXPECTED_PATH, 0);
 
   const lessonDescription = getLessonDescription(lesson);
   assert.equal(
     lessonDescription,
-    '\nSome description.\n\nMaybe some code:\n\n```js\nconst a = 1;\n// A comment at the end?\n```\n\n'
+    '\n\nSome description.\n\nMaybe some code:\n\n```js\nconst a = 1;\n// A comment at the end?\n```\n\n'
   );
 
   const lessonTextsAndTests = getLessonTextsAndTests(lesson);
@@ -85,12 +85,12 @@ try {
 try {
   const projectTitle = await getProjectTitle(POOR_PATH);
   assert.deepEqual(projectTitle, 'Title - Project');
-  const lesson = await getLessonFromFile(POOR_PATH);
+  const lesson = await getLessonFromFile(POOR_PATH, 0);
 
   const lessonDescription = getLessonDescription(lesson);
   assert.equal(
     lessonDescription,
-    'This description has no spaces between the heading.\n```rs\n\n//Same goes for this code.\nlet mut a = 1;\n// comment\n```\n'
+    '\nThis description has no spaces between the heading.\n```rs\n\n//Same goes for this code.\nlet mut a = 1;\n// comment\n```\n'
   );
 
   const lessonTextsAndTests = getLessonTextsAndTests(lesson);
