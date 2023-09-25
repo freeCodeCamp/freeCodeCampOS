@@ -1,7 +1,6 @@
 const path = require('path');
 const { DefinePlugin } = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
 module.exports = {
   entry: path.join(__dirname, 'client/index.tsx'),
   devtool: 'inline-source-map',
@@ -12,7 +11,7 @@ module.exports = {
   },
   watch: process.env.NODE_ENV === 'development',
   watchOptions: {
-    ignored: ['**/node_modules', 'config']
+    ignored: ['**/node_modules', '**/config']
   },
   module: {
     rules: [
@@ -56,7 +55,7 @@ module.exports = {
       },
       {
         test: /\.(jpg|jpeg|png|gif|mp3|svg)$/,
-        use: ['file-loader']
+        type: 'asset/resource'
       }
     ]
   },
@@ -81,7 +80,8 @@ module.exports = {
     new DefinePlugin({
       'process.env.GITPOD_WORKSPACE_URL': JSON.stringify(
         process.env.GITPOD_WORKSPACE_URL
-      )
+      ),
+      'process.env.FCC_OS_PORT': JSON.stringify(process.env.FCC_OS_PORT)
     })
   ]
 };

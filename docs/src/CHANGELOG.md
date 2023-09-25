@@ -1,6 +1,46 @@
 # Changelog
 
-## [Unreleased]
+## [2.0.0] - UNRELEASED
+
+### Add
+
+- make `watcher` global
+- `process.env.FCC_OS_PORT || 8080` for server listen port
+- working `hints`
+
+### Change
+
+- remove `__helpers.makeDirectory`
+- remove `__helpers.runCommand`
+- remove `__helpers.writeJsonFile`
+- remove `__helpers.getDirectory`
+- remove `__helpers.getFile`
+- remove `__helpers.getJsonFile`
+- remove `__helpers.copyDirectory`
+- remove `__helpers.copyProjectFiles`
+- remove `__helpers.fileExists`
+- update `controlWrapper` to match documented API
+- start lessons at `0` instead of `1`
+- remove landing page topic (`h2`)
+- `config.path` is no longer required
+- Remove `postinstall` script
+
+### Update
+
+- dependency babel-loader to v9.1.2
+- dependency marked to v9
+  - Markedjs had multiple major releases within 2 months
+- dependency typescript to v5.0.4
+- dependency webpack-cli to v5.1.1
+
+### Migration Guide
+
+1. Refactor tests to use Nodejs API instead of removed `__helpers` functions.
+2. Change all lesson numbers to be zero-based (start at `0`)
+3. Manually build client before running tooling server (`npm run build:client`)
+   1. **Suggestion:** Add `cd ./node_modules/@freecodecamp/freecodecamp-os/ && npm run build:client` to `freecodecamp.conf.json > prepare`
+
+## [1.8.5] - UNRELEASED
 
 ## [1.10.0] - 2023-08-08
 
@@ -29,8 +69,14 @@
 
 ### Update
 
-- dependency @types/react to v18.0.38
-- dependency @types/node to v18.15.13
+- dependency webpack-dev-server to v4.15.0
+- dependency @types/react to v18.2.6
+- dependency @types/marked to v4.3.0
+- react monorepo
+- dependency @types/node to v18.16.5
+- dependency @babel/core to v7.21.8
+- babel monorepo to v7.21.5
+- pin dependencies (#241)
 
 ## [1.9.0] - 2023-05-20
 
@@ -59,10 +105,6 @@
 - dependency webpack-dev-server to v4.13.3
 - dependency html-webpack-plugin to v5.5.1
 - dependency @types/react to v18.0.35
-- dependency @types/react to v18.0.33
-- dependency @types/react to v18.0.32
-- dependency webpack-dev-server to v4.13.2
-- dependency @types/react to v18.0.31
 - dependency @types/node to v18.15.11
 - babel monorepo to v7.21.4
 

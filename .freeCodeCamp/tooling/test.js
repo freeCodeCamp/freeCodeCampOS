@@ -1,14 +1,15 @@
 // These are used in the local scope of the `eval` in `runTests`
-import fs from 'fs';
-import { assert, AssertionError } from 'chai';
+import { assert, AssertionError, expect, config as chaiConfig } from 'chai';
 import __helpers_c from './test-utils.js';
+import { watcher } from './hot-reload.js';
 
 import {
-  getLessonHintsAndTests,
+  getLessonTextsAndTests,
   getLessonFromFile,
   getBeforeAll,
   getBeforeEach,
-  getAfterAll
+  getAfterAll,
+  getLessonHints
 } from './parser.js';
 
 import {
@@ -25,7 +26,8 @@ import {
   updateTests,
   updateConsole,
   updateHints,
-  handleProjectFinish
+  handleProjectFinish,
+  resetBottomPanel
 } from './client-socks.js';
 import { join } from 'path';
 import { logover } from './logger.js';
@@ -72,8 +74,10 @@ export async function runTests(ws, projectDashedName) {
     }
     // toggleLoaderAnimation(ws);
 
-    const hintsAndTestsArr = getLessonHintsAndTests(lesson);
-    testsState = hintsAndTestsArr.reduce((acc, curr, i) => {
+    const hints = getLessonHints(lesson);
+
+    const textsAndTestsArr = getLessonTextsAndTests(lesson);
+    testsState = textsAndTestsArr.reduce((acc, curr, i) => {
       return [
         ...acc,
         {
@@ -87,7 +91,7 @@ export async function runTests(ws, projectDashedName) {
 
     updateTests(ws, testsState);
     updateConsole(ws, '');
-    const testPromises = hintsAndTestsArr.map(([hint, testCode], i) => {
+    const testPromises = textsAndTestsArr.map(([text, testCode], i) => {
       return async () => {
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
@@ -110,7 +114,7 @@ export async function runTests(ws, projectDashedName) {
           updateTest(ws, testsState[i]);
         } catch (e) {
           if (!(e instanceof AssertionError)) {
-            logover.error(`Test #${i + 1}:`, e);
+            logover.error(`Test #${i}:`, e);
           }
 
           testsState[i].passed = false;
@@ -119,7 +123,7 @@ export async function runTests(ws, projectDashedName) {
 
           updateConsole(ws, consoleError);
           updateTest(ws, testsState[i]);
-          return Promise.reject(`- ${hint}\n`);
+          return Promise.reject(`- ${text}\n`);
         }
         return Promise.resolve();
       };
@@ -134,7 +138,6 @@ export async function runTests(ws, projectDashedName) {
             const val = await testPromise();
             results.push({ status: 'fulfilled', value: val });
           } catch (e) {
-            passed = false;
             results.push({ status: 'rejected', reason: e });
             if (project.breakOnFailure) {
               break;
@@ -143,34 +146,31 @@ export async function runTests(ws, projectDashedName) {
         }
       } else {
         results = await Promise.allSettled(testPromises.map(p => p()));
-        passed = results.every(r => r.status === 'fulfilled');
       }
+      passed = results.every(r => r.status === 'fulfilled');
 
       if (passed) {
-        if (project.isIntegrated || lessonNumber === project.numberOfLessons) {
+        if (
+          project.isIntegrated ||
+          lessonNumber === project.numberOfLessons - 1
+        ) {
           await setProjectConfig(project.dashedName, {
             completedDate: Date.now()
           });
+          resetBottomPanel(ws);
           handleProjectFinish(ws);
         } else {
           await setProjectConfig(project.dashedName, {
             currentLesson: lessonNumber + 1
           });
           await runLesson(ws, projectDashedName);
-          updateHints(ws, '');
         }
       } else {
-        updateHints(
-          ws,
-          results
-            .filter(r => r.status === 'rejected')
-            .map(r => r.value)
-            .join('\n')
-        );
+        updateHints(ws, hints);
       }
     } catch (e) {
       // TODO: This should not ever run...
-      updateHints(ws, e);
+      updateHints(ws, hints);
     } finally {
       if (afterAll) {
         try {
@@ -187,6 +187,6 @@ export async function runTests(ws, projectDashedName) {
     logover.error('Test Error: ');
     logover.error(e);
   } finally {
-    updateTests(ws, testsState);
+    // updateTests(ws, testsState);
   }
 }

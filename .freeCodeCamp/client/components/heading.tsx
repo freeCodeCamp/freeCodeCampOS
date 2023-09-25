@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { F } from '../types';
 
 interface HeadingProps {
-  topic: string;
   title: string;
   lessonNumber?: number;
   numberOfLessons?: number;
@@ -11,7 +10,6 @@ interface HeadingProps {
 }
 
 export const Heading = ({
-  topic,
   title,
   lessonNumber,
   numberOfLessons,
@@ -25,9 +23,10 @@ export const Heading = ({
     setTimeout(() => setAnim(''), 1000);
   }, [lessonNumber]);
 
-  const canGoBack = lessonNumber && lessonNumber > 1;
+  const lessonNumberExists = typeof lessonNumber !== 'undefined';
+  const canGoBack = lessonNumberExists && lessonNumber > 0;
   const canGoForward =
-    lessonNumber && numberOfLessons && lessonNumber < numberOfLessons;
+    lessonNumberExists && numberOfLessons && lessonNumber < numberOfLessons - 1;
 
   return (
     <nav className='heading'>
@@ -42,8 +41,8 @@ export const Heading = ({
         </button>
       )}
       <h1 id='project-heading' className={anim}>
-        {topic} - {title}
-        {lessonNumber && ' - Lesson ' + lessonNumber}
+        {title}
+        {lessonNumberExists && ' - Lesson ' + lessonNumber}
       </h1>
       {goToNextLesson && (
         <button

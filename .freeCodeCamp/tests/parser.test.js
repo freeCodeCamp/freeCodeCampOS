@@ -2,14 +2,15 @@ import {
   getProjectTitle,
   getLessonFromFile,
   getLessonDescription,
-  getLessonHintsAndTests,
+  getLessonTextsAndTests,
   getLessonSeed,
   getBeforeAll,
   getBeforeEach,
   getCommands,
   getFilesWithSeed,
   isForceFlag,
-  extractStringFromCode
+  extractStringFromCode,
+  getLessonHints
 } from '../tooling/parser.js';
 import { assert } from 'chai';
 import { Logger } from 'logover';
@@ -21,40 +22,46 @@ const logover = new Logger({
   timestamp: null
 });
 
-const EXPECTED_PATH = './tests/fixtures/expected-format.md';
-const POOR_PATH = './tests/fixtures/valid-poor-format.md';
+const EXPECTED_PATH = '.freeCodeCamp/tests/fixtures/expected-format.md';
+const POOR_PATH = '.freeCodeCamp/tests/fixtures/valid-poor-format.md';
 
 try {
   const projectTitle = await getProjectTitle(EXPECTED_PATH);
-  assert.deepEqual(projectTitle, {
-    projectTopic: 'Title',
-    currentProject: 'Project'
-  });
-  const lesson = await getLessonFromFile(EXPECTED_PATH);
+  assert.deepEqual(projectTitle, 'Title - Project');
+  const lesson = await getLessonFromFile(EXPECTED_PATH, 0);
 
   const lessonDescription = getLessonDescription(lesson);
   assert.equal(
     lessonDescription,
-    '\nSome description.\n\nMaybe some code:\n\n```js\nconst a = 1;\n// A comment at the end?\n```\n\n'
+    '\n\nSome description.\n\nMaybe some code:\n\n```js\nconst a = 1;\n// A comment at the end?\n```\n\n'
   );
 
-  const lessonHintsAndTests = getLessonHintsAndTests(lesson);
+  const lessonTextsAndTests = getLessonTextsAndTests(lesson);
 
-  assert.equal(lessonHintsAndTests[0][0], 'Test text with many words.');
+  assert.equal(lessonTextsAndTests[0][0], 'Test text with many words.');
   assert.equal(
-    lessonHintsAndTests[0][1],
+    lessonTextsAndTests[0][1],
     "// First test code\nconst a = 'test';\n"
   );
   assert.equal(
-    lessonHintsAndTests[1][0],
+    lessonTextsAndTests[1][0],
     'Second test text with `inline-code`.'
   );
   assert.equal(
-    lessonHintsAndTests[1][1],
+    lessonTextsAndTests[1][1],
     "const a = 'test2';\n// Second test code;\n"
   );
 
   const lessonSeed = getLessonSeed(lesson);
+
+  const lessonHints = getLessonHints(lesson);
+
+  assert.equal(lessonHints.length, 2);
+  assert.equal(lessonHints.at(0), 'Hint 1.');
+  assert.equal(
+    lessonHints.at(1),
+    'Hint 2, with multiple lines.\n\n```js\nconst a = 0;\n```'
+  );
 
   const beforeAll = getBeforeAll(lesson);
   assert.equal(beforeAll, "global.__beforeAll = 'before-all';\n");
@@ -77,31 +84,28 @@ try {
 
 try {
   const projectTitle = await getProjectTitle(POOR_PATH);
-  assert.deepEqual(projectTitle, {
-    projectTopic: 'Title',
-    currentProject: 'Project'
-  });
-  const lesson = await getLessonFromFile(POOR_PATH);
+  assert.deepEqual(projectTitle, 'Title - Project');
+  const lesson = await getLessonFromFile(POOR_PATH, 0);
 
   const lessonDescription = getLessonDescription(lesson);
   assert.equal(
     lessonDescription,
-    'This description has no spaces between the heading.\n```rs\n\n//Same goes for this code.\nlet mut a = 1;\n// comment\n```\n'
+    '\nThis description has no spaces between the heading.\n```rs\n\n//Same goes for this code.\nlet mut a = 1;\n// comment\n```\n'
   );
 
-  const lessonHintsAndTests = getLessonHintsAndTests(lesson);
+  const lessonTextsAndTests = getLessonTextsAndTests(lesson);
 
-  assert.equal(lessonHintsAndTests[0][0], 'Test text at top.');
+  assert.equal(lessonTextsAndTests[0][0], 'Test text at top.');
   assert.equal(
-    lessonHintsAndTests[0][1],
+    lessonTextsAndTests[0][1],
     '// First test no space\n// No code?\n\n'
   );
   assert.equal(
-    lessonHintsAndTests[1][0],
+    lessonTextsAndTests[1][0],
     'Second test text with `inline-code`.'
   );
   assert.equal(
-    lessonHintsAndTests[1][1],
+    lessonTextsAndTests[1][1],
     "// Too many spaces?\nconst a = 'test2';\n"
   );
 

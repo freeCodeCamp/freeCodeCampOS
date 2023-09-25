@@ -2,8 +2,8 @@
   "path": ".",
   "version": "0.1.0",
   "scripts": {
-    "develop-course": "NODE_ENV=development node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js",
-    "run-course": "NODE_ENV=production node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js",
+    "develop-course": "FCC_OS_PORT=8081 NODE_ENV=development npm run develop",
+    "run-course": "FCC_OS_PORT=8081 NODE_ENV=production && cd ./node_modules/@freecodecamp/freecodecamp-os/ && npm run build:client && node .freeCodeCamp/tooling/server.js",
     "test": {
       "functionName": "handleMessage",
       "arguments": [
@@ -18,7 +18,7 @@
     "previews": [
       {
         "open": true,
-        "url": "http://localhost:8080",
+        "url": "http://localhost:8081",
         "showLoader": true,
         "timeout": 4000
       }
@@ -37,6 +37,9 @@
       "description": "Placeholder description",
       "faq-link": "https://freecodecamp.org",
       "faq-text": "Link to FAQ related to course"
+    },
+    "static": {
+      "/images": "./curriculum/images"
     }
   },
   "config": {
@@ -55,7 +58,9 @@
       "/node_modules/",
       ".git",
       "/target/",
-      "/test-ledger/"
+      "/test-ledger/",
+      ".vscode",
+      ".freecodecamp.conf.json"
     ]
   },
   "tooling": {

@@ -4,10 +4,6 @@ The test utilities are exported/global objects available in the test runner. The
 
 Many of the exported functions are _convinience wrappers_ around Nodejs' `fs` and `child_process` modules. Specifically, they make use of the global `ROOT` variable to run the functions relative to the root of the workspace.
 
-```admonish attention
-Many of these functions are expected to be removed in future versions.
-```
-
 ## `controlWrapper`
 
 Wraps a function in an interval to retry until it does not throw or times out.
@@ -31,12 +27,6 @@ const cb = async () => {
 const result = await __helpers.controlWrapper(cb);
 ```
 
-## `copyDirectory`
-
-## `copyProjectFiles`
-
-## `fileExists`
-
 ## `getBashHistory`
 
 Get the `.logs/.bash_history.log` file contents
@@ -56,6 +46,10 @@ const bashHistory = await __helpers.getBashHistory();
 ## `getCommandOutput`
 
 Returns the output of a command called from the given path relative to the root of the workspace.
+
+```admonish danger title="Safety"
+Throws if path is not a valid POSIX/DOS path, and if promisified `exec` throws.
+```
 
 ```typescript
 function getCommandOutput(
@@ -83,12 +77,6 @@ function getCWD(): Promise<string>;
 ```javascript
 const cwd = await __helpers.getCWD();
 ```
-
-## `getDirectory`
-
-## `getFile`
-
-## `getJsonFile`
 
 ## `getLastCommand`
 
@@ -177,9 +165,3 @@ const { exportedFile } = await __helpers.importSansCache(
   'learn-x-by-building-y/index.js'
 );
 ```
-
-## `makeDirectory`
-
-## `runCommand`
-
-## `writeJsonFile`

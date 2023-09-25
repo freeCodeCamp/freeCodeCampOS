@@ -4,9 +4,6 @@ For the most part, this roadmap outlines todos for `freecodecamp-os`. If this ro
 
 ## Documentation
 
-- [ ] Configuring a course
-  - [ ] Required files for different features
-
 ## Features
 
 - [ ] Client option to cancel tests
@@ -14,3 +11,11 @@ For the most part, this roadmap outlines todos for `freecodecamp-os`. If this ro
 - [ ] Loader to show progress of "Reset Step"
 - [ ] Crowdin translation integration
   - Possibly, this will include UI to select available languages
+
+### Hooks
+
+- `challengeCompleted`
+
+- Campers get their own API Key (API generates token)
+  - Probably on browser
+-

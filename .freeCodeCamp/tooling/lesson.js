@@ -3,7 +3,7 @@ import { join } from 'path';
 import {
   getLessonFromFile,
   getLessonDescription,
-  getLessonHintsAndTests,
+  getLessonTextsAndTests,
   getProjectTitle,
   getLessonSeed,
   isForceFlag
@@ -13,7 +13,8 @@ import {
   updateProjectHeading,
   updateTests,
   updateProject,
-  updateError
+  updateError,
+  resetBottomPanel
 } from './client-socks.js';
 import { ROOT, getState, getProjectConfig, freeCodeCampConfig } from './env.js';
 import { logover } from './logger.js';
@@ -39,12 +40,13 @@ export async function runLesson(ws, projectDashedName) {
     const description = getLessonDescription(lesson);
 
     updateProject(ws, project);
+    resetBottomPanel(ws);
 
     if (!isIntegrated) {
-      const hintsAndTestsArr = getLessonHintsAndTests(lesson);
+      const textsAndTestsArr = getLessonTextsAndTests(lesson);
       updateTests(
         ws,
-        hintsAndTestsArr.reduce((acc, curr, i) => {
+        textsAndTestsArr.reduce((acc, curr, i) => {
           return [
             ...acc,
             { passed: false, testText: curr[0], testId: i, isLoading: false }

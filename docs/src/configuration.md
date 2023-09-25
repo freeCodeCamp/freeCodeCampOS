@@ -10,7 +10,6 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 
 ```json
 {
-  "path": ".",
   "version": "0.0.1",
   "scripts": {
     "develop-course": "",
@@ -28,7 +27,40 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 }
 ```
 
+````admonish example collapsible=true title="Minimum Usable Example"
+```json
+{
+  "version": "0.0.1",
+  "scripts": {
+    "develop-course": "NODE_ENV=development node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js",
+    "run-course": "NODE_ENV=production node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js"
+  },
+  "config": {
+    "projects.json": "./config/projects.json",
+    "state.json": "./config/state.json"
+  },
+  "curriculum": {
+    "locales": {
+      "english": "./curriculum/locales/english"
+    }
+  }
+}
+```
+````
+
 ### Optional Configuration (Features)
+
+#### `path`
+
+This is a string representing the relative path to the course directory from the root of the workspace.
+
+````admonish example
+```json
+{
+  "path": "./courses/my-course"
+}
+```
+````
 
 #### `prepare`
 
@@ -84,21 +116,10 @@ This configures files, terminals, and previews to open when the course is opened
 ```
 ````
 
-#### `bash`
+#### `bashrc`
 
-- `.bashrc`: path relative to the root of the course - `string`
-- `sourcerer.sh`: path relative to the root of the course - `string`
-
-````admonish example
-```json
-{
-  "bash": {
-    ".bashrc": "./bash/.bashrc",
-    "sourcerer.sh": "./bash/sourcerer.sh"
-  }
-}
-```
-````
+- `enabled`: whether or not source the `.bashrc` file - `boolean`
+- `path`: path relative to the root of the course - `string`
 
 #### `client`
 
@@ -116,9 +137,9 @@ This configures files, terminals, and previews to open when the course is opened
     "assets": {
       "header": "./client/assets/header.png",
       "favicon": "./client/assets/favicon.ico"
-    }
-  },
-  "static": ["./curriculum/", { "/images": "./curriculum/images" }]
+    },
+    "static": ["./curriculum/", { "/images": "./curriculum/images" }]
+  }
 }
 ```
 ````
@@ -154,6 +175,10 @@ This configures files, terminals, and previews to open when the course is opened
 }
 ```
 ````
+
+```admonish attention
+Currently, `english` is a required locale, and is used as the default.
+```
 
 #### `hotReload`
 
@@ -209,9 +234,7 @@ This configures files, terminals, and previews to open when the course is opened
 [
   {
     "id": 0, // Unique ID
-    "title": "<PROJECT_TITLE>",
-    "dashedName": "<PROJECT_DASHED_NAME>",
-    "description": "<PROJECT_DESCRIPTION>"
+    "dashedName": "<PROJECT_DASHED_NAME>"
   }
 ]
 ```
@@ -227,10 +250,10 @@ This configures files, terminals, and previews to open when the course is opened
     "dashedName": "learn-x-by-building-y",
     "description": "In this project, you'll learn X by building Y",
     "isIntegrated": false,
-    "isPublic": true,
+    "isPublic": false,
     "currentLesson": 1,
     "runTestsOnWatch": false,
-    "isResetEnabled": true,
+    "isResetEnabled": false,
     "numberOfLessons": 10,
     "seedEveryLesson": false,
     "blockingTests": false,
@@ -242,8 +265,14 @@ This configures files, terminals, and previews to open when the course is opened
 
 ## `.gitignore`
 
-### Retaining files when step is reset
+### Retaining Files When a Step is Reset
 
 ```admonish warning
 Resetting a step removes all untracked files from the project directory. To prevent this for specific files, add them to a boilerplate `.gitignore` file, or the one in root.
 ```
+
+## Environment
+
+### `FCC_OS_PORT`
+
+By default, the server and client communicate over port `8080`. If this is undesirable, the `FCC_OS_PORT` environment variable can be set.

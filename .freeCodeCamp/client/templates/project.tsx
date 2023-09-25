@@ -11,7 +11,6 @@ export interface ProjectProps {
   goToNextLesson: F<void, void>;
   goToPreviousLesson: F<void, void>;
   isLoading: boolean;
-  topic: string;
   lessonNumber: number;
   description: string;
   tests: TestType[];
@@ -27,7 +26,6 @@ export const Project = ({
   goToPreviousLesson,
   isLoading,
   project,
-  topic,
   lessonNumber,
   description,
   tests,
@@ -39,12 +37,11 @@ export const Project = ({
       <div className='container'>
         <Heading
           {...(project.isIntegrated
-            ? { topic, title: project.title }
+            ? { title: project.title }
             : {
                 goToNextLesson,
                 goToPreviousLesson,
                 numberOfLessons: project.numberOfLessons,
-                topic,
                 title: project.title,
                 lessonNumber
               })}

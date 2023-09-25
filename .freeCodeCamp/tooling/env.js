@@ -6,7 +6,20 @@ export const ROOT = process.env.INIT_CWD || process.cwd();
 
 export async function getConfig() {
   const config = await readFile(join(ROOT, 'freecodecamp.conf.json'), 'utf-8');
-  return JSON.parse(config);
+  const conf = JSON.parse(config);
+  const defaultConfig = {
+    curriculum: {
+      path: 'curriculum',
+      locales: {
+        english: 'curriculum/locales/english'
+      }
+    },
+    config: {
+      'projects.json': 'config/projects.json',
+      'state.json': 'config/state.json'
+    }
+  };
+  return { ...defaultConfig, ...conf };
 }
 
 export const freeCodeCampConfig = await getConfig();
@@ -17,10 +30,10 @@ export async function getState() {
     locale: 'english',
     lastSeed: {
       projectDashedName: null,
-      // All lessons start at 1, but the logic for whether to seed a lesson
+      // All lessons start at 0, but the logic for whether to seed a lesson
       // or not is based on the current lesson matching the last seeded lesson
-      // So, to ensure the first lesson is seeded, this is 0
-      lessonNumber: 0
+      // So, to ensure the first lesson is seeded, this is -1
+      lessonNumber: -1
     }
   };
   try {
@@ -65,9 +78,9 @@ export async function getProjectConfig(project) {
 
   const defaultConfig = {
     testPollingRate: 333,
-    currentLesson: 1,
+    currentLesson: 0,
     runTestsOnWatch: false,
-    lastKnownLessonWithHash: 1,
+    lastKnownLessonWithHash: 0,
     seedEveryLesson: false,
     blockingTests: false,
     breakOnFailure: false,

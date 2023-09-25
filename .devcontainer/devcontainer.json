@@ -1,11 +1,18 @@
 {
-  "extensions": [
-    "dbaeumer.vscode-eslint",
-    "freeCodeCamp.freecodecamp-courses@1.6.0",
-    "freeCodeCamp.freecodecamp-dark-vscode-theme"
-  ],
-  "forwardPorts": [8080],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "freeCodeCamp.freecodecamp-courses@1.7.5",
+        "freeCodeCamp.freecodecamp-dark-vscode-theme"
+      ]
+    }
+  },
+  "forwardPorts": [8081],
   "workspaceFolder": "/workspace/freeCodeCampOS",
   "dockerFile": "../Dockerfile",
-  "context": ".."
+  "context": "..",
+  "updateRemoteUserUID": false,
+  "remoteUser": "gitpod",
+  "containerUser": "gitpod"
 }

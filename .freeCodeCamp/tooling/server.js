@@ -12,13 +12,7 @@ import {
 
 import { WebSocketServer } from 'ws';
 import { runLesson } from './lesson.js';
-import {
-  updateTests,
-  updateHints,
-  updateConsole,
-  updateProjects,
-  updateFreeCodeCampConfig
-} from './client-socks.js';
+import { updateProjects, updateFreeCodeCampConfig } from './client-socks.js';
 import { hotReload } from './hot-reload.js';
 import { hideAll, showFile, showAll } from './utils.js';
 import { join } from 'path';
@@ -37,11 +31,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const app = express();
 
-app.use(
-  express.static(
-    join(ROOT, 'node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/dist')
-  )
-);
+app.use(express.static(join('.freeCodeCamp/dist')));
 
 // Serve static dir(s)
 const staticDir = freeCodeCampConfig.client?.static;
@@ -62,7 +52,6 @@ if (Array.isArray(staticDir)) {
     app.use(route, express.static(join(ROOT, dir)));
   }
 }
-
 async function handleRunTests(ws, data) {
   const { currentProject } = await getState();
   await runTests(ws, currentProject);
@@ -80,12 +69,9 @@ async function handleGoToNextLesson(ws, data) {
   const project = await getProjectConfig(currentProject);
   const nextLesson = project.currentLesson + 1;
 
-  if (nextLesson > 0 && nextLesson <= project.numberOfLessons) {
+  if (nextLesson > 0 && nextLesson <= project.numberOfLessons - 1) {
     await setProjectConfig(currentProject, { currentLesson: nextLesson });
     await runLesson(ws, project.dashedName);
-    updateHints(ws, '');
-    updateTests(ws, []);
-    updateConsole(ws, '');
   }
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
@@ -95,12 +81,9 @@ async function handleGoToPreviousLesson(ws, data) {
   const project = await getProjectConfig(currentProject);
   const prevLesson = project.currentLesson - 1;
 
-  if (prevLesson > 0 && prevLesson <= project.numberOfLessons) {
+  if (prevLesson >= 0 && prevLesson <= project.numberOfLessons - 1) {
     await setProjectConfig(currentProject, { currentLesson: prevLesson });
     await runLesson(ws, project.dashedName);
-    updateTests(ws, []);
-    updateHints(ws, '');
-    updateConsole(ws, '');
   }
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
@@ -134,7 +117,6 @@ async function handleSelectProject(ws, data) {
   // for the case where the Camper has navigated to the landing page.
   await setState({ currentProject: selectedProject?.dashedName ?? null });
   if (!selectedProject && !data?.data?.id) {
-    logover.warn('Selected project does not exist: ', data);
     return ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
   }
 
@@ -162,8 +144,10 @@ async function handleRequestData(ws, data) {
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
 
-const server = app.listen(8080, () => {
-  logover.info('Listening on port 8080');
+const PORT = process.env.FCC_OS_PORT || 8080;
+
+const server = app.listen(PORT, () => {
+  logover.info(`Server listening on port ${PORT}`);
 });
 
 const handle = {

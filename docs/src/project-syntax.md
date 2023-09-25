@@ -4,14 +4,10 @@ This is the Markdown syntax used to create projects in the curriculum.
 
 ## Markers
 
-### `# <TITLE> - <SUB_TITLE>`
+### `# <TITLE>`
 
 ```markdown
-# <TITLE> - <SUB_TITLE>
-```
-
-```admonish note
-The project title requires the `TITLE` and `SUB_TITLE` to be separated by a dash (`-`).
+# <TITLE>
 ```
 
 ### `## <N>`
@@ -20,9 +16,13 @@ The project title requires the `TITLE` and `SUB_TITLE` to be separated by a dash
 ## <LESSON_NUMBER>
 ```
 
+```admonish note title=""
+Zero-based numbering, because of course
+```
+
 ````admonish example collapsible=true
 ```markdown
-## 1
+## 0
 ```
 ````
 
@@ -70,7 +70,7 @@ assert.equal(true, true);
 ### `### --seed--`
 
 ````markdown
-#### --seed--
+### --seed--
 
 #### --"<FILE_PATH>"--
 
@@ -103,6 +103,28 @@ npm install
 ````
 `````
 
+### `### --hints--`
+
+````markdown
+### --hints--
+
+#### 0
+
+Markdown-valid hint
+
+#### 1
+
+A second Markdown hint with code:
+
+```rust
+impl Developer for Camper {
+  fn can_code(&self) -> bool {
+    true
+  }
+}
+```
+````
+
 #### `#### --force--`
 
 Any seed marked with the force flag will overwrite the [`seedEveryLesson` configuration option](configuration.md#definitions-1). Specifically, the force flag causes the seed to run, if it were not going to, and it prevents the seed from running, if it were going to.
@@ -129,10 +151,11 @@ An EOF discriminator.
 
 ## Example
 
+`````admonish example collapsible=true title="<code>curriculum/locales/english/learn-x-by-building-y.md</code>"
 ````markdown
 # freeCodeCampOS - Learn X by Building Y
 
-## 1
+## 0
 
 ### --description--
 
@@ -176,7 +199,7 @@ await __helpers.javascriptTest(filePath, test, cb);
 // I am an example boilerplate file
 ```
 
-## 2
+## 1
 
 ### --description--
 
@@ -206,7 +229,7 @@ assert.equal(true, true);
 const a = 1;
 ```
 
-## 3
+## 2
 
 ### --description--
 
@@ -247,6 +270,21 @@ touch test/index.ts
 const test: string = 'test';
 ```
 
+## 3
+
+### --description--
+
+Description.
+
+### --tests--
+
+You should ...
+
+```js
+await new Promise(resolve => setTimeout(resolve, 2000));
+assert.equal(true, true);
+```
+
 ## 4
 
 ### --description--
@@ -270,21 +308,6 @@ Description.
 
 ### --tests--
 
-You should ...
-
-```js
-await new Promise(resolve => setTimeout(resolve, 2000));
-assert.equal(true, true);
-```
-
-## 6
-
-### --description--
-
-Description.
-
-### --tests--
-
 This test will pass after 5 seconds.
 
 ```js
@@ -294,3 +317,26 @@ assert.equal(1, 1);
 
 ## --fcc-end--
 ````
+`````
+
+It is also possible to add the seed for a lesson in a separate file named `<PROJECT_DASHED_NAME>-seed.md` within the `locales` directory.
+
+`````admonish example collapsible=true title="<code>curriculum/locales/english/learn-x-by-building-y-seed.md</code>"
+````markdown
+## 1
+
+### --seed--
+
+#### --"index.js"--
+
+```javascript
+// Seed in a separate file
+```
+
+## --fcc-end--
+````
+`````
+
+```admonish note
+If seed for the same lesson is included in both the project file and a seed file, the seed in the project file will be used.
+```

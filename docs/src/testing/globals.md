@@ -2,17 +2,23 @@
 
 None of the globals are within the `__helpers` module.
 
-### `chai.assert`
+### `chai`
 
-The `chai.assert` module: <https://www.chaijs.com/api/assert/>
+#### `assert`
 
-### `fs`
+The `assert` module: <https://www.chaijs.com/api/assert/>
 
-The `fs` module for file system operations: <https://nodejs.org/api/fs.html>
+#### `expect`
 
-### `join`
+The `expect` module: <https://www.chaijs.com/api/bdd/>
 
-The `join` function from the `path` module: <https://nodejs.org/api/path.html#pathjoinpaths>
+#### `config as chaiConfig`
+
+The `config` module: <https://www.chaijs.com/guide/styles/#configuration>
+
+#### `AssertionError`
+
+This is the `AssertionError` class from the `assert` module.
 
 ### `logover`
 
@@ -24,9 +30,20 @@ This is mostly useful for debugging, as any logs will be output in the freeCodeC
 
 The root of the workspace.
 
-### `import`
+### `watcher`
 
-As expected, the `import` function allows any other available module to be dynamically imported.
+The [Chokidar](https://www.npmjs.com/package/chokidar) `FSWatcher` instance.
+
+This is useful if you want to stop watching a directory during a test:
+
+````admonish example
+```javascript
+const DIRECTORY_PATH_RELATIVE_TO_ROOT = "example";
+watcher.unwatch(DIRECTORY_PATH_RELATIVE_TO_ROOT);
+// Do something
+watcher.add(DIRECTORY_PATH_RELATIVE_TO_ROOT);
+```
+````
 
 ## Collisions
 

@@ -1,7 +1,7 @@
 // Handles all the resetting of the projects
 
 import { join } from 'path';
-import { updateError } from './client-socks.js';
+import { resetBottomPanel, updateError } from './client-socks.js';
 import { getConfig, getProjectConfig, getState, ROOT } from './env.js';
 import { logover } from './logger.js';
 import { getLessonFromFile, getLessonSeed } from './parser.js';
@@ -12,6 +12,7 @@ import { runCommand, runLessonSeed } from './seed.js';
  * @param {WebSocket} ws
  */
 export async function resetProject(ws) {
+  resetBottomPanel(ws);
   // Get commands and handle file setting
   const { currentProject } = await getState();
   const freeCodeCampConfig = await getConfig();
@@ -23,7 +24,7 @@ export async function resetProject(ws) {
     project.dashedName + '.md'
   );
 
-  let lessonNumber = 1;
+  let lessonNumber = 0;
   try {
     let lesson = await getLessonFromFile(FILE, lessonNumber);
 

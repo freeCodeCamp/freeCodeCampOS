@@ -21,3 +21,4 @@ freecodecamp.conf.json
 renovate.json
 .freeCodeCamp/dist
 .freeCodeCamp/tests
+minimal-example
