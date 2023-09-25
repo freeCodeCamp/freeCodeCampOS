@@ -8,7 +8,7 @@
     "isPublic": true,
     "currentLesson": 0,
     "runTestsOnWatch": true,
-    "seedEveryLesson": true,
+    "seedEveryLesson": false,
     "isResetEnabled": true,
     "numberOfLessons": 5
   },

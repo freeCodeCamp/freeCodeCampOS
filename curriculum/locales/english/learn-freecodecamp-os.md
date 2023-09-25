@@ -63,7 +63,7 @@ const file = await readFile(
   'curriculum/locales/english/learn-freecodecamp-os.md',
   'utf-8'
 );
-assert.notInclude(file, 'Welcome to freeCodeCampOS!');
+assert.notInclude(file.slice(0, 100), 'Welcome to freeCodeCampOS!');
 ```
 
 I always fail 🙃
@@ -90,7 +90,7 @@ const file = await readFile(
   'curriculum/locales/english/learn-freecodecamp-os.md',
   'utf-8'
 );
-assert.include(file, 'Welcome to freeCodeCampOS!');
+assert.include(file.slice(0, 100), 'Welcome to freeCodeCampOS!');
 ```
 
 ### --seed--
@@ -98,7 +98,7 @@ assert.include(file, 'Welcome to freeCodeCampOS!');
 #### --cmd--
 
 ```bash
-# git restore curriculum/locales/english/learn-freecodecamp-os.md
+git restore curriculum/locales/english/learn-freecodecamp-os.md
 ```
 
 ## 4
