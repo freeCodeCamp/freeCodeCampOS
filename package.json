@@ -18,7 +18,7 @@
     "@babel/preset-env": "7.22.20",
     "@babel/preset-react": "7.22.15",
     "@babel/preset-typescript": "7.22.15",
-    "@types/marked": "5.0.1",
+    "@types/marked": "5.0.2",
     "@types/node": "18.17.19",
     "@types/prismjs": "1.26.1",
     "@types/react": "18.2.22",
