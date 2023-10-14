@@ -13,11 +13,11 @@
     "test": "node ./.freeCodeCamp/tests/parser.test.js"
   },
   "dependencies": {
-    "@babel/core": "7.23.0",
+    "@babel/core": "7.23.2",
     "@babel/plugin-syntax-import-assertions": "7.22.5",
-    "@babel/preset-env": "7.22.20",
+    "@babel/preset-env": "7.23.2",
     "@babel/preset-react": "7.22.15",
-    "@babel/preset-typescript": "7.23.0",
+    "@babel/preset-typescript": "7.23.2",
     "@types/marked": "5.0.2",
     "@types/node": "18.18.4",
     "@types/prismjs": "1.26.1",
