@@ -34,7 +34,7 @@
     "html-webpack-plugin": "5.5.3",
     "logover": "2.0.0",
     "marked": "9.1.6",
-    "marked-highlight": "2.0.6",
+    "marked-highlight": "2.0.7",
     "nodemon": "3.0.1",
     "os-browserify": "0.3.0",
     "path-browserify": "1.0.1",
