@@ -6,20 +6,22 @@ import { Output } from '../components/output';
 import './project.css';
 
 export interface ProjectProps {
-  runTests: F<void, void>;
-  resetProject: F<void, void>;
+  cancelTests: F<void, void>;
   goToNextLesson: F<void, void>;
   goToPreviousLesson: F<void, void>;
+  resetProject: F<void, void>;
+  runTests: F<void, void>;
+  cons: ConsoleError[];
+  description: string;
+  hints: string;
   isLoading: boolean;
   lessonNumber: number;
-  description: string;
-  tests: TestType[];
-  hints: string;
-  cons: ConsoleError[];
   project: ProjectI;
+  tests: TestType[];
 }
 
 export const Project = ({
+  cancelTests,
   runTests,
   resetProject,
   goToNextLesson,
@@ -51,11 +53,17 @@ export const Project = ({
 
         <Controls
           {...(project.isIntegrated
-            ? { runTests }
+            ? {
+                cancelTests,
+                runTests,
+                tests
+              }
             : {
+                cancelTests,
                 runTests,
                 resetProject,
-                isResetEnabled: project.isResetEnabled
+                isResetEnabled: project.isResetEnabled,
+                tests
               })}
         />
 

@@ -15,8 +15,8 @@ export enum Events {
   REQUEST_DATA = 'request-data',
   GO_TO_NEXT_LESSON = 'go-to-next-lesson',
   GO_TO_PREVIOUS_LESSON = 'go-to-previous-lesson',
-  SELECT_PROJECT = 'select-project'
-  // CANCEL_TESTS = 'cancel-tests'
+  SELECT_PROJECT = 'select-project',
+  CANCEL_TESTS = 'cancel-tests'
 }
 
 export type TestType = {

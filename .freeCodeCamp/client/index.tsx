@@ -179,6 +179,10 @@ const App = () => {
     sock(Events.GO_TO_PREVIOUS_LESSON);
   }
 
+  function cancelTests() {
+    sock(Events.CANCEL_TESTS);
+  }
+
   if (alertCamper) {
     return (
       <>
@@ -195,17 +199,18 @@ const App = () => {
         {project ? (
           <Project
             {...{
-              project,
-              lessonNumber,
-              description,
-              tests,
-              hints,
+              cancelTests,
               cons,
-              isLoading,
-              runTests,
-              resetProject,
+              description,
               goToNextLesson,
-              goToPreviousLesson
+              goToPreviousLesson,
+              hints,
+              isLoading,
+              lessonNumber,
+              project,
+              resetProject,
+              runTests,
+              tests
             }}
           />
         ) : (
