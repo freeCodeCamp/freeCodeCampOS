@@ -1,4 +1,26 @@
 import { AssertionError } from 'chai';
+import { logover } from '../logger.js';
+import { getProjectConfig, getState, setProjectConfig } from '../env.js';
+import { freeCodeCampConfig, ROOT } from '../env.js';
+import {
+  getLessonFromFile,
+  getBeforeAll,
+  getBeforeEach,
+  getAfterAll,
+  getLessonHints,
+  getLessonTextsAndTests
+} from '../parser.js';
+import {
+  updateTest,
+  updateTests,
+  updateConsole,
+  updateHints,
+  resetBottomPanel,
+  handleProjectFinish
+} from '../client-socks.js';
+import { runLesson } from '../lesson.js';
+import { join } from 'node:path';
+import { Worker } from 'node:worker_threads';
 
 /**
  * Run the given project's tests
@@ -55,12 +77,15 @@ export async function runTests(ws, projectDashedName) {
     // Create one worker for each test if non-blocking.
     // TODO: See if holding pool of workers is better.
     if (project.blockingTests) {
-      const worker = new Worker('./test-worker.js', {
-        name: 'blocking-worker'
-      });
+      const worker = new Worker(
+        join(ROOT, '.freeCodeCamp/tooling/tests', 'test-worker.js'),
+        {
+          name: 'blocking-worker'
+        }
+      );
 
       // Kill worker if client says, or test timesout
-      ws.on('message', async data => {
+      ws.on('message', async message => {
         const { event, data } = JSON.parse(message);
         if (event === 'cancel-tests') {
           worker.terminate();
@@ -68,11 +93,10 @@ export async function runTests(ws, projectDashedName) {
       });
       // When result is received back from worker, update the client state
       worker.on('message', message => {
-        const { passed, testId, testText, error } = message;
+        const { passed, testId, error } = message;
         if (error) {
           if (!(error instanceof AssertionError)) {
             logover.error(`Test #${testId}:`, error);
-            updateError(ws, error);
           }
 
           const consoleError = {
@@ -81,7 +105,10 @@ export async function runTests(ws, projectDashedName) {
           };
           updateConsole(ws, consoleError);
         }
-        updateTest(ws, { passed, testId, testText, isLoading: false });
+        testsState[testId].isLoading = false;
+        testsState[testId].passed = passed;
+
+        updateTest(ws, testsState[testId]);
       });
 
       for (let i = 0; i < textsAndTestsArr.length; i++) {
@@ -123,24 +150,29 @@ export async function runTests(ws, projectDashedName) {
           }
         }
 
-        const worker = new Worker('./test-worker.js', {
-          name: `worker-${i}`
-        });
+        const worker = new Worker(
+          join(ROOT, '.freeCodeCamp/tooling/tests', 'test-worker.js'),
+          {
+            name: `worker-${i}`
+          }
+        );
 
         // Kill worker if client says, or test timesout
-        ws.on('message', async data => {
+        ws.on('message', async message => {
           const { event, data } = JSON.parse(message);
           if (event === 'cancel-tests') {
             worker.terminate();
           }
         });
         // When result is received back from worker, update the client state
-        worker.on('message', message => {
+        worker.on('message', async message => {
           const { passed, testId, error } = message;
+          logover.debug(passed, testId, error);
+          testsState[testId].isLoading = false;
+          testsState[testId].passed = passed;
           if (error) {
             if (!(error instanceof AssertionError)) {
               logover.error(`Test #${testId}:`, error);
-              updateError(ws, error);
             }
 
             const consoleError = {
@@ -149,10 +181,15 @@ export async function runTests(ws, projectDashedName) {
             };
             updateConsole(ws, consoleError);
           }
-          updateTest(ws, {
-            passed,
-            testId,
-            testText: testsState[testId].testText
+          updateTest(ws, testsState[testId]);
+
+          await testsPassedCallback({
+            ws,
+            project,
+            hints,
+            lessonNumber,
+
+            testsState
           });
         });
 
@@ -171,10 +208,20 @@ export async function runTests(ws, projectDashedName) {
         logover.error(e);
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    logover.error('Test Error: ');
+    logover.error(e);
+  }
 }
 
-async function testPassedCallback(testId) {
+async function testsPassedCallback({
+  ws,
+  project,
+  hints,
+  lessonNumber,
+  testsState
+}) {
+  const passed = testsState.every(test => test.passed);
   if (passed) {
     if (project.isIntegrated || lessonNumber === project.numberOfLessons - 1) {
       await setProjectConfig(project.dashedName, {
@@ -186,7 +233,7 @@ async function testPassedCallback(testId) {
       await setProjectConfig(project.dashedName, {
         currentLesson: lessonNumber + 1
       });
-      await runLesson(ws, projectDashedName);
+      await runLesson(ws, project.dashedName);
     }
   } else {
     updateHints(ws, hints);

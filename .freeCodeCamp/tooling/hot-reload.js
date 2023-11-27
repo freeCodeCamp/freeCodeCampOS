@@ -2,7 +2,7 @@
 // and executing the command to run the tests for the next (current) lesson
 import { getState, getProjectConfig, ROOT, freeCodeCampConfig } from './env.js';
 import { runLesson } from './lesson.js';
-import { runTests } from './test.js';
+import { runTests } from './tests/main.js';
 import { watch } from 'chokidar';
 import { logover } from './logger.js';
 
