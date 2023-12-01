@@ -89,27 +89,24 @@ export async function runTests(ws, projectDashedName) {
         const { event, data } = JSON.parse(message);
         if (event === 'cancel-tests') {
           worker.terminate();
+          testsState.forEach(test => {
+            test.isLoading = false;
+            test.passed = false;
+          });
+          updateTests(ws, testsState);
+          updateConsole(ws, '');
+          await checkTestsCallback({
+            ws,
+            project,
+            hints,
+            lessonNumber,
+            testsState,
+            afterAll
+          });
         }
       });
       // When result is received back from worker, update the client state
-      worker.on('message', message => {
-        const { passed, testId, error } = message;
-        if (error) {
-          if (!(error instanceof AssertionError)) {
-            logover.error(`Test #${testId}:`, error);
-          }
-
-          const consoleError = {
-            ...testsState[testId],
-            error
-          };
-          updateConsole(ws, consoleError);
-        }
-        testsState[testId].isLoading = false;
-        testsState[testId].passed = passed;
-
-        updateTest(ws, testsState[testId]);
-      });
+      worker.on('message', workerMessage);
 
       for (let i = 0; i < textsAndTestsArr.length; i++) {
         const [text, testCode] = textsAndTestsArr[i];
@@ -133,10 +130,11 @@ export async function runTests(ws, projectDashedName) {
     } else {
       // Run tests in parallel, and in own worker threads
       for (let i = 0; i < textsAndTestsArr.length; i++) {
-        const [text, testCode] = textsAndTestsArr[i];
+        const [_text, testCode] = textsAndTestsArr[i];
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
 
+        // TODO: There might be gotchas with running beforeEach in parallel
         if (beforeEach) {
           try {
             logover.debug('Starting: --before-each-- hook');
@@ -162,51 +160,54 @@ export async function runTests(ws, projectDashedName) {
           const { event, data } = JSON.parse(message);
           if (event === 'cancel-tests') {
             worker.terminate();
+            testsState[i].isLoading = false;
+            testsState[i].passed = false;
+            updateTests(ws, testsState);
+            updateConsole(ws, '');
+
+            // Run afterAll even if tests are cancelled
+            await checkTestsCallback({
+              ws,
+              project,
+              hints,
+              lessonNumber,
+              testsState,
+              afterAll
+            });
           }
         });
         // When result is received back from worker, update the client state
-        worker.on('message', async message => {
-          const { passed, testId, error } = message;
-          logover.debug(passed, testId, error);
-          testsState[testId].isLoading = false;
-          testsState[testId].passed = passed;
-          if (error) {
-            if (!(error instanceof AssertionError)) {
-              logover.error(`Test #${testId}:`, error);
-            }
-
-            const consoleError = {
-              ...testsState[testId],
-              error
-            };
-            updateConsole(ws, consoleError);
-          }
-          updateTest(ws, testsState[testId]);
-
-          await testsPassedCallback({
-            ws,
-            project,
-            hints,
-            lessonNumber,
-
-            testsState
-          });
-        });
+        worker.on('message', workerMessage);
 
         worker.postMessage({ testCode, testId: i });
       }
     }
 
-    // Run afterAll hook
-    if (afterAll) {
-      try {
-        logover.debug('Starting: --after-all-- hook');
-        await eval(`(async () => {${afterAll}})()`);
-        logover.debug('Finished: --after-all-- hook');
-      } catch (e) {
-        logover.error('--after-all-- hook failed to run:');
-        logover.error(e);
+    async function workerMessage(message) {
+      const { passed, testId, error } = message;
+      testsState[testId].isLoading = false;
+      testsState[testId].passed = passed;
+      if (error) {
+        if (!(error instanceof AssertionError)) {
+          logover.error(`Test #${testId}:`, error);
+        }
+
+        const consoleError = {
+          ...testsState[testId],
+          error
+        };
+        updateConsole(ws, consoleError);
       }
+      updateTest(ws, testsState[testId]);
+
+      await checkTestsCallback({
+        ws,
+        project,
+        hints,
+        lessonNumber,
+        testsState,
+        afterAll
+      });
     }
   } catch (e) {
     logover.error('Test Error: ');
@@ -214,12 +215,13 @@ export async function runTests(ws, projectDashedName) {
   }
 }
 
-async function testsPassedCallback({
+async function checkTestsCallback({
   ws,
   project,
   hints,
   lessonNumber,
-  testsState
+  testsState,
+  afterAll
 }) {
   const passed = testsState.every(test => test.passed);
   if (passed) {
@@ -237,5 +239,19 @@ async function testsPassedCallback({
     }
   } else {
     updateHints(ws, hints);
+  }
+  const allTestsFinished = testsState.every(test => !test.isLoading);
+  if (allTestsFinished) {
+    // Run afterAll hook
+    if (afterAll) {
+      try {
+        logover.debug('Starting: --after-all-- hook');
+        await eval(`(async () => {${afterAll}})()`);
+        logover.debug('Finished: --after-all-- hook');
+      } catch (e) {
+        logover.error('--after-all-- hook failed to run:');
+        logover.error(e);
+      }
+    }
   }
 }
