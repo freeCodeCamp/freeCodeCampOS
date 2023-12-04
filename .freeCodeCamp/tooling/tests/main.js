@@ -7,6 +7,7 @@ import {
   getBeforeAll,
   getBeforeEach,
   getAfterAll,
+  getAfterEach,
   getLessonHints,
   getLessonTextsAndTests
 } from '../parser.js';
@@ -43,6 +44,7 @@ export async function runTests(ws, projectDashedName) {
     const beforeAll = getBeforeAll(lesson);
     const beforeEach = getBeforeEach(lesson);
     const afterAll = getAfterAll(lesson);
+    const afterEach = getAfterEach(lesson);
 
     if (beforeAll) {
       try {
@@ -80,7 +82,10 @@ export async function runTests(ws, projectDashedName) {
       const worker = new Worker(
         join(ROOT, '.freeCodeCamp/tooling/tests', 'test-worker.js'),
         {
-          name: 'blocking-worker'
+          name: 'blocking-worker',
+          workerData: {
+            beforeEach
+          }
         }
       );
 
@@ -113,18 +118,31 @@ export async function runTests(ws, projectDashedName) {
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
 
-        if (beforeEach) {
+        worker.on('exit', async exitCode => {
+          // If exit code == 1, worker was likely terminated
+          // Let client know test was cancelled
+          if (exitCode === 1) {
+            testsState[i].isLoading = false;
+            testsState[i].passed = false;
+            updateTests(ws, testsState);
+
+            const consoleError = {
+              ...testsState[i],
+              error
+            };
+            updateConsole(ws, consoleError);
+          }
+          // Run afterEach even if tests are cancelled
           try {
-            logover.debug('Starting: --before-each-- hook');
-            const _beforeEachOut = await eval(
-              `(async () => { ${beforeEach} })();`
+            const _afterEachOut = await eval(
+              `(async () => { ${afterEach} })();`
             );
-            logover.debug('Finished: --before-each-- hook');
           } catch (e) {
-            logover.error('--before-each-- hook failed to run:');
+            logover.error('--after-each-- hook failed to run:');
             logover.error(e);
           }
-        }
+        });
+
         worker.postMessage({ testCode, testId: i });
       }
     } else {
@@ -134,24 +152,13 @@ export async function runTests(ws, projectDashedName) {
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
 
-        // TODO: There might be gotchas with running beforeEach in parallel
-        if (beforeEach) {
-          try {
-            logover.debug('Starting: --before-each-- hook');
-            const _beforeEachOut = await eval(
-              `(async () => { ${beforeEach} })();`
-            );
-            logover.debug('Finished: --before-each-- hook');
-          } catch (e) {
-            logover.error('--before-each-- hook failed to run:');
-            logover.error(e);
-          }
-        }
-
         const worker = new Worker(
           join(ROOT, '.freeCodeCamp/tooling/tests', 'test-worker.js'),
           {
-            name: `worker-${i}`
+            name: `worker-${i}`,
+            workerData: {
+              beforeEach
+            }
           }
         );
 
@@ -178,6 +185,30 @@ export async function runTests(ws, projectDashedName) {
         });
         // When result is received back from worker, update the client state
         worker.on('message', workerMessage);
+        worker.on('exit', async exitCode => {
+          // If exit code == 1, worker was likely terminated
+          // Let client know test was cancelled
+          if (exitCode === 1) {
+            testsState[i].isLoading = false;
+            testsState[i].passed = false;
+            updateTests(ws, testsState);
+
+            const consoleError = {
+              ...testsState[i],
+              error
+            };
+            updateConsole(ws, consoleError);
+          }
+          // Run afterEach even if tests are cancelled
+          try {
+            const _afterEachOut = await eval(
+              `(async () => { ${afterEach} })();`
+            );
+          } catch (e) {
+            logover.error('--after-each-- hook failed to run:');
+            logover.error(e);
+          }
+        });
 
         worker.postMessage({ testCode, testId: i });
       }

@@ -1,6 +1,29 @@
 # Changelog
 
-## [2.0.0] - UNRELEASED
+## [2.1.0] - 2023-12-XX
+
+### Add
+
+- Worker threads to run tests in parallel
+- `### --after-each--` to run code after each test
+- `Cancel Tests` button that terminates all workers
+
+### Update
+
+- dependency @types/node to v18.18.13
+- dependency @types/react-dom to v18.2.17
+- dependency typescript to v5.3.2
+- dependency ts-loader to v9.5.1
+- dependency marked-highlight to v2.0.7
+- dependency marked to v9.1.6
+- babel monorepo to v7.23.3
+- dependency @types/prismjs to v1.26.3
+- dependency @types/react to v18.2.36
+- actions/setup-node digest to 1a4442c (#380)
+- dependency chai to v4.3.10
+- dependency @types/marked to v5.0.2
+
+## [2.0.0] - 2023-09-25
 
 ### Add
 
@@ -39,8 +62,6 @@
 2. Change all lesson numbers to be zero-based (start at `0`)
 3. Manually build client before running tooling server (`npm run build:client`)
    1. **Suggestion:** Add `cd ./node_modules/@freecodecamp/freecodecamp-os/ && npm run build:client` to `freecodecamp.conf.json > prepare`
-
-## [1.8.5] - UNRELEASED
 
 ## [1.10.0] - 2023-08-08
 

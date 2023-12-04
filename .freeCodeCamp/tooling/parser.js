@@ -13,6 +13,7 @@ const HINTS_MARKER = `### --hints--`;
 const BEFORE_ALL_MARKER = '### --before-all--';
 const AFTER_ALL_MARKER = '### --after-all--';
 const BEFORE_EACH_MARKER = '### --before-each--';
+const AFTER_EACH_MARKER = '### --after-each--';
 const NEXT_MARKER_REG = `\n###? --`;
 const CMD_MARKER = '#### --cmd--';
 const FILE_MARKER_REG = '(?<=#### --")[^"]+(?="--)';
@@ -191,6 +192,18 @@ export function getAfterAll(lesson) {
   if (!afterAll) return null;
   const afterAllCommand = extractStringFromCode(afterAll);
   return afterAllCommand ?? null;
+}
+
+/**
+ * Gets the command/script to run after running each lesson test
+ * @param {string} lesson - The lesson content
+ * @returns {string | null} The command to run after running each lesson test
+ */
+export function getAfterEach(lesson) {
+  const beforeEach = parseMarker(AFTER_EACH_MARKER, lesson);
+  if (!beforeEach) return null;
+  const beforeEachCommand = extractStringFromCode(beforeEach);
+  return beforeEachCommand ?? null;
 }
 
 /**
