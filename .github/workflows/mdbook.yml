@@ -38,7 +38,7 @@ jobs:
           cargo install --version ^1 mdbook-admonish
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@f156874f8191504dae5b037505266ed5dda6c382 # v3
+        uses: actions/configure-pages@b8130d9ab958b325bbde9786d62f2c97a9885a0e # v3
       - name: Build with mdBook
         run: cd docs && mdbook build
       - name: Check Expected Files
