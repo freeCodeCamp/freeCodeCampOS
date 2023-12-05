@@ -75,7 +75,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'client', 'index.html'),
-      favicon: path.join(__dirname, 'client', 'assets/fcc_primary_small.svg')
+      favicon: path.join(__dirname, 'client', '../curricularm/images/fcc_primary_large.png')
     }),
     new DefinePlugin({
       'process.env.GITPOD_WORKSPACE_URL': JSON.stringify(
