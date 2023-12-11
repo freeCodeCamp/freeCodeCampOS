@@ -38,6 +38,7 @@ Click the `Run Tests` button again. Then, click the `Console` tab in the bottom 
 This is a test that will always fail.
 
 ```js
+await new Promise(resolve => setTimeout(resolve, 5000));
 assert.fail(
   'This is a custom test assertion message. Click the > button to go to the next lesson'
 );
@@ -63,13 +64,23 @@ const file = await readFile(
   'curriculum/locales/english/learn-freecodecamp-os.md',
   'utf-8'
 );
+await new Promise(resolve => setTimeout(resolve, 5000));
 assert.notInclude(file.slice(0, 100), 'Welcome to freeCodeCampOS!');
 ```
 
 I always fail 🙃
 
 ```js
+await new Promise(resolve => setTimeout(resolve, 3000));
+console.log('Look! Worker stdout is printed in debug mode: ', __a);
+assert(__a == 1);
 assert.fail('Click the > button to go to the next lesson');
+```
+
+### --before-each--
+
+```js
+const __a = 1;
 ```
 
 ## 3
@@ -271,7 +282,7 @@ The `id` property should be `0`.
 assert.equal(__projects[0].id, 0);
 ```
 
-### --defore-all--
+### --before-each--
 
 ```js
 const { readFile } = await import('fs/promises');
@@ -280,13 +291,6 @@ const file = await readFile(
   'utf-8'
 );
 const __projects = JSON.parse(file);
-global.__projects = __projects;
-```
-
-### --after-all--
-
-```js
-delete global.__projects;
 ```
 
 ## 10
@@ -651,7 +655,7 @@ The `<LOCALE_DIR>` property should be a string.
 assert.isString(__conf.curriculum.locales['<LOCALE_DIR>']);
 ```
 
-### --before-all--
+### --before-each--
 
 ```js
 const { readFile } = await import('fs/promises');
@@ -660,13 +664,6 @@ const conf = await readFile(
   'utf-8'
 );
 const __conf = JSON.parse(conf);
-global.__conf = __conf;
-```
-
-### --after-all--
-
-```js
-delete global.__conf;
 ```
 
 ## 18
@@ -926,7 +923,7 @@ The `runTestsOnWatch` property should have a value of `true`.
 assert.isTrue(__projects[0].runTestsOnWatch);
 ```
 
-### --before-all--
+### --before-each--
 
 ```js
 const { readFile } = await import('fs/promises');
@@ -935,13 +932,6 @@ const file = await readFile(
   'utf-8'
 );
 const __projects = JSON.parse(file);
-global.__projects = __projects;
-```
-
-### --after-all--
-
-```js
-delete global.__projects;
 ```
 
 ## 26

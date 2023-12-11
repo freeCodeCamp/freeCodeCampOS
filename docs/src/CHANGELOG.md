@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.1.0] - 2023-12-XX
+## [2.1.0] - 2023-12-12
 
 ### Add
 
@@ -23,7 +23,7 @@
 - dependency chai to v4.3.10
 - dependency @types/marked to v5.0.2
 
-## [2.0.0] - 2023-09-25
+## [2.0.0 - deprecated] - 2023-09-25
 
 ### Add
 
@@ -47,6 +47,7 @@
 - remove landing page topic (`h2`)
 - `config.path` is no longer required
 - Remove `postinstall` script
+- Tests no longer have `--before-all--` context
 
 ### Update
 
@@ -62,6 +63,9 @@
 2. Change all lesson numbers to be zero-based (start at `0`)
 3. Manually build client before running tooling server (`npm run build:client`)
    1. **Suggestion:** Add `cd ./node_modules/@freecodecamp/freecodecamp-os/ && npm run build:client` to `freecodecamp.conf.json > prepare`
+4. Change `--before-all--` into `--before-each--`
+   1. Probably remove `--after-all--`
+   2. No longer use `global` in tests
 
 ## [1.10.0] - 2023-08-08
 

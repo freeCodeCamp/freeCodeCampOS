@@ -23,11 +23,16 @@ parentPort.on('message', async ({ testCode, testId }) => {
   let passed = false;
   let error = null;
   try {
-    const _beforeEachOut = await eval(`(async () => { ${beforeEach} })();`);
-    const _testOutput = await eval(`(async () => {${testCode}})();`);
+    const _eval_out = await eval(`(async () => {
+      ${beforeEach}
+      ${testCode}
+})();`);
     passed = true;
   } catch (e) {
-    error = e;
+    error = {};
+    error.text = e;
+    // Cannot pass `e` "as is", because classes cannot be passed between threads
+    error.type = e instanceof AssertionError ? 'AssertionError' : 'Error';
   }
   parentPort.postMessage({ passed, testId, error });
 });

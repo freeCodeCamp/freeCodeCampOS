@@ -79,69 +79,35 @@ export async function runTests(ws, projectDashedName) {
     // Create one worker for each test if non-blocking.
     // TODO: See if holding pool of workers is better.
     if (project.blockingTests) {
-      const worker = new Worker(
-        join(ROOT, '.freeCodeCamp/tooling/tests', 'test-worker.js'),
-        {
-          name: 'blocking-worker',
-          workerData: {
-            beforeEach
-          }
-        }
-      );
+      const worker = createWorker('blocking-worker', { beforeEach });
 
       // Kill worker if client says, or test timesout
       ws.on('message', async message => {
-        const { event, data } = JSON.parse(message);
-        if (event === 'cancel-tests') {
-          worker.terminate();
-          testsState.forEach(test => {
-            test.isLoading = false;
-            test.passed = false;
-          });
-          updateTests(ws, testsState);
-          updateConsole(ws, '');
-          await checkTestsCallback({
-            ws,
-            project,
-            hints,
-            lessonNumber,
-            testsState,
-            afterAll
-          });
-        }
+        await handleCancelTests({
+          ws,
+          project,
+          message,
+          worker,
+          testsState,
+          hints,
+          afterAll,
+          lessonNumber
+        });
       });
       // When result is received back from worker, update the client state
       worker.on('message', workerMessage);
+      worker.stdout.on('data', data => {
+        logover.debug(`Blocking Worker:`, data.toString());
+      });
+      worker.on('exit', async exitCode => {
+        worker.exited = true;
+        await handleWorkerExit({ ws, exitCode, testsState, afterEach });
+      });
 
       for (let i = 0; i < textsAndTestsArr.length; i++) {
         const [text, testCode] = textsAndTestsArr[i];
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
-
-        worker.on('exit', async exitCode => {
-          // If exit code == 1, worker was likely terminated
-          // Let client know test was cancelled
-          if (exitCode === 1) {
-            testsState[i].isLoading = false;
-            testsState[i].passed = false;
-            updateTests(ws, testsState);
-
-            const consoleError = {
-              ...testsState[i],
-              error
-            };
-            updateConsole(ws, consoleError);
-          }
-          // Run afterEach even if tests are cancelled
-          try {
-            const _afterEachOut = await eval(
-              `(async () => { ${afterEach} })();`
-            );
-          } catch (e) {
-            logover.error('--after-each-- hook failed to run:');
-            logover.error(e);
-          }
-        });
 
         worker.postMessage({ testCode, testId: i });
       }
@@ -152,62 +118,30 @@ export async function runTests(ws, projectDashedName) {
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
 
-        const worker = new Worker(
-          join(ROOT, '.freeCodeCamp/tooling/tests', 'test-worker.js'),
-          {
-            name: `worker-${i}`,
-            workerData: {
-              beforeEach
-            }
-          }
-        );
+        const worker = createWorker(`worker-${i}`, { beforeEach });
 
         // Kill worker if client says, or test timesout
         ws.on('message', async message => {
-          const { event, data } = JSON.parse(message);
-          if (event === 'cancel-tests') {
-            worker.terminate();
-            testsState[i].isLoading = false;
-            testsState[i].passed = false;
-            updateTests(ws, testsState);
-            updateConsole(ws, '');
-
-            // Run afterAll even if tests are cancelled
-            await checkTestsCallback({
-              ws,
-              project,
-              hints,
-              lessonNumber,
-              testsState,
-              afterAll
-            });
-          }
+          await handleCancelTests({
+            ws,
+            message,
+            worker,
+            testsState,
+            i,
+            project,
+            hints,
+            afterAll,
+            lessonNumber
+          });
         });
         // When result is received back from worker, update the client state
         worker.on('message', workerMessage);
+        worker.stdout.on('data', data => {
+          logover.debug(`Worker-${i}:`, data.toString());
+        });
         worker.on('exit', async exitCode => {
-          // If exit code == 1, worker was likely terminated
-          // Let client know test was cancelled
-          if (exitCode === 1) {
-            testsState[i].isLoading = false;
-            testsState[i].passed = false;
-            updateTests(ws, testsState);
-
-            const consoleError = {
-              ...testsState[i],
-              error
-            };
-            updateConsole(ws, consoleError);
-          }
-          // Run afterEach even if tests are cancelled
-          try {
-            const _afterEachOut = await eval(
-              `(async () => { ${afterEach} })();`
-            );
-          } catch (e) {
-            logover.error('--after-each-- hook failed to run:');
-            logover.error(e);
-          }
+          worker.exited = true;
+          await handleWorkerExit({ ws, exitCode, testsState, i, afterEach });
         });
 
         worker.postMessage({ testCode, testId: i });
@@ -219,7 +153,7 @@ export async function runTests(ws, projectDashedName) {
       testsState[testId].isLoading = false;
       testsState[testId].passed = passed;
       if (error) {
-        if (!(error instanceof AssertionError)) {
+        if (error.type !== 'AssertionError') {
           logover.error(`Test #${testId}:`, error);
         }
 
@@ -285,4 +219,121 @@ async function checkTestsCallback({
       }
     }
   }
+}
+
+/**
+ * Handles the 'cancel-tests' event from the client
+ * @param {object} param0
+ * @param {WebSocket} param0.ws
+ * @param {string} param0.message
+ * @param {Worker} param0.worker
+ * @param {Array} param0.testsState
+ * @param {number} param0.i
+ * @param {object} param0.project
+ * @param {Array} param0.hints
+ * @param {string} param0.afterAll
+ * @param {number} param0.lessonNumber
+ */
+async function handleCancelTests({
+  ws,
+  message,
+  worker,
+  testsState,
+  i,
+  project,
+  hints,
+  afterAll,
+  lessonNumber
+}) {
+  const { event, data } = JSON.parse(message);
+  // When worker is exited, `.resourceLimits == {}`
+  if (event === 'cancel-tests') {
+    worker.terminate();
+    if (i !== undefined && !worker.exited) {
+      testsState[i].isLoading = false;
+      testsState[i].passed = false;
+      updateConsole(ws, {
+        ...testsState[i],
+        error: 'Tests cancelled.'
+      });
+    } else {
+      testsState.forEach(test => {
+        if (test.isLoading) {
+          test.isLoading = false;
+          test.passed = false;
+          updateConsole(ws, {
+            ...test,
+            error: 'Tests cancelled.'
+          });
+        }
+      });
+    }
+    updateTests(ws, testsState);
+
+    // Run afterAll even if tests are cancelled
+    await checkTestsCallback({
+      ws,
+      project,
+      hints,
+      lessonNumber,
+      testsState,
+      afterAll
+    });
+  }
+}
+
+/**
+ * NOTE: Either `handleCancelTests` or `handleWorkerExit` should update `testsState`
+ * @param {object} param0
+ * @param {number} param0.exitCode
+ * @param {Array} param0.testsState
+ * @param {number} param0.i
+ * @param {string} param0.afterEach
+ * @param {object} param0.error
+ */
+async function handleWorkerExit({ ws, exitCode, testsState, i, afterEach }) {
+  // If exit code == 1, worker was likely terminated
+  // Let client know test was cancelled
+  if (exitCode === 1) {
+    if (i !== undefined) {
+      testsState[i].isLoading = false;
+      testsState[i].passed = false;
+      const consoleError = {
+        ...testsState[i],
+        error: 'Tests cancelled.'
+      };
+      updateConsole(ws, consoleError);
+    } else {
+      testsState.forEach(test => {
+        if (test.isLoading) {
+          test.isLoading = false;
+          test.passed = false;
+          updateConsole(ws, {
+            ...test,
+            error: 'Tests cancelled.'
+          });
+        }
+      });
+    }
+    updateTests(ws, testsState);
+  }
+  // Run afterEach even if tests are cancelled
+  try {
+    const _afterEachOut = await eval(`(async () => { ${afterEach} })();`);
+  } catch (e) {
+    logover.error('--after-each-- hook failed to run:');
+    logover.error(e);
+  }
+}
+
+function createWorker(name, workerData) {
+  return new Worker(
+    join(ROOT, '.freeCodeCamp/tooling/tests', 'test-worker.js'),
+    {
+      name,
+      workerData,
+      stdout: true,
+      stdin: true
+    }
+  );
 }
