@@ -22,6 +22,12 @@ if (process.env.GITPOD_WORKSPACE_URL) {
     process.env.GITPOD_WORKSPACE_URL.replace(/^https:\/\//, `wss://${PORT}-`) +
       ''
   );
+} else if (process.env.CODESPACE_NAME) {
+  socket = new WebSocket(
+    `wss://${process.env.CODESPACE_NAME}-${PORT}.${
+      process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN || 'app.github.dev'
+    }`
+  );
 } else {
   socket = new WebSocket(`ws://localhost:${PORT}`);
 }
