@@ -29,6 +29,7 @@ import { Worker } from 'node:worker_threads';
  * @param {string} projectDashedName
  */
 export async function runTests(ws, projectDashedName) {
+  // TODO: Consider awaiting in parallel, since both invoke `fs`
   const project = await getProjectConfig(projectDashedName);
   const { locale } = await getState();
   // toggleLoaderAnimation(ws);
@@ -61,17 +62,14 @@ export async function runTests(ws, projectDashedName) {
     const hints = getLessonHints(lesson);
 
     const textsAndTestsArr = getLessonTextsAndTests(lesson);
-    testsState = textsAndTestsArr.reduce((acc, curr, i) => {
-      return [
-        ...acc,
-        {
-          passed: false,
-          testText: curr[0],
-          testId: i,
-          isLoading: !project.blockingTests
-        }
-      ];
-    }, []);
+    testsState = textsAndTestsArr.map((text, i) => {
+      return {
+        passed: false,
+        testText: text[0],
+        testId: i,
+        isLoading: !project.blockingTests
+      };
+    });
 
     updateTests(ws, testsState);
     updateConsole(ws, '');
@@ -150,6 +148,7 @@ export async function runTests(ws, projectDashedName) {
 
     async function workerMessage(message) {
       const { passed, testId, error } = message;
+      console.log('workerMessage:', message);
       testsState[testId].isLoading = false;
       testsState[testId].passed = passed;
       if (error) {

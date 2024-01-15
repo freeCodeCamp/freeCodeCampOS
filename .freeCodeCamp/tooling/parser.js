@@ -203,7 +203,7 @@ export function getAfterEach(lesson) {
   const beforeEach = parseMarker(AFTER_EACH_MARKER, lesson);
   if (!beforeEach) return null;
   const beforeEachCommand = extractStringFromCode(beforeEach);
-  return beforeEachCommand ?? null;
+  return beforeEachCommand;
 }
 
 /**
