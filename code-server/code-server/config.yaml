@@ -1,0 +1,8 @@
+bind-addr: 0.0.0.0:8080
+auth: none
+app-name: freeCodeCamp-OS
+disable-getting-started-override: true # TODO: Might need this to be false, if we want our own getting started page
+disable-telemetry: true
+# cert: true
+# proxy-domain: todo
+# locale: en

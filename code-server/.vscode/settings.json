@@ -1,0 +1,6 @@
+{
+  "editor.formatOnSave": true,
+  "files.autoSave": "off",
+  "window.commandCenter": false,
+  "workbench.colorTheme": "freeCodeCamp Dark Theme"
+}

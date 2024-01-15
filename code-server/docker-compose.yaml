@@ -1,0 +1,14 @@
+services:
+  code-server:
+    build:
+      dockerfile: ./images/Dockerfile
+    container_name: code-server
+    # command: code-server
+    # restart: unless-stopped
+    ports:
+      - 8080:8080
+    volumes:
+      - v1.0.0:/root/.local/share/code-server/User/
+
+volumes:
+  v1.0.0:
