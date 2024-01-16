@@ -40,7 +40,6 @@ export async function runLesson(ws, projectDashedName) {
     const description = getLessonDescription(lesson);
 
     updateProject(ws, project);
-    resetBottomPanel(ws);
 
     if (!isIntegrated) {
       const textsAndTestsArr = getLessonTextsAndTests(lesson);
@@ -54,6 +53,7 @@ export async function runLesson(ws, projectDashedName) {
         }, [])
       );
     }
+    resetBottomPanel(ws);
 
     const { projectTopic, currentProject } = await getProjectTitle(projectFile);
     updateProjectHeading(ws, {

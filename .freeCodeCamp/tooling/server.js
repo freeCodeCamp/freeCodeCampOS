@@ -1,6 +1,6 @@
 import express from 'express';
 import { readFile } from 'fs/promises';
-import { runTests } from './test.js';
+import { runTests } from './tests/main.js';
 import {
   getProjectConfig,
   getState,

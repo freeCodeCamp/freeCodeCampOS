@@ -47,4 +47,4 @@ watcher.add(DIRECTORY_PATH_RELATIVE_TO_ROOT);
 
 ## Collisions
 
-As the tests are run in the `eval`ed context of the `freecodecamp-os/.freeCodeCamp/tooling/test.js` module, there is the possibility that variable naming collisions will occur. To avoid this, it is recommended to prefix object names with `__` (dunder).
+As the tests are run in the `eval`ed context of the `freecodecamp-os/.freeCodeCamp/tooling/tests/test-worker.js` module, there is the possibility that variable naming collisions will occur. To avoid this, it is recommended to prefix object names with `__` (dunder).

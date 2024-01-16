@@ -41,19 +41,35 @@ Dynamic helpers should be imported.
 // 2
 await new Promise(resolve => setTimeout(resolve, 1000));
 assert.equal(__helpers.testDynamicHelper(), 'Helper success!');
+// assert.fail('test');
+```
+
+### --before-each--
+
+```js
+await new Promise(resolve => setTimeout(resolve, 1000));
+const __projectLoc = 'example global variable for tests';
+```
+
+### --after-each--
+
+```js
+await new Promise(resolve => setTimeout(resolve, 1000));
+logover.info('after each');
 ```
 
 ### --before-all--
 
 ```js
-global.__projectLoc = 'example global variable for tests';
+await new Promise(resolve => setTimeout(resolve, 1000));
+logover.info('before all');
 ```
 
 ### --after-all--
 
 ```js
-// Clean up
-delete global.__projectLoc;
+await new Promise(resolve => setTimeout(resolve, 1000));
+logover.info('after all');
 ```
 
 ## --fcc-end--
