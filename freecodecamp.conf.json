@@ -15,6 +15,7 @@
     }
   },
   "workspace": {
+    "autoStart": true,
     "previews": [
       {
         "open": true,

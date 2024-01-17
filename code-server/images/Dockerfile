@@ -14,10 +14,17 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh
 COPY ./code-server/config.yaml /root/.config/code-server/
 COPY .vscode/settings.json /root/.local/share/code-server/User/settings.json
 
-COPY ../.vscode/freecodecamp-courses-2.0.0.vsix $HOME
+COPY ../.vscode/freecodecamp-courses-2.1.0.vsix $HOME
 COPY ../.vscode/freecodecamp-dark-vscode-theme-1.0.0.vsix $HOME
-RUN code-server --install-extension freecodecamp-courses-2.0.0.vsix
+RUN code-server --install-extension freecodecamp-courses-2.1.0.vsix
 RUN code-server --install-extension freecodecamp-dark-vscode-theme-1.0.0.vsix
+
+# Install Nodejs v20
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+RUN apt-get install -y nodejs
+
+RUN npm install @freecodecamp/freecodeamp-os
+
 # code-server --host 0.0.0.0 --auth none
 CMD ["code-server"]
 

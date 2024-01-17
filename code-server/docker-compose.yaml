@@ -8,7 +8,9 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - v1.0.0:/root/.local/share/code-server/User/
+      - settings:/root/.local/share/code-server/User/
+      - curriculum:/root/curriculum/
 
 volumes:
-  v1.0.0:
+  settings:
+  curriculum:
