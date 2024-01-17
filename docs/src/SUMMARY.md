@@ -17,6 +17,7 @@
 - [Resetting]()
   - [Lifecycle](./resetting/lifecycle.md)
   - [Reset](./resetting/reset.md)
+- [Plugin System](./plugin-system.md)
 - [Contributing](./contributing.md)
 - [CHANGELOG](./CHANGELOG.md)
 - [Roadmap](./roadmap.md)

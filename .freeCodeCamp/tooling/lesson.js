@@ -19,6 +19,7 @@ import {
 import { ROOT, getState, getProjectConfig, freeCodeCampConfig } from './env.js';
 import { logover } from './logger.js';
 import { seedLesson } from './seed.js';
+import { pluginEvents } from '../plugin/index.js';
 
 /**
  * Runs the lesson from the `projectDashedName` config.
@@ -38,6 +39,8 @@ export async function runLesson(ws, projectDashedName) {
     const lesson = await getLessonFromFile(projectFile, currentLesson);
 
     const description = getLessonDescription(lesson);
+
+    await pluginEvents.onProjectStart(project);
 
     updateProject(ws, project);
 

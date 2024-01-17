@@ -4,6 +4,10 @@
 
 ### Definitions
 
+```admonish attention
+The following applies to version `2.1.0` of the freeCodeCamp - Courses extension.
+```
+
 The most up-to-date definitions can be found here: https://github.com/freeCodeCamp/courses-vscode-extension/blob/main/src/typings.ts
 
 ### Required Configuration
@@ -78,6 +82,7 @@ This is a string command run in the terminal before the course is opened.
 
 This configures files, terminals, and previews to open when the course is opened.
 
+- `autoStart`: whether or not to run the `run-course` script when VSCode opens - `boolean`
 - `files.path`: path relative to the root of the course - `string`
 - `terminals.directory`: path relative to the root of the course - `string`
 - `terminal.message`: message to echo in the terminal - `string`
@@ -92,6 +97,7 @@ This configures files, terminals, and previews to open when the course is opened
 ```json
 {
   "workspace": {
+    "autoStart": false,
     "files": [
       {"path": "README.md"},
     ],
@@ -197,12 +203,14 @@ Currently, `english` is a required locale, and is used as the default.
 #### `tooling`
 
 - `helpers`: path relative to the root of the course - `string`
+- `plugins`: path relative to the root of the course - `string`
 
 ````admonish example
 ```json
 {
   "tooling": {
-    "helpers": "./tooling/helpers.js"
+    "helpers": "./tooling/helpers.js",
+    "plugins": "./tooling/plugins.js"
   }
 }
 ```

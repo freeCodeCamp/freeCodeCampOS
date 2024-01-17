@@ -1,12 +1,19 @@
 # Changelog
 
-## [2.1.0] - 2023-12-12
+## [2.1.0] - 2024-01-18
 
 ### Add
 
 - Worker threads to run tests in parallel
 - `### --after-each--` to run code after each test
 - `Cancel Tests` button that terminates all workers
+- Plugin system for events:
+  - `onTestsStart`
+  - `onTestsEnd`
+  - `onProjectStart`
+  - `onLessonPassed`
+  - `onLessonFailed`
+  - `onProjectFinished`
 
 ### Update
 
