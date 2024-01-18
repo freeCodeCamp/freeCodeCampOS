@@ -1,4 +1,5 @@
-import { getState } from './env.js';
+import { join } from 'path';
+import { ROOT, getState } from './env.js';
 
 export async function t(key, args = {}, forceLangToUse) {
   const { locale: loc } = await getState();
@@ -7,7 +8,11 @@ export async function t(key, args = {}, forceLangToUse) {
   const locale = forceLangToUse ?? loc;
   // TODO: Not used anywhere, but needs path fixing too.
   const comments = import(
-    `.freeCodeCamp/tooling/locales/${locale}/comments.json`,
+    join(
+      ROOT,
+      'node_modules/@freecodecamp/freecodecamp-os',
+      `.freeCodeCamp/tooling/locales/${locale}/comments.json`
+    ),
     {
       assert: { type: 'json' }
     }
