@@ -22,6 +22,17 @@ import {
 import { runLesson } from '../lesson.js';
 import { join } from 'node:path';
 import { Worker } from 'node:worker_threads';
+import { pluginEvents } from '../../plugin/index.js';
+
+try {
+  const plugins = freeCodeCampConfig.tooling?.plugins;
+  if (plugins) {
+    await import(join(ROOT, plugins));
+  }
+} catch (e) {
+  logover.error('Error importing plugins:');
+  logover.error(e);
+}
 
 /**
  * Run the given project's tests
@@ -70,6 +81,8 @@ export async function runTests(ws, projectDashedName) {
         isLoading: !project.blockingTests
       };
     });
+
+    await pluginEvents.onTestsStart(project, testsState);
 
     updateTests(ws, testsState);
     updateConsole(ws, '');
@@ -148,7 +161,6 @@ export async function runTests(ws, projectDashedName) {
 
     async function workerMessage(message) {
       const { passed, testId, error } = message;
-      console.log('workerMessage:', message);
       testsState[testId].isLoading = false;
       testsState[testId].passed = passed;
       if (error) {
@@ -189,7 +201,10 @@ async function checkTestsCallback({
 }) {
   const passed = testsState.every(test => test.passed);
   if (passed) {
+    await pluginEvents.onLessonPassed(project);
+
     if (project.isIntegrated || lessonNumber === project.numberOfLessons - 1) {
+      await pluginEvents.onProjectFinished(project);
       await setProjectConfig(project.dashedName, {
         completedDate: Date.now()
       });
@@ -202,6 +217,7 @@ async function checkTestsCallback({
       await runLesson(ws, project.dashedName);
     }
   } else {
+    await pluginEvents.onLessonFailed(project);
     updateHints(ws, hints);
   }
   const allTestsFinished = testsState.every(test => !test.isLoading);
@@ -217,6 +233,8 @@ async function checkTestsCallback({
         logover.error(e);
       }
     }
+
+    await pluginEvents.onTestsEnd(project, testsState);
   }
 }
 

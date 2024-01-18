@@ -17,8 +17,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      MDBOOK_VERSION: 0.4.28
-      ADMONISH_VERSION: 1.9.0
+      MDBOOK_VERSION: 0.4.36
+      ADMONISH_VERSION: 1.15.0
       UNLINK_VERSION: 0.1.0
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3

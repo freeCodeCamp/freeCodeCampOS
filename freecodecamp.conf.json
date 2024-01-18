@@ -2,8 +2,8 @@
   "path": ".",
   "version": "0.1.0",
   "scripts": {
-    "develop-course": "FCC_OS_PORT=8081 NODE_ENV=development npm run develop",
-    "run-course": "FCC_OS_PORT=8081 NODE_ENV=production && cd ./node_modules/@freecodecamp/freecodecamp-os/ && npm run build:client && node .freeCodeCamp/tooling/server.js",
+    "develop-course": "FCC_OS_PORT=8080 NODE_ENV=development npm run develop",
+    "run-course": "FCC_OS_PORT=8080 NODE_ENV=production && cd ./node_modules/@freecodecamp/freecodecamp-os/ && npm run build:client && node .freeCodeCamp/tooling/server.js",
     "test": {
       "functionName": "handleMessage",
       "arguments": [
@@ -15,10 +15,11 @@
     }
   },
   "workspace": {
+    "autoStart": true,
     "previews": [
       {
         "open": true,
-        "url": "http://localhost:8081",
+        "url": "http://localhost:8080",
         "showLoader": true,
         "timeout": 4000
       }
@@ -64,6 +65,7 @@
     ]
   },
   "tooling": {
-    "helpers": "./tooling/helpers.js"
+    "helpers": "./tooling/helpers.js",
+    "plugins": "./tooling/plugins.js"
   }
 }

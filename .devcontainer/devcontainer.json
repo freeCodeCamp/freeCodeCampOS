@@ -3,12 +3,12 @@
     "vscode": {
       "extensions": [
         "dbaeumer.vscode-eslint",
-        "freeCodeCamp.freecodecamp-courses@1.7.5",
+        "freeCodeCamp.freecodecamp-courses@2.1.0",
         "freeCodeCamp.freecodecamp-dark-vscode-theme"
       ]
     }
   },
-  "forwardPorts": [8081],
+  "forwardPorts": [8080],
   "workspaceFolder": "/workspace/freeCodeCampOS",
   "dockerFile": "../Dockerfile",
   "context": "..",
