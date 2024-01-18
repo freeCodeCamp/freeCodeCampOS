@@ -345,7 +345,12 @@ async function handleWorkerExit({ ws, exitCode, testsState, i, afterEach }) {
 
 function createWorker(name, workerData) {
   return new Worker(
-    join(ROOT, '.freeCodeCamp/tooling/tests', 'test-worker.js'),
+    join(
+      ROOT,
+      'node_modules/@freecodecamp/freecodecamp-os',
+      '.freeCodeCamp/tooling/tests',
+      'test-worker.js'
+    ),
     {
       name,
       workerData,
