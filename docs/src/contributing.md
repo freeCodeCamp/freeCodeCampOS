@@ -2,11 +2,10 @@
 
 ## Local Development
 
-1. Link `@freecodecamp/freecodecamp-os` to itself:
+1. Link `@freecodecamp/freecodecamp-os` to itself, by adding the following to `package.json > dependencies`:
 
-```bash
-npm link
-npm link @freecodecamp/freecodecamp-os
+```json
+"@freecodecamp/freecodecamp-os": "."
 ```
 
 2. Install tooling:
@@ -20,11 +19,17 @@ npm i
 - Open the command pallete (Ctrl+Shift+P)
 - `freeCodeCamp: Develop Course`
 
+```admonish attention
+Be sure to remove these changes, before opening a PR, as a package cannot reference itself.
+```
+
 ## Gitpod
 
 1. Open the project in Gitpod:
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/freeCodeCamp/freecodecampOS)
+
+2. Perform the same linking as [local development](#local-development)
 
 ## Opening a Pull Request
 
