@@ -40,7 +40,9 @@ export async function runLesson(ws, projectDashedName) {
 
     const description = getLessonDescription(lesson);
 
-    await pluginEvents.onProjectStart(project);
+    if (currentLesson === 0) {
+      await pluginEvents.onProjectStart(project);
+    }
 
     updateProject(ws, project);
 

@@ -1,9 +1,10 @@
 {
   "path": ".",
   "version": "0.1.0",
+  "prepare": "sed -i 's#WD=/workspace/freeCodeCampOS#WD=$(pwd)#g' ./bash/.bashrc",
   "scripts": {
-    "develop-course": "FCC_OS_PORT=8080 NODE_ENV=development npm run develop",
-    "run-course": "FCC_OS_PORT=8080 NODE_ENV=production && cd ./node_modules/@freecodecamp/freecodecamp-os/ && npm run build:client && node .freeCodeCamp/tooling/server.js",
+    "develop-course": "FCC_OS_PORT=8080 NODE_ENV=development npm run start",
+    "run-course": "FCC_OS_PORT=8080 NODE_ENV=production && npm run start",
     "test": {
       "functionName": "handleMessage",
       "arguments": [
@@ -61,7 +62,7 @@
       "/target/",
       "/test-ledger/",
       ".vscode",
-      ".freecodecamp.conf.json"
+      "freecodecamp.conf.json"
     ]
   },
   "tooling": {

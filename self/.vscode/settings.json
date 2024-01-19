@@ -24,7 +24,10 @@
     "bash": {
       "path": "bash",
       "icon": "terminal-bash",
-      "args": ["--init-file", "./bash/sourcerer.sh"]
+      "args": [
+        "--init-file",
+        "./bash/sourcerer.sh"
+      ]
     }
   }
 }

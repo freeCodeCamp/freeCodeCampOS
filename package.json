@@ -5,12 +5,12 @@
   "description": "Package used for freeCodeCamp projects with the freeCodeCamp Courses VSCode extension",
   "scripts": {
     "build:client": "NODE_ENV=production webpack --config ./.freeCodeCamp/webpack.config.cjs",
-    "build:git": "node ./.freeCodeCamp/tooling/git/build.js",
     "develop": "npm run develop:client & npm run develop:server",
     "develop:client": "NODE_ENV=development webpack --mode development --config ./.freeCodeCamp/webpack.config.cjs --watch",
     "develop:server": "nodemon --watch ./.freeCodeCamp/dist/ --watch ./.freeCodeCamp/tooling/ --watch ./tooling/ --ignore ./config/ ./.freeCodeCamp/tooling/server.js",
     "start": "npm run build:client && node ./.freeCodeCamp/tooling/server.js",
-    "test": "node ./.freeCodeCamp/tests/parser.test.js"
+    "test": "node ./.freeCodeCamp/tests/parser.test.js",
+    "prepublish": "npm run build:client"
   },
   "dependencies": {
     "@babel/core": "7.23.7",

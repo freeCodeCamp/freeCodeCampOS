@@ -15,22 +15,29 @@ import { Header } from './components/header';
 import './styles.css';
 import { E44o5 } from './components/error';
 
-let socket: WebSocket;
-const PORT = process.env.FCC_OS_PORT || 8080;
-if (process.env.GITPOD_WORKSPACE_URL) {
-  socket = new WebSocket(
-    process.env.GITPOD_WORKSPACE_URL.replace(/^https:\/\//, `wss://${PORT}-`) +
-      ''
-  );
-} else if (process.env.CODESPACE_NAME) {
-  socket = new WebSocket(
-    `wss://${process.env.CODESPACE_NAME}-${PORT}.${
-      process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN || 'app.github.dev'
-    }`
-  );
-} else {
-  socket = new WebSocket(`ws://localhost:${PORT}`);
-}
+// let socket: WebSocket;
+// const PORT = process.env.FCC_OS_PORT || 8080;
+// if (process.env.GITPOD_WORKSPACE_URL) {
+//   socket = new WebSocket(
+//     process.env.GITPOD_WORKSPACE_URL.replace(/^https:\/\//, `wss://${PORT}-`) +
+//       ''
+//   );
+// } else if (process.env.CODESPACE_NAME) {
+//   socket = new WebSocket(
+//     `wss://${process.env.CODESPACE_NAME}-${PORT}.${
+//       process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN || 'app.github.dev'
+//     }`
+//   );
+// } else {
+//   socket = new WebSocket(`ws://localhost:${PORT}`);
+// }
+
+// Dynamically construct the socket url based on `window.location`
+const socket = new WebSocket(
+  `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${
+    window.location.host
+  }`
+);
 
 const App = () => {
   const [projects, setProjects] = useState<ProjectI[]>([]);

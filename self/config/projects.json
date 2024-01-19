@@ -10,7 +10,7 @@
     "runTestsOnWatch": true,
     "seedEveryLesson": false,
     "isResetEnabled": true,
-    "numberOfLessons": 5
+    "numberOfLessons": 27
   },
   {
     "id": 1,
