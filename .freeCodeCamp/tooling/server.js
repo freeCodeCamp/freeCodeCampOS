@@ -1,6 +1,6 @@
 import express from 'express';
 import { readFile } from 'fs/promises';
-import { runTests } from './tests/main.js';
+import { getWorkerPool, runTests } from './tests/main.js';
 import {
   getProjectConfig,
   getState,
@@ -148,6 +148,14 @@ async function handleRequestData(ws, data) {
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
 
+function handleCancelTests(ws, data) {
+  const workerPool = getWorkerPool();
+  for (const worker of workerPool) {
+    worker.terminate();
+  }
+  ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
+}
+
 const PORT = process.env.FCC_OS_PORT || 8080;
 
 const server = app.listen(PORT, () => {
@@ -163,7 +171,8 @@ const handle = {
   'go-to-next-lesson': handleGoToNextLesson,
   'go-to-previous-lesson': handleGoToPreviousLesson,
   'request-data': handleRequestData,
-  'select-project': handleSelectProject
+  'select-project': handleSelectProject,
+  'cancel-tests': handleCancelTests
 };
 
 const wss = new WebSocketServer({ server });

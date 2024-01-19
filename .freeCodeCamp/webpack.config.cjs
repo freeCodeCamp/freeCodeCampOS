@@ -1,5 +1,4 @@
 const path = require('path');
-const { DefinePlugin } = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   entry: path.join(__dirname, 'client/index.tsx'),
@@ -34,7 +33,12 @@ module.exports = {
                     'markdown',
                     'sql',
                     'rust',
-                    'typescript'
+                    'typescript',
+                    'jsx',
+                    'c',
+                    'csharp',
+                    'cpp',
+                    'dotnet'
                   ],
                   plugins: [],
                   theme: 'okaidia',
@@ -76,16 +80,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'client', 'index.html'),
       favicon: path.join(__dirname, 'client', 'assets/fcc_primary_small.svg')
-    }),
-    new DefinePlugin({
-      'process.env.GITPOD_WORKSPACE_URL': JSON.stringify(
-        process.env.GITPOD_WORKSPACE_URL
-      ),
-      'process.env.CODESPACE_NAME': JSON.stringify(process.env.CODESPACE_NAME),
-      'process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN': JSON.stringify(
-        process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN
-      ),
-      'process.env.FCC_OS_PORT': JSON.stringify(process.env.FCC_OS_PORT)
     })
   ]
 };

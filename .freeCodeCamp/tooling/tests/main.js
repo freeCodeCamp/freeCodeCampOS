@@ -1,5 +1,7 @@
-import { AssertionError } from 'chai';
+import { assert, AssertionError, expect, config as chaiConfig } from 'chai';
+import { watcher } from '../hot-reload.js';
 import { logover } from '../logger.js';
+
 import { getProjectConfig, getState, setProjectConfig } from '../env.js';
 import { freeCodeCampConfig, ROOT } from '../env.js';
 import {
@@ -33,6 +35,9 @@ try {
   logover.error('Error importing plugins:');
   logover.error(e);
 }
+
+/** @type {Worker[]} */
+export const WORKER_POOL = [];
 
 /**
  * Run the given project's tests
@@ -91,20 +96,8 @@ export async function runTests(ws, projectDashedName) {
     // TODO: See if holding pool of workers is better.
     if (project.blockingTests) {
       const worker = createWorker('blocking-worker', { beforeEach });
+      WORKER_POOL.push(worker);
 
-      // Kill worker if client says, or test timesout
-      ws.on('message', async message => {
-        await handleCancelTests({
-          ws,
-          project,
-          message,
-          worker,
-          testsState,
-          hints,
-          afterAll,
-          lessonNumber
-        });
-      });
       // When result is received back from worker, update the client state
       worker.on('message', workerMessage);
       worker.stdout.on('data', data => {
@@ -112,7 +105,17 @@ export async function runTests(ws, projectDashedName) {
       });
       worker.on('exit', async exitCode => {
         worker.exited = true;
-        await handleWorkerExit({ ws, exitCode, testsState, afterEach });
+        removeWorkerFromPool(worker);
+        await handleWorkerExit({
+          ws,
+          exitCode,
+          testsState,
+          afterEach,
+          project,
+          hints,
+          lessonNumber,
+          afterAll
+        });
       });
 
       for (let i = 0; i < textsAndTestsArr.length; i++) {
@@ -130,21 +133,8 @@ export async function runTests(ws, projectDashedName) {
         updateTest(ws, testsState[i]);
 
         const worker = createWorker(`worker-${i}`, { beforeEach });
+        WORKER_POOL.push(worker);
 
-        // Kill worker if client says, or test timesout
-        ws.on('message', async message => {
-          await handleCancelTests({
-            ws,
-            message,
-            worker,
-            testsState,
-            i,
-            project,
-            hints,
-            afterAll,
-            lessonNumber
-          });
-        });
         // When result is received back from worker, update the client state
         worker.on('message', workerMessage);
         worker.stdout.on('data', data => {
@@ -152,7 +142,18 @@ export async function runTests(ws, projectDashedName) {
         });
         worker.on('exit', async exitCode => {
           worker.exited = true;
-          await handleWorkerExit({ ws, exitCode, testsState, i, afterEach });
+          removeWorkerFromPool(worker);
+          await handleWorkerExit({
+            ws,
+            exitCode,
+            testsState,
+            i,
+            afterEach,
+            project,
+            hints,
+            lessonNumber,
+            afterAll
+          });
         });
 
         worker.postMessage({ testCode, testId: i });
@@ -203,12 +204,12 @@ async function checkTestsCallback({
   if (passed) {
     await pluginEvents.onLessonPassed(project);
 
+    resetBottomPanel(ws);
     if (project.isIntegrated || lessonNumber === project.numberOfLessons - 1) {
       await pluginEvents.onProjectFinished(project);
       await setProjectConfig(project.dashedName, {
         completedDate: Date.now()
       });
-      resetBottomPanel(ws);
       handleProjectFinish(ws);
     } else {
       await setProjectConfig(project.dashedName, {
@@ -235,67 +236,7 @@ async function checkTestsCallback({
     }
 
     await pluginEvents.onTestsEnd(project, testsState);
-  }
-}
-
-/**
- * Handles the 'cancel-tests' event from the client
- * @param {object} param0
- * @param {WebSocket} param0.ws
- * @param {string} param0.message
- * @param {Worker} param0.worker
- * @param {Array} param0.testsState
- * @param {number} param0.i
- * @param {object} param0.project
- * @param {Array} param0.hints
- * @param {string} param0.afterAll
- * @param {number} param0.lessonNumber
- */
-async function handleCancelTests({
-  ws,
-  message,
-  worker,
-  testsState,
-  i,
-  project,
-  hints,
-  afterAll,
-  lessonNumber
-}) {
-  const { event, data } = JSON.parse(message);
-  // When worker is exited, `.resourceLimits == {}`
-  if (event === 'cancel-tests') {
-    worker.terminate();
-    if (i !== undefined && !worker.exited) {
-      testsState[i].isLoading = false;
-      testsState[i].passed = false;
-      updateConsole(ws, {
-        ...testsState[i],
-        error: 'Tests cancelled.'
-      });
-    } else {
-      testsState.forEach(test => {
-        if (test.isLoading) {
-          test.isLoading = false;
-          test.passed = false;
-          updateConsole(ws, {
-            ...test,
-            error: 'Tests cancelled.'
-          });
-        }
-      });
-    }
-    updateTests(ws, testsState);
-
-    // Run afterAll even if tests are cancelled
-    await checkTestsCallback({
-      ws,
-      project,
-      hints,
-      lessonNumber,
-      testsState,
-      afterAll
-    });
+    WORKER_POOL.splice(0, WORKER_POOL.length);
   }
 }
 
@@ -307,8 +248,22 @@ async function handleCancelTests({
  * @param {number} param0.i
  * @param {string} param0.afterEach
  * @param {object} param0.error
+ * @param {object} param0.project
+ * @param {Array} param0.hints
+ * @param {string} param0.afterAll
+ * @param {number} param0.lessonNumber
  */
-async function handleWorkerExit({ ws, exitCode, testsState, i, afterEach }) {
+async function handleWorkerExit({
+  ws,
+  exitCode,
+  testsState,
+  i,
+  afterEach,
+  project,
+  hints,
+  lessonNumber,
+  afterAll
+}) {
   // If exit code == 1, worker was likely terminated
   // Let client know test was cancelled
   if (exitCode === 1) {
@@ -341,6 +296,15 @@ async function handleWorkerExit({ ws, exitCode, testsState, i, afterEach }) {
     logover.error('--after-each-- hook failed to run:');
     logover.error(e);
   }
+  // Run afterAll even if tests are cancelled
+  await checkTestsCallback({
+    ws,
+    project,
+    hints,
+    lessonNumber,
+    testsState,
+    afterAll
+  });
 }
 
 function createWorker(name, workerData) {
@@ -358,4 +322,15 @@ function createWorker(name, workerData) {
       stdin: true
     }
   );
+}
+
+export function getWorkerPool() {
+  return WORKER_POOL;
+}
+
+function removeWorkerFromPool(worker) {
+  const index = WORKER_POOL.indexOf(worker);
+  if (index > -1) {
+    WORKER_POOL.splice(index, 1);
+  }
 }

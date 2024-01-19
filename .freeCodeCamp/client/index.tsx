@@ -15,22 +15,12 @@ import { Header } from './components/header';
 import './styles.css';
 import { E44o5 } from './components/error';
 
-let socket: WebSocket;
-const PORT = process.env.FCC_OS_PORT || 8080;
-if (process.env.GITPOD_WORKSPACE_URL) {
-  socket = new WebSocket(
-    process.env.GITPOD_WORKSPACE_URL.replace(/^https:\/\//, `wss://${PORT}-`) +
-      ''
-  );
-} else if (process.env.CODESPACE_NAME) {
-  socket = new WebSocket(
-    `wss://${process.env.CODESPACE_NAME}-${PORT}.${
-      process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN || 'app.github.dev'
-    }`
-  );
-} else {
-  socket = new WebSocket(`ws://localhost:${PORT}`);
-}
+// Dynamically construct the socket url based on `window.location`
+const socket = new WebSocket(
+  `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${
+    window.location.host
+  }`
+);
 
 const App = () => {
   const [projects, setProjects] = useState<ProjectI[]>([]);
@@ -41,7 +31,7 @@ const App = () => {
   const [lessonNumber, setLessonNumber] = useState(1);
   const [description, setDescription] = useState('');
   const [tests, setTests] = useState<TestType[]>([]);
-  const [hints, setHints] = useState('');
+  const [hints, setHints] = useState<string[]>([]);
   const [cons, setCons] = useState<ConsoleError[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [alertCamper, setAlertCamper] = useState<null | string>(null);
@@ -134,8 +124,8 @@ const App = () => {
   function updateTest({ test }: { test: TestType }) {
     setTests(ts => ts.map(t => (t.testId === test.testId ? test : t)));
   }
-  function updateHints({ hints }: { hints: string }) {
-    setHints(parseMarkdown(hints));
+  function updateHints({ hints }: { hints: string[] }) {
+    setHints(hints);
   }
 
   function updateConsole({ cons }: { cons: ConsoleError }) {
@@ -163,7 +153,7 @@ const App = () => {
 
   function resetState() {
     setTests([]);
-    setHints('');
+    setHints([]);
     setCons([]);
   }
 
