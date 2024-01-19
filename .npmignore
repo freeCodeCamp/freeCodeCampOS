@@ -1,8 +1,9 @@
 .devcontainer
-.freeCodeCamp/client
+# Included, because it helps with testing when importing straight from GitHub
+# .freeCodeCamp/client
 .freeCodeCamp/tests
-.freeCodeCamp/tsconfig.json
-.freeCodeCamp/webpack.config.cjs
+# .freeCodeCamp/tsconfig.json
+# .freeCodeCamp/webpack.config.cjs
 
 .github
 docs
