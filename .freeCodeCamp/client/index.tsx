@@ -48,7 +48,7 @@ const App = () => {
   const [lessonNumber, setLessonNumber] = useState(1);
   const [description, setDescription] = useState('');
   const [tests, setTests] = useState<TestType[]>([]);
-  const [hints, setHints] = useState('');
+  const [hints, setHints] = useState<string[]>([]);
   const [cons, setCons] = useState<ConsoleError[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [alertCamper, setAlertCamper] = useState<null | string>(null);
@@ -141,8 +141,8 @@ const App = () => {
   function updateTest({ test }: { test: TestType }) {
     setTests(ts => ts.map(t => (t.testId === test.testId ? test : t)));
   }
-  function updateHints({ hints }: { hints: string }) {
-    setHints(parseMarkdown(hints));
+  function updateHints({ hints }: { hints: string[] }) {
+    setHints(hints);
   }
 
   function updateConsole({ cons }: { cons: ConsoleError }) {
@@ -170,7 +170,7 @@ const App = () => {
 
   function resetState() {
     setTests([]);
-    setHints('');
+    setHints([]);
     setCons([]);
   }
 

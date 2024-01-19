@@ -13,7 +13,7 @@ export interface ProjectProps {
   runTests: F<void, void>;
   cons: ConsoleError[];
   description: string;
-  hints: string;
+  hints: string[];
   isLoading: boolean;
   lessonNumber: number;
   project: ProjectI;

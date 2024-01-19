@@ -7,7 +7,7 @@ import { Hints } from './hints';
 
 interface OutputProps {
   isLoading: boolean;
-  hints?: string;
+  hints?: string[];
   tests: TestType[];
   cons: ConsoleError[];
 }
