@@ -156,6 +156,31 @@ function handleCancelTests(ws, data) {
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
 
+async function handleRunClientCode(ws, data) {
+  const code = data?.data;
+  if (!code) {
+    return;
+  }
+  try {
+    let __result;
+    await eval(`(async () => {${code}})()`);
+    ws.send(
+      parse({
+        data: { event: data.event, __result },
+        event: 'RESPONSE'
+      })
+    );
+  } catch (e) {
+    logover.error('Error running client code:\n', e);
+    ws.send(
+      parse({
+        data: { event: data.event, error: e.message },
+        event: 'RESPONSE'
+      })
+    );
+  }
+}
+
 const PORT = process.env.FCC_OS_PORT || 8080;
 
 const server = app.listen(PORT, () => {
@@ -172,7 +197,8 @@ const handle = {
   'go-to-previous-lesson': handleGoToPreviousLesson,
   'request-data': handleRequestData,
   'select-project': handleSelectProject,
-  'cancel-tests': handleCancelTests
+  'cancel-tests': handleCancelTests,
+  '__run-client-code': handleRunClientCode
 };
 
 const wss = new WebSocketServer({ server });
