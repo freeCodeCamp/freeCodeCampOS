@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.1.0] - 2024-01-19
+## [2.1.0] - 2024-01-23
 
 ### Add
 
@@ -14,6 +14,8 @@
   - `onLessonPassed`
   - `onLessonFailed`
   - `onProjectFinished`
+- `/script/injectable.js` static file to inject a JS script into the client
+- `__run-client-code` websocket event to run code in the server's context
 
 ### Update
 
