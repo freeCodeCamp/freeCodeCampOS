@@ -41,7 +41,8 @@
       "faq-text": "Link to FAQ related to course"
     },
     "static": {
-      "/images": "./curriculum/images"
+      "/images": "./curriculum/images",
+      "/script/injectable.js": "./client/injectable.js"
     }
   },
   "config": {
