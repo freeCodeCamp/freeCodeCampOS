@@ -16,6 +16,7 @@
   - `onProjectFinished`
 - `/script/injectable.js` static file to inject a JS script into the client
 - `__run-client-code` websocket event to run code in the server's context
+- Add `create-freecodecamp-os-app` cli for creating the boilerplate
 
 ### Update
 

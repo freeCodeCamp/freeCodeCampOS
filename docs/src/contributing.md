@@ -63,6 +63,12 @@ Any top-level directory or config file. Changing a package should have a scope o
 
 This documention is built using [mdBook](https://rust-lang.github.io/mdBook/). Read their documentation to install the latest version.
 
+Also, the documentation uses `mdbook-admonish`:
+
+```bash
+cargo install mdbook-admonish
+```
+
 ### Serve the Documentation
 
 ```bash
@@ -77,6 +83,17 @@ This will spin up a local server at `http://localhost:3000`. Also, this has hot-
 ```bash
 cd docs
 mdbook build
+```
+
+## CLI (`create-freecodecamp-os-app`)
+
+The CLI is written in Rust, and is located in the `cli` directory.
+
+### Development
+
+```bash
+$ cd cli
+cli$ cargo run
 ```
 
 ---

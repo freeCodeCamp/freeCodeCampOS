@@ -1,9 +1,8 @@
 name: Publish to npm
 
 on:
-  push:
-    branches:
-      - prod
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   publish:
