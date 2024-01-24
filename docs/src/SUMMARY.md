@@ -2,6 +2,7 @@
 
 - [Introduction](./introduction.md)
 - [Getting Started](./getting-started.md)
+- [CLI](./cli.md)
 - [Examples](./examples.md)
 - [Configuration](./configuration.md)
 - [Project Syntax](./project-syntax.md)
