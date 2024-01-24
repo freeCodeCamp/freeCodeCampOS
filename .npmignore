@@ -6,6 +6,7 @@
 # .freeCodeCamp/webpack.config.cjs
 
 .github
+cli
 docs
 self
 

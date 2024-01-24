@@ -4,6 +4,7 @@ use std::{fs::canonicalize, path::Path};
 use environment::Environment;
 use features::Features;
 use fs::Course;
+use indicatif::ProgressBar;
 use inquire::{
     error::InquireResult, min_length, validator::Validation, Confirm, CustomType, MultiSelect, Text,
 };
@@ -56,7 +57,6 @@ fn main() -> InquireResult<()> {
         .with_default(1)
         .with_formatter(&|i| format!("{i}"))
         // .with_error_message("Please type a valid number")
-        .with_help_message("Type the amount in US dollars using a decimal point as a separator")
         .with_validator(|input: &u8| {
             if *input > 0 {
                 Ok(Validation::Valid)
@@ -86,7 +86,7 @@ fn main() -> InquireResult<()> {
     //     .prompt()?;
 
     let course = Course::new(
-        directory_name,
+        directory_name.clone(),
         environment,
         features,
         is_git_repository,
@@ -94,7 +94,14 @@ fn main() -> InquireResult<()> {
         num_projects,
     );
 
-    course.create_course();
+    let pb = ProgressBar::new(15);
+    println!("Creating course...");
+
+    course.create_course(&pb);
+
+    pb.finish_with_message("done");
+    println!("Created course: {directory_name}");
+    println!("Start by `cd {directory_name}`.");
 
     Ok(())
 }

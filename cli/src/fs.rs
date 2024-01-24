@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use indicatif::ProgressBar;
 use serde_json::{json, Value};
 
 use crate::{
@@ -24,39 +25,53 @@ pub struct Course {
 }
 
 impl Course {
-    pub fn create_course(&self) {
+    pub fn create_course(&self, progress_bar: &ProgressBar) {
+        progress_bar.inc(1);
         self.git_init();
+        progress_bar.inc(1);
         self.npm_init();
-        self.npm_install_freecodecamp_os();
+        progress_bar.inc(1);
 
         self.touch_bash();
+        progress_bar.inc(1);
         self.touch_conf();
+        progress_bar.inc(1);
         self.touch_curriculum();
+        progress_bar.inc(1);
         // self.touch_devcontainer();
         self.touch_docker();
+        progress_bar.inc(1);
         self.touch_gitpod();
+        progress_bar.inc(1);
         self.touch_helpers();
+        progress_bar.inc(1);
         self.touch_injectables();
+        progress_bar.inc(1);
         self.touch_logs();
+        progress_bar.inc(1);
         self.touch_plugins();
+        progress_bar.inc(1);
         self.touch_projects();
+        progress_bar.inc(1);
         self.touch_state();
+        progress_bar.inc(1);
         self.touch_vscode();
-        todo!();
+        progress_bar.inc(1);
     }
 
-    fn command(&self, command: &str, args: Vec<&str>) {
+    fn command(&self, command: &str, args: Vec<&str>) -> std::io::Result<std::process::Output> {
         std::process::Command::new(command)
             .args(args)
             .current_dir(&self.canonicalized_path)
-            .spawn()
-            .expect("Failed to execute command");
+            .output()
     }
 
     /// Runs `git init` in the `directory_name`
     fn git_init(&self) {
         if self.is_git_repository {
-            self.command("git", vec!["init"]);
+            if let Err(e) = self.command("git", vec!["init"]) {
+                println!("Failed to run `git init`: {e}")
+            }
         }
     }
 
@@ -80,11 +95,28 @@ impl Course {
     }
 
     fn npm_init(&self) {
-        self.command("npm", vec!["init", "-y"]);
-    }
-
-    fn npm_install_freecodecamp_os(&self) {
-        self.command("npm", vec!["install", "@freecodecamp/freecodecamp-os"]);
+        let package = json!({
+          "name": self.directory_name,
+          "version": "1.0.0",
+          "private": true,
+          "description": "",
+          "scripts": {
+            "start": "node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js"
+          },
+          "keywords": [],
+          "author": "",
+          "license": "MIT",
+          "dependencies": {
+            "@freecodecamp/freecodecamp-os": "^2.0.0"
+          },
+          "type": "module"
+        });
+        if let Err(e) = std::fs::write(
+            self.canonicalized_path.join("package.json"),
+            serde_json::to_string_pretty(&package).expect("Failed to serialise package"),
+        ) {
+            eprintln!("Failed to create package.json file: {e}");
+        }
     }
 
     fn touch_bash(&self) {
@@ -153,8 +185,8 @@ impl Course {
                 "sed -i 's#WD=/workspace/freeCodeCampOS#WD=$(pwd)#g' ./bash/.bashrc".to_string(),
             ),
             scripts: Scripts {
-                develop_course: "npm run develop".to_string(),
-                run_course: "npm run run".to_string(),
+                develop_course: "FCC_OS_PORT=8080 NODE_ENV=development npm run start".to_string(),
+                run_course: "FCC_OS_PORT=8080 NODE_ENV=production && npm run start".to_string(),
                 test: None,
             },
             workspace: Some(Workspace {
@@ -206,9 +238,12 @@ impl Course {
     }
 
     fn touch_curriculum(&self) {
-        if let Err(e) =
-            std::fs::create_dir_all(self.canonicalized_path.join("curriculum/locales/english"))
-        {
+        let mut base_path = String::from("curriculum");
+        if self.is_translated {
+            base_path.push_str("/locales/english");
+        }
+
+        if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join(&base_path)) {
             eprintln!("Failed to create curriculum directory: {e}");
         } else {
             let boilerplate = r"# Project {i}
@@ -232,12 +267,21 @@ assert.fail();
             for i in 0..self.num_projects {
                 if let Err(e) = std::fs::write(
                     self.canonicalized_path
-                        .join(format!("curriculum/locales/english/project-{i}.md")),
+                        .join(format!("{base_path}/project-{i}.md")),
                     boilerplate.replace("{i}", &i.to_string()),
                 ) {
-                    eprintln!(
-                        "Failed to create 'curriculum/locales/english/project-{i}.md' file: {e}"
-                    );
+                    eprintln!("Failed to create '{base_path}/project-{i}.md' file: {e}");
+                }
+                if let Err(e) =
+                    std::fs::create_dir_all(self.canonicalized_path.join(format!("project-{i}")))
+                {
+                    eprintln!("Failed to create 'project-{i}' directory: {e}");
+                } else if let Err(e) = std::fs::write(
+                    self.canonicalized_path
+                        .join(format!("project-{i}/.gitkeep")),
+                    String::new(),
+                ) {
+                    eprintln!("Failed to create 'project-{i}/.gitkeep' file: {e}");
                 }
             }
         }
