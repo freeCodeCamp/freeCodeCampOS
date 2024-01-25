@@ -18,14 +18,8 @@ cargo install create-freecodecamp-os-app
 
 ## Usage
 
-If installed from a release:
-
 ```bash
 create-freecodecamp-os-app
 ```
 
-If installed from `cargo`:
-
-```bash
-cargo create-freecodecamp-os-app
-```
+The version of the CLI is tied to the version of `freecodecamp-os`. Some options may not be available if the version of the CLI is not compatible with the version of `freecodecamp-os` that is installed.

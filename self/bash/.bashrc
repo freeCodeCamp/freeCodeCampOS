@@ -122,7 +122,7 @@ for i in $(ls -A $HOME/.bashrc.d/); do source $HOME/.bashrc.d/$i; done
 
 
 # freeCodeCamp - Needed for most tests to work
-WD=/home/shauh/freeCodeCampOS/self
+WD=/workspace/freeCodeCampOS
 
-PROMPT_COMMAND='>| $WD/.logs/.terminal-out.log && cat $WD/.logs/.temp.log >| $WD/.logs/.terminal-out.log && truncate -s 0 $WD/.logs/.temp.log; echo $PWD >> $WD/.logs/.cwd.log; history -a $WD/.logs/.bash_history.log; echo $PWD\$ $(history | tail -n 1) >> $WD/.logs/.history_cwd.log;'
+PROMPT_COMMAND='>| $WD/.logs/.terminal_out.log && cat $WD/.logs/.temp.log >| $WD/.logs/.terminal_out.log && truncate -s 0 $WD/.logs/.temp.log; echo $PWD >> $WD/.logs/.cwd.log; history -a $WD/.logs/.bash_history.log; echo $PWD\$ $(history | tail -n 1) >> $WD/.logs/.history_cwd.log;'
 exec > >(tee -ia $WD/.logs/.temp.log) 2>&1

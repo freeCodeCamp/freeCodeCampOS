@@ -5,8 +5,7 @@ use serde_json::{json, Value};
 
 use crate::{
     conf::{
-        Bash, Client, Conf, Config, Curriculum, HotReload, Landing, Locales, Preview, Project,
-        Scripts, State, Tooling, Workspace,
+        Client, Conf, Config, Curriculum, HotReload, Landing, Locales, Project, State, Tooling,
     },
     environment::Environment,
     features::Features,
@@ -70,7 +69,7 @@ impl Course {
     fn git_init(&self) {
         if self.is_git_repository {
             if let Err(e) = self.command("git", vec!["init"]) {
-                println!("Failed to run `git init`: {e}")
+                println!("Failed to run `git init`: {e}");
             }
         }
     }
@@ -107,7 +106,7 @@ impl Course {
           "author": "",
           "license": "MIT",
           "dependencies": {
-            "@freecodecamp/freecodecamp-os": "^2.0.0"
+            "@freecodecamp/freecodecamp-os": "^3.0.0"
           },
           "type": "module"
         });
@@ -144,15 +143,6 @@ impl Course {
     }
 
     fn touch_conf(&self) {
-        let bash = if self.features.contains(&Features::Terminal) {
-            Some(Bash {
-                bashrc: "./bash/.bashrc".to_string(),
-                sourcerer_sh: "./bash/sourcerer.sh".to_string(),
-            })
-        } else {
-            None
-        };
-
         let static_files = if self.features.contains(&Features::ScriptInjection) {
             Some(json!( {
                     "/scripts/injectable.js": "./client/injectable.js".to_string(),
@@ -180,25 +170,6 @@ impl Course {
 
         let conf = Conf {
             version: "0.0.1".try_into().unwrap(),
-            path: None,
-            prepare: Some(
-                "sed -i 's#WD=/workspace/freeCodeCampOS#WD=$(pwd)#g' ./bash/.bashrc".to_string(),
-            ),
-            scripts: Scripts {
-                develop_course: "FCC_OS_PORT=8080 NODE_ENV=development npm run start".to_string(),
-                run_course: "FCC_OS_PORT=8080 NODE_ENV=production && npm run start".to_string(),
-                test: None,
-            },
-            workspace: Some(Workspace {
-                auto_start: Some(true),
-                previews: Some(vec![Preview {
-                    open: true,
-                    url: "http://localhost:8080".to_string(),
-                    show_loader: true,
-                    timeout: 4000,
-                }]),
-            }),
-            bash,
             client: Some(Client {
                 assets: None,
                 landing: Some(Landing {
@@ -461,7 +432,7 @@ window.onload = function () {
                 ".history_cwd.log",
                 ".next_command.log",
                 ".temp.log",
-                ".terminal-out.log",
+                ".terminal_out.log",
             ];
             if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join(".logs")) {
                 eprintln!("Failed to create .logs directory: {e}");
@@ -580,7 +551,19 @@ pluginEvents.onLessonPassed = async project => {
                         "./bash/sourcerer.sh"
                     ]
                 }
-            }
+            },
+            "freecodecamp-courses.autoStart": true,
+            "freecodecamp-courses.prepare": "sed -i \"s#WD=.*#WD=$(pwd)#g\" ./bash/.bashrc",
+            "freecodecamp-courses.scripts.develop-course": "FCC_OS_PORT=8080 NODE_ENV=development npm run start",
+            "freecodecamp-courses.scripts.run-course": "FCC_OS_PORT=8080 NODE_ENV=production npm run start",
+            "freecodecamp-courses.workspace.previews": [
+                {
+                    "open": true,
+                    "url": "http://localhost:8080",
+                    "showLoader": true,
+                    "timeout": 4000
+                }
+            ]
         });
         if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join(".vscode")) {
             eprintln!("Failed to create .vscode directory: {e}");

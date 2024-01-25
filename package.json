@@ -1,7 +1,7 @@
 {
   "name": "@freecodecamp/freecodecamp-os",
   "author": "freeCodeCamp",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Package used for freeCodeCamp projects with the freeCodeCamp Courses VSCode extension",
   "scripts": {
     "build:client": "NODE_ENV=production webpack --config ./.freeCodeCamp/webpack.config.cjs",

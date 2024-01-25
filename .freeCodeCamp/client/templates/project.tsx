@@ -67,11 +67,7 @@ export const Project = ({
               })}
         />
 
-        <Output
-          {...(project.isIntegrated
-            ? { isLoading, tests, cons }
-            : { isLoading, hints, tests, cons })}
-        />
+        <Output {...{ isLoading, hints, tests, cons }} />
       </div>
     </>
   );

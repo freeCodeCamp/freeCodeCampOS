@@ -27,12 +27,7 @@ Add the following required configuration:
 
 ```json
 {
-  "path": ".",
   "version": "0.0.1",
-  "scripts": {
-    "develop-course": "<TERMINAL_COMMAND>",
-    "run-course": "<TERMINAL_COMMAND>"
-  },
   "config": {
     "projects.json": "<PROJECTS_JSON>",
     "state.json": "<STATE_JSON>"
@@ -61,12 +56,7 @@ Technically, the `develop-course` and `run-course` scripts have to be specific v
 ````admonish example collapsible=true
 ```json
 {
-  "path": ".",
   "version": "0.0.1",
-  "scripts": {
-    "develop-course": "NODE_ENV=development node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js",
-    "run-course": "NODE_ENV=production node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js"
-  },
   "config": {
     "projects.json": "./config/projects.json",
     "state.json": "./config/state.json"
@@ -155,10 +145,45 @@ If using the `terminal` feature:
 │   ├── .history_cwd.log
 │   ├── .next_command.log
 │   ├── .temp.log
-│   └── .terminal-out.log
+│   └── .terminal_out.log
 ```
 If using the `tooling` feature:
 ```txt
 ├── <CONFIG_TOOLING_HELPERS>
 ```
 ````
+
+Create a `.vscode/settings.json` file to configure the freeCodeCamp - Courses extension:
+
+```json
+{
+  // Open the course when the workspace is opened
+  "freecodecamp-courses.autoStart": true,
+  // Automatically adjust the terminal logs if used
+  "freecodecamp-courses.prepare": "sed -i \"s#WD=.*#WD=$(pwd)#g\" ./bash/.bashrc",
+  // Command run in terminal on `freeCodeCamp: Develop Course`
+  "freecodecamp-courses.scripts.develop-course": "FCC_OS_PORT=8080 NODE_ENV=development npm run start",
+  // Command run in terminal on `freeCodeCamp: Run Course`
+  "freecodecamp-courses.scripts.run-course": "FCC_OS_PORT=8080 NODE_ENV=production npm run start",
+  // Preview to open when course starts
+  "freecodecamp-courses.workspace.previews": [
+    {
+      "open": true,
+      "url": "http://localhost:8080",
+      "showLoader": true,
+      "timeout": 4000
+    }
+  ],
+  // The below settings are needed for using the terminal feature
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.profiles.linux": {
+    "bash": {
+      "path": "bash",
+      "icon": "terminal-bash",
+      "args": ["--init-file", "./bash/sourcerer.sh"]
+    }
+  }
+}
+```
+
+A few more settings are available, and can be seen and configured from the VSCode Settings UI.

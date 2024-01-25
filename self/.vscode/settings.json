@@ -17,17 +17,26 @@
     "README.md": false,
     "renovate.json": false,
     "build-x-using-y": false,
-    "learn-x-by-building-y": false
+    "learn-freecodecamp-os": false
   },
   "terminal.integrated.defaultProfile.linux": "bash",
   "terminal.integrated.profiles.linux": {
     "bash": {
       "path": "bash",
       "icon": "terminal-bash",
-      "args": [
-        "--init-file",
-        "./bash/sourcerer.sh"
-      ]
+      "args": ["--init-file", "./bash/sourcerer.sh"]
     }
-  }
+  },
+  "freecodecamp-courses.autoStart": true,
+  "freecodecamp-courses.prepare": "sed -i \"s#WD=.*#WD=$(pwd)#g\" ./bash/.bashrc",
+  "freecodecamp-courses.scripts.develop-course": "FCC_OS_PORT=8080 NODE_ENV=development npm run start",
+  "freecodecamp-courses.scripts.run-course": "FCC_OS_PORT=8080 NODE_ENV=production npm run start",
+  "freecodecamp-courses.workspace.previews": [
+    {
+      "open": true,
+      "url": "http://localhost:8080",
+      "showLoader": true,
+      "timeout": 4000
+    }
+  ]
 }

@@ -6,11 +6,6 @@ use serde_json::Value;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Conf {
     pub version: Version,
-    pub path: Option<String>,
-    pub prepare: Option<String>,
-    pub scripts: Scripts,
-    pub workspace: Option<Workspace>,
-    pub bash: Option<Bash>,
     pub client: Option<Client>,
     pub config: Config,
     pub curriculum: Curriculum,
@@ -24,45 +19,6 @@ pub struct Version {
     pub major: u8,
     pub minor: u8,
     pub patch: u8,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Scripts {
-    #[serde(rename = "develop-course")]
-    pub develop_course: String,
-    #[serde(rename = "run-course")]
-    pub run_course: String,
-    pub test: Option<Test>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Test {
-    pub function_name: String,
-    pub arguments: Option<Vec<Value>>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Workspace {
-    #[serde(rename = "autoStart")]
-    pub auto_start: Option<bool>,
-    pub previews: Option<Vec<Preview>>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Preview {
-    pub open: bool,
-    pub url: String,
-    #[serde(rename = "showLoader")]
-    pub show_loader: bool,
-    pub timeout: u16,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Bash {
-    #[serde(rename = ".bashrc")]
-    pub bashrc: String,
-    #[serde(rename = "sourcerer.sh")]
-    pub sourcerer_sh: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

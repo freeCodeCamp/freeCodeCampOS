@@ -14,11 +14,6 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 
 ```json
 {
-  "version": "0.0.1",
-  "scripts": {
-    "develop-course": "",
-    "run-course": ""
-  },
   "config": {
     "projects.json": "<PROJECTS_JSON>",
     "state.json": "<STATE_JSON>"
@@ -34,11 +29,6 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 ````admonish example collapsible=true title="Minimum Usable Example"
 ```json
 {
-  "version": "0.0.1",
-  "scripts": {
-    "develop-course": "NODE_ENV=development node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js",
-    "run-course": "NODE_ENV=production node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js"
-  },
   "config": {
     "projects.json": "./config/projects.json",
     "state.json": "./config/state.json"
@@ -53,79 +43,6 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 ````
 
 ### Optional Configuration (Features)
-
-#### `path`
-
-This is a string representing the relative path to the course directory from the root of the workspace.
-
-````admonish example
-```json
-{
-  "path": "./courses/my-course"
-}
-```
-````
-
-#### `prepare`
-
-This is a string command run in the terminal before the course is opened.
-
-````admonish example
-```json
-{
-  "prepare": "npm i"
-}
-```
-````
-
-#### `workspace`
-
-This configures files, terminals, and previews to open when the course is opened.
-
-- `autoStart`: whether or not to run the `run-course` script when VSCode opens - `boolean`
-- `files.path`: path relative to the root of the course - `string`
-- `terminals.directory`: path relative to the root of the course - `string`
-- `terminal.message`: message to echo in the terminal - `string`
-- `terminal.name`: name of the terminal - `string`
-- `terminal.show`: if `false`, runs the terminal in the background - `boolean`
-- `previews.open`: whether or not to open the preview - `boolean`
-- `previews.url`: url to open in the preview - `string`
-- `previews.showLoader`: whether or not to show the loader. This is useful if setup takes a long time - `boolean`
-- `previews.timeout`: how long to show the loader before trying the `url` - `number` (ms)
-
-````admonish example
-```json
-{
-  "workspace": {
-    "autoStart": false,
-    "files": [
-      {"path": "README.md"},
-    ],
-    "terminals": [
-      {
-        "directory": "client",
-        "message": "Starting client...",
-        "name": "Terminal 1",
-        "show": true
-      },
-    ],
-    "previews": [
-      {
-        "open": true,
-        "url": "http://localhost:8080",
-        "showLoader": true,
-        "timeout": 4000
-      }
-    ]
-  }
-}
-```
-````
-
-#### `bashrc`
-
-- `enabled`: whether or not source the `.bashrc` file - `boolean`
-- `path`: path relative to the root of the course - `string`
 
 #### `client`
 

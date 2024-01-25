@@ -8,7 +8,7 @@ import { logover } from './logger.js';
 // ---------------
 // GENERIC HELPERS
 // ---------------
-const PATH_TERMINAL_OUT = join(ROOT, '.logs/.terminal-out.log');
+const PATH_TERMINAL_OUT = join(ROOT, '.logs/.terminal_out.log');
 const PATH_BASH_HISTORY = join(ROOT, '.logs/.bash_history.log');
 const PATH_CWD = join(ROOT, '.logs/.cwd.log');
 const PATH_TEMP = join(ROOT, '.logs/.temp.log');
@@ -114,8 +114,8 @@ async function getTemp() {
 }
 
 /**
- * Get the `.logs/.terminal-out.log` file contents, or `throw` if not found
- * @returns {Promise<string>} The `.terminal-out.log` file contents
+ * Get the `.logs/.terminal_out.log` file contents, or `throw` if not found
+ * @returns {Promise<string>} The `.terminal_out.log` file contents
  */
 async function getTerminalOutput() {
   const terminalLogs = await readFile(PATH_TERMINAL_OUT, 'utf8');

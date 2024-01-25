@@ -9,7 +9,6 @@ export async function getConfig() {
   const conf = JSON.parse(config);
   const defaultConfig = {
     curriculum: {
-      path: 'curriculum',
       locales: {
         english: 'curriculum/locales/english'
       }

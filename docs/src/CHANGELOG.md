@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.0] - 2024-01-26
+
+### Change
+
+- Remove `freecodecamp.conf.json` fields controlled by `freecodecamp-courses` extension
+- Allow hints for integrated projects
+
 ## [2.1.0] - 2024-01-23
 
 ### Add

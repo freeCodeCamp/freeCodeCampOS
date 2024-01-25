@@ -1,6 +1,6 @@
 [package]
 name = "create-freecodecamp-os-app"
-version = "1.0.0"
+version = "3.0.0"
 edition = "2021"
 description = "CLI to create the boilerplate for a new freeCodeCamp-OS app"
 license = "BSD-3-Clause"
