@@ -21,9 +21,9 @@
     "nodemon": "3.0.3"
   },
   "devDependencies": {
-    "@babel/core": "7.23.7",
+    "@babel/core": "7.23.9",
     "@babel/plugin-syntax-import-assertions": "7.23.3",
-    "@babel/preset-env": "7.23.8",
+    "@babel/preset-env": "7.23.9",
     "@babel/preset-react": "7.23.3",
     "@babel/preset-typescript": "7.23.3",
     "@types/marked": "5.0.2",
