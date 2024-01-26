@@ -3,7 +3,7 @@
     "vscode": {
       "extensions": [
         "dbaeumer.vscode-eslint",
-        "freeCodeCamp.freecodecamp-courses@2.1.0",
+        "freeCodeCamp.freecodecamp-courses@3.0.0",
         "freeCodeCamp.freecodecamp-dark-vscode-theme"
       ]
     }

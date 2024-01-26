@@ -112,30 +112,44 @@ impl<'a> Deserialize<'a> for Version {
 pub struct Project {
     pub id: u16,
     pub title: String,
+    #[serde(rename = "dashedName")]
     pub dashed_name: String,
+    #[serde(rename = "isIntegrated")]
     pub is_integrated: Option<bool>,
     pub description: String,
+    #[serde(rename = "isPublic")]
     pub is_public: Option<bool>,
+    #[serde(rename = "currentLesson")]
     pub current_lesson: u16,
+    #[serde(rename = "runTestsOnWatch")]
     pub run_tests_on_watch: Option<bool>,
+    #[serde(rename = "seedEveryLesson")]
     pub seed_every_lesson: Option<bool>,
+    #[serde(rename = "isResetEnabled")]
     pub is_reset_enabled: Option<bool>,
+    #[serde(rename = "numberofLessons")]
     pub number_of_lessons: Option<u16>,
+    #[serde(rename = "blockingTests")]
     pub blocking_tests: Option<bool>,
+    #[serde(rename = "breakOnFailure")]
     pub break_on_failure: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct State {
+    #[serde(rename = "currentProject")]
     /// The current project the user is working on as a `String` or `Value::Null`
     pub current_project: Value,
     pub locale: String,
+    #[serde(rename = "lastSeed")]
     pub last_seed: Option<LastSeed>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct LastSeed {
+    #[serde(rename = "projectDashedName")]
     pub project_dashed_name: Value,
+    #[serde(rename = "lessonNumber")]
     /// The lesson number last seeded
     ///
     /// Can be -1, because lessons start at 0, and -1 is used to indicate that no lesson has been seeded

@@ -46,8 +46,6 @@ impl Course {
         progress_bar.inc(1);
         self.touch_injectables();
         progress_bar.inc(1);
-        self.touch_logs();
-        progress_bar.inc(1);
         self.touch_plugins();
         progress_bar.inc(1);
         self.touch_projects();
@@ -263,12 +261,39 @@ assert.fail();
         if self.environment.contains(&Environment::Codespaces)
             || self.environment.contains(&Environment::VSCode)
         {
-            unimplemented!();
+            let devcontainer = json!({
+              "customizations": {
+                "vscode": {
+                  "extensions": [
+                    "dbaeumer.vscode-eslint",
+                    "freeCodeCamp.freecodecamp-courses@3.0.0",
+                    "freeCodeCamp.freecodecamp-dark-vscode-theme"
+                  ]
+                }
+              },
+              "forwardPorts": [8080],
+              "workspaceFolder": "/workspace/freeCodeCampOS",
+              "dockerFile": "../Dockerfile",
+              "context": "..",
+              "updateRemoteUserUID": false,
+              "remoteUser": "gitpod",
+              "containerUser": "gitpod"
+            });
+            if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join(".devcontainer")) {
+                eprintln!("Failed to create .devcontainer directory: {e}");
+            } else if let Err(e) = std::fs::write(
+                self.canonicalized_path
+                    .join(".devcontainer/devcontainer.json"),
+                serde_json::to_string_pretty(&devcontainer)
+                    .expect("Failed to serialise devcontainer"),
+            ) {
+                eprintln!("Failed to create .devcontainer/devcontainer.json file: {e}");
+            }
         }
     }
 
     fn touch_docker(&self) {
-        let dockerfile = r"FROM gitpod/workspace-full:2024-01-17-19-15-31
+        let dockerfile = r"FROM gitpod/workspace-full
 
 WORKDIR /workspace/freeCodeCampOS
 
@@ -294,7 +319,7 @@ ports:
 
 vscode:
   extensions:
-    - https://github.com/freeCodeCamp/courses-vscode-extension/releases/download/v2.1.0/freecodecamp-courses-2.1.0.vsix
+    - https://github.com/freeCodeCamp/courses-vscode-extension/releases/download/v3.0.0/freecodecamp-courses-3.0.0.vsix
     - https://github.com/freeCodeCamp/freecodecamp-dark-vscode-theme/releases/download/v1.0.0/freecodecamp-dark-vscode-theme-1.0.0.vsix
 ";
             if let Err(e) = std::fs::write(self.canonicalized_path.join(".gitpod.yml"), gitpod) {
@@ -420,31 +445,6 @@ window.onload = function () {
                 injectable,
             ) {
                 eprintln!("Failed to create client/injectable.js file: {e}");
-            }
-        }
-    }
-
-    fn touch_logs(&self) {
-        if self.features.contains(&Features::Terminal) {
-            let log_files = vec![
-                ".bash_history.log",
-                ".cwd.log",
-                ".history_cwd.log",
-                ".next_command.log",
-                ".temp.log",
-                ".terminal_out.log",
-            ];
-            if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join(".logs")) {
-                eprintln!("Failed to create .logs directory: {e}");
-            } else {
-                for log_file in log_files {
-                    if let Err(e) = std::fs::write(
-                        self.canonicalized_path.join(format!(".logs/{log_file}")),
-                        String::new(),
-                    ) {
-                        eprintln!("Failed to create .logs/{log_file} file: {e}");
-                    }
-                }
             }
         }
     }
