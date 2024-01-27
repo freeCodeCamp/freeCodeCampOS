@@ -11,5 +11,5 @@ repository = "https://github.com/freeCodeCamp/freeCodeCampOS"
 [dependencies]
 indicatif = "0.17.7"
 inquire = "0.6.2"
-serde = { version = "1.0.195", features = ["derive"] }
+serde = { version = "1.0.196", features = ["derive"] }
 serde_json = "1.0.111"
