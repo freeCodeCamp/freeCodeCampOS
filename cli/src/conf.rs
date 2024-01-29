@@ -6,6 +6,7 @@ use serde_json::Value;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Conf {
     pub version: Version,
+    pub port: Option<u32>,
     pub client: Option<Client>,
     pub config: Config,
     pub curriculum: Curriculum,

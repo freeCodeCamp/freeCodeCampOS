@@ -168,6 +168,7 @@ impl Course {
 
         let conf = Conf {
             version: "0.0.1".try_into().unwrap(),
+            port: Some(8080),
             client: Some(Client {
                 assets: None,
                 landing: Some(Landing {
@@ -554,8 +555,8 @@ pluginEvents.onLessonPassed = async project => {
             },
             "freecodecamp-courses.autoStart": true,
             "freecodecamp-courses.prepare": "sed -i \"s#WD=.*#WD=$(pwd)#g\" ./bash/.bashrc",
-            "freecodecamp-courses.scripts.develop-course": "FCC_OS_PORT=8080 NODE_ENV=development npm run start",
-            "freecodecamp-courses.scripts.run-course": "FCC_OS_PORT=8080 NODE_ENV=production npm run start",
+            "freecodecamp-courses.scripts.develop-course": "NODE_ENV=development npm run start",
+            "freecodecamp-courses.scripts.run-course": "NODE_ENV=production npm run start",
             "freecodecamp-courses.workspace.previews": [
                 {
                     "open": true,

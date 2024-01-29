@@ -181,7 +181,7 @@ async function handleRunClientCode(ws, data) {
   }
 }
 
-const PORT = process.env.FCC_OS_PORT || 8080;
+const PORT = freeCodeCampConfig.port || 8080;
 
 const server = app.listen(PORT, () => {
   logover.info(`Server listening on port ${PORT}`);

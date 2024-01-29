@@ -162,9 +162,9 @@ Create a `.vscode/settings.json` file to configure the freeCodeCamp - Courses ex
   // Automatically adjust the terminal logs if used
   "freecodecamp-courses.prepare": "sed -i \"s#WD=.*#WD=$(pwd)#g\" ./bash/.bashrc",
   // Command run in terminal on `freeCodeCamp: Develop Course`
-  "freecodecamp-courses.scripts.develop-course": "FCC_OS_PORT=8080 NODE_ENV=development npm run start",
+  "freecodecamp-courses.scripts.develop-course": "NODE_ENV=development npm run start",
   // Command run in terminal on `freeCodeCamp: Run Course`
-  "freecodecamp-courses.scripts.run-course": "FCC_OS_PORT=8080 NODE_ENV=production npm run start",
+  "freecodecamp-courses.scripts.run-course": "NODE_ENV=production npm run start",
   // Preview to open when course starts
   "freecodecamp-courses.workspace.previews": [
     {

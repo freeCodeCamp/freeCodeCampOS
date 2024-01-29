@@ -735,7 +735,7 @@ await fetch('http://localhost:8080');
 
 ### --description--
 
-The development server runs at the port number defined by the `FCC_OS_PORT` env var, but defaults to `8080`. Open `http://localhost:8080` in your browser to see the course.
+The development server runs at the port number defined by the `port` field in the `freecodecamp.conf.json` file, but defaults to `8080`. Open `http://localhost:8080` in your browser to see the course.
 
 Also, take a look at the terminal output; in development, your config is validated - errors and warnings are logged to the terminal if something is not quite right.
 
@@ -753,7 +753,7 @@ In VSCode, you can open a webpage within the editor by:
 
 #### 1
 
-Notice this course teaching you how to create a course is itself a course, and is running on port `8081`.
+Notice this course teaching you how to create a course is itself a course, and is running on port `8080`.
 
 ### --tests--
 

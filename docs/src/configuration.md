@@ -2,18 +2,11 @@
 
 ## `freecodecamp.conf.json`
 
-### Definitions
-
-```admonish attention
-The following applies to version `2.1.0` of the freeCodeCamp - Courses extension.
-```
-
-The most up-to-date definitions can be found here: https://github.com/freeCodeCamp/courses-vscode-extension/blob/main/src/typings.ts
-
 ### Required Configuration
 
 ```json
 {
+  "version": "0.0.1",
   "config": {
     "projects.json": "<PROJECTS_JSON>",
     "state.json": "<STATE_JSON>"
@@ -29,6 +22,7 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 ````admonish example collapsible=true title="Minimum Usable Example"
 ```json
 {
+  "version": "0.0.1",
   "config": {
     "projects.json": "./config/projects.json",
     "state.json": "./config/state.json"
@@ -43,6 +37,18 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 ````
 
 ### Optional Configuration (Features)
+
+#### `port`
+
+By default, the server and client communicate over port `8080`. To change this, add a `port` key to the configuration file:
+
+````admonish example
+```json
+{
+  "port": 8080
+}
+```
+````
 
 #### `client`
 
@@ -195,9 +201,3 @@ Currently, `english` is a required locale, and is used as the default.
 ```admonish warning
 Resetting a step removes all untracked files from the project directory. To prevent this for specific files, add them to a boilerplate `.gitignore` file, or the one in root.
 ```
-
-## Environment
-
-### `FCC_OS_PORT`
-
-By default, the server and client communicate over port `8080`. If this is undesirable, the `FCC_OS_PORT` environment variable can be set.

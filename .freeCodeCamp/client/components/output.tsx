@@ -40,7 +40,7 @@ export const Output = ({ isLoading, hints, tests, cons }: OutputProps) => {
             Console
           </button>
         </li>
-        {hints.length && (
+        {hints.length ? (
           <li>
             <button
               className='output-btn'
@@ -52,7 +52,7 @@ export const Output = ({ isLoading, hints, tests, cons }: OutputProps) => {
               Hints
             </button>
           </li>
-        )}
+        ) : null}
       </ul>
       {isLoading ? (
         <Loader />
