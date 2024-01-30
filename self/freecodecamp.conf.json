@@ -7,9 +7,16 @@
       "favicon": "./client/assets/fcc_primary_small.svg"
     },
     "landing": {
-      "description": "Placeholder description",
-      "faq-link": "https://freecodecamp.org",
-      "faq-text": "Link to FAQ related to course"
+      "english": {
+        "description": "Placeholder description",
+        "faq-link": "https://freecodecamp.org",
+        "faq-text": "Link to FAQ related to course"
+      },
+      "afrikaans": {
+        "description": "Beskrywing",
+        "faq-link": "https://freecodecamp.org",
+        "faq-text": "Skakel na gereelde vra"
+      }
     },
     "static": {
       "/images": "./curriculum/images",
@@ -22,7 +29,11 @@
   },
   "curriculum": {
     "locales": {
-      "english": "./curriculum/locales/english"
+      "english": "./curriculum/locales/english",
+      "afrikaans": "./curriculum/locales/afrikaans"
+    },
+    "assertions": {
+      "afrikaans": "./curriculum/assertions/afrikaans.json"
     }
   },
   "hotReload": {

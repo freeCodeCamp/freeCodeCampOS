@@ -8,7 +8,10 @@ export async function t(key, args = {}, forceLangToUse) {
   // Read file and parse JSON
   const locale = forceLangToUse ?? loc;
   const config = await getConfig();
-  const assertions = config.curriculum?.assertions[locale];
+  const assertions = config.curriculum?.assertions?.[locale];
+  if (!assertions) {
+    return key;
+  }
   const comments = await import(join(ROOT, assertions), {
     assert: { type: 'json' }
   });

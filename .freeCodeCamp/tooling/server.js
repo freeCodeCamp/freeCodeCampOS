@@ -12,12 +12,20 @@ import {
 
 import { WebSocketServer } from 'ws';
 import { runLesson } from './lesson.js';
-import { updateProjects, updateFreeCodeCampConfig } from './client-socks.js';
+import {
+  updateProjects,
+  updateFreeCodeCampConfig,
+  updateLocale
+} from './client-socks.js';
 import { hotReload } from './hot-reload.js';
 import { hideAll, showFile, showAll } from './utils.js';
 import { join } from 'path';
 import { logover } from './logger.js';
-import { getTotalLessons } from './parser.js';
+import {
+  getProjectDescription,
+  getProjectTitle,
+  getTotalLessons
+} from './parser.js';
 import { resetProject } from './reset.js';
 import { validateCurriculum } from './validate.js';
 
@@ -92,16 +100,36 @@ async function handleGoToPreviousLesson(ws, data) {
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
 
-async function handleConnect(ws) {
+async function getProjects() {
   const projects = JSON.parse(
     await readFile(
       join(ROOT, freeCodeCampConfig.config['projects.json']),
       'utf-8'
     )
   );
+  const { locale } = await getState();
+  // Add title and description to projects
+  for (const project of projects) {
+    const projectFilePath = join(
+      ROOT,
+      freeCodeCampConfig.curriculum.locales[locale],
+      project.dashedName + '.md'
+    );
+    const title = await getProjectTitle(projectFilePath);
+    const description = await getProjectDescription(projectFilePath);
+    project.title = title;
+    project.description = description;
+  }
+  return projects;
+}
+
+async function handleConnect(ws) {
+  const projects = await getProjects();
+
   updateProjects(ws, projects);
   updateFreeCodeCampConfig(ws, freeCodeCampConfig);
-  const { currentProject } = await getState();
+  const { currentProject, locale } = await getState();
+  updateLocale(ws, locale);
   if (!currentProject) {
     return;
   }
@@ -137,12 +165,7 @@ async function handleSelectProject(ws, data) {
 
 async function handleRequestData(ws, data) {
   if (data?.data?.request === 'projects') {
-    const projects = JSON.parse(
-      await readFile(
-        join(ROOT, freeCodeCampConfig.config['projects.json']),
-        'utf-8'
-      )
-    );
+    const projects = await getProjects();
     updateProjects(ws, projects);
   }
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
@@ -181,6 +204,13 @@ async function handleRunClientCode(ws, data) {
   }
 }
 
+async function handleChangeLanguage(ws, data) {
+  await setState({ locale: data?.data?.locale });
+  updateLocale(ws, data?.data?.locale);
+  const projects = await getProjects();
+  updateProjects(ws, projects);
+}
+
 const PORT = freeCodeCampConfig.port || 8080;
 
 const server = app.listen(PORT, () => {
@@ -198,6 +228,7 @@ const handle = {
   'request-data': handleRequestData,
   'select-project': handleSelectProject,
   'cancel-tests': handleCancelTests,
+  'change-language': handleChangeLanguage,
   '__run-client-code': handleRunClientCode
 };
 
@@ -210,12 +241,7 @@ wss.on('connection', function connection(ws) {
     handle[parsedData.event]?.(ws, parsedData);
   });
   (async () => {
-    const projects = JSON.parse(
-      await readFile(
-        join(ROOT, freeCodeCampConfig.config['projects.json']),
-        'utf-8'
-      )
-    );
+    const projects = await getProjects();
     updateProjects(ws, projects);
     updateFreeCodeCampConfig(ws, freeCodeCampConfig);
   })();

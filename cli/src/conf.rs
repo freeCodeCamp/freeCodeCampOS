@@ -25,7 +25,7 @@ pub struct Version {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Client {
     pub assets: Option<Assets>,
-    pub landing: Option<Landing>,
+    pub landing: Option<Value>,
     #[serde(rename = "static")]
     pub static_files: Option<Value>,
 }
@@ -56,6 +56,7 @@ pub struct Config {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Curriculum {
     pub locales: Locales,
+    pub assertions: Option<Value>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

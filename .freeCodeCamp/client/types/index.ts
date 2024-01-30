@@ -16,7 +16,8 @@ export enum Events {
   GO_TO_NEXT_LESSON = 'go-to-next-lesson',
   GO_TO_PREVIOUS_LESSON = 'go-to-previous-lesson',
   SELECT_PROJECT = 'select-project',
-  CANCEL_TESTS = 'cancel-tests'
+  CANCEL_TESTS = 'cancel-tests',
+  CHANGE_LANGUAGE = 'change-language'
 }
 
 export type TestType = {

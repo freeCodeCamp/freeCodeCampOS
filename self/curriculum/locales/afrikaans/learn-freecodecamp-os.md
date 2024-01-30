@@ -1,12 +1,12 @@
-# Learn freeCodeCampOS
+# Leer freeCodeCampOS
 
-In this course, you will learn how to use the @freecodecamp/freecodecamp-os package to develop courses.jy
+In hierdie kursus, jy sal leer hoe om 'n kursus te skep met `@freecodecamp/freecodecamp-os`.
 
 ## 0
 
 ### --description--
 
-Welcome to freeCodeCampOS! 👋
+Welcom om te freeCodeCampOS! 👋
 
 This example project will walk you through some of the features of freeCodeCampOS, and how to use them for your own course.
 
@@ -21,7 +21,7 @@ Did you know the "OS" in freeCodeCampOS stands for "Open Source"?
 
 ### --tests--
 
-This is a test that will always pass.
+Hierdie toets sal vir altyd gepas.
 
 ```js
 assert(true);

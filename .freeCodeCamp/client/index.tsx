@@ -30,6 +30,7 @@ const App = () => {
 
   const [lessonNumber, setLessonNumber] = useState(1);
   const [description, setDescription] = useState('');
+  const [locale, setLocale] = useState('english');
   const [tests, setTests] = useState<TestType[]>([]);
   const [hints, setHints] = useState<string[]>([]);
   const [cons, setCons] = useState<ConsoleError[]>([]);
@@ -76,6 +77,7 @@ const App = () => {
     'update-freeCodeCamp-config': setFreeCodeCampConfig,
     'update-error': updateError,
     'reset-tests': resetTests,
+    'update-locale': setLocale,
     RESPONSE: debounce
   };
 
@@ -182,7 +184,7 @@ const App = () => {
   if (alertCamper) {
     return (
       <>
-        <Header updateProject={updateProject} />
+        <Header {...{ sock, updateProject, freeCodeCampConfig }} />
         <E44o5 text={alertCamper} error={error} />
       </>
     );
@@ -191,7 +193,7 @@ const App = () => {
   return (
     <>
       <Suspense fallback={<Loader />}>
-        <Header updateProject={updateProject} />
+        <Header {...{ sock, updateProject, freeCodeCampConfig }} />
         {project ? (
           <Project
             {...{
@@ -210,7 +212,7 @@ const App = () => {
             }}
           />
         ) : (
-          <Landing {...{ sock, projects, freeCodeCampConfig }} />
+          <Landing {...{ locale, sock, projects, freeCodeCampConfig }} />
         )}
       </Suspense>
     </>

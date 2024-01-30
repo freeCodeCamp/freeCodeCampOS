@@ -74,37 +74,37 @@ p {
 }
 
 .loader {
-  --b: 10px; /* border thickness */
-  --n: 10; /* number of dashes*/
-  --g: 10deg; /* gap  between dashes*/
-  --c: red; /* the color */
+  --b: 10px;
+  /* border thickness */
+  --n: 10;
+  /* number of dashes*/
+  --g: 10deg;
+  /* gap  between dashes*/
+  --c: red;
+  /* the color */
 
-  width: 100px; /* size */
+  width: 100px;
+  /* size */
   margin: 0 auto;
   aspect-ratio: 1;
   border-radius: 50%;
-  padding: 1px; /* get rid of bad outlines */
+  padding: 1px;
+  /* get rid of bad outlines */
   background: conic-gradient(#0000, var(--c)) content-box;
-  -webkit-mask: /* we use +/-1deg between colors to avoid jagged edges */ repeating-conic-gradient(
-      #0000 0deg,
+  -webkit-mask:
+    /* we use +/-1deg between colors to avoid jagged edges */
+    repeating-conic-gradient(#0000 0deg,
       #000 1deg calc(360deg / var(--n) - var(--g) - 1deg),
-      #0000 calc(360deg / var(--n) - var(--g)) calc(360deg / var(--n))
-    ),
-    radial-gradient(
-      farthest-side,
+      #0000 calc(360deg / var(--n) - var(--g)) calc(360deg / var(--n))),
+    radial-gradient(farthest-side,
       #0000 calc(98% - var(--b)),
-      #000 calc(100% - var(--b))
-    );
-  mask: repeating-conic-gradient(
-      #0000 0deg,
+      #000 calc(100% - var(--b)));
+  mask: repeating-conic-gradient(#0000 0deg,
       #000 1deg calc(360deg / var(--n) - var(--g) - 1deg),
-      #0000 calc(360deg / var(--n) - var(--g)) calc(360deg / var(--n))
-    ),
-    radial-gradient(
-      farthest-side,
+      #0000 calc(360deg / var(--n) - var(--g)) calc(360deg / var(--n))),
+    radial-gradient(farthest-side,
       #0000 calc(98% - var(--b)),
-      #000 calc(100% - var(--b))
-    );
+      #000 calc(100% - var(--b)));
   -webkit-mask-composite: destination-in;
   mask-composite: intersect;
   animation: load 1s infinite steps(var(--n));
@@ -209,4 +209,40 @@ details {
   margin-left: 7px;
   position: relative;
   top: 1px;
+}
+
+#toggle-lang-button {
+  margin: 0 0.5rem;
+  position: absolute;
+  right: 0;
+  top: 0.28rem;
+}
+
+#toggle-lang-button:hover {
+  cursor: pointer;
+}
+
+#nav-lang-list {
+  position: absolute;
+  right: 0;
+  background-color: var(--dark-1);
+  border-radius: 0.3rem;
+  padding: 0.3rem;
+  margin-top: 2.4rem;
+  z-index: 1;
+}
+#nav-lang-list > li {
+  padding: 0.28rem;
+  list-style: none;
+}
+
+#nav-lang-list > li > button {
+  width: 100%;
+  color: var(--dark-3);
+}
+
+#nav-lang-list > li > button:hover {
+  color: var(--light-2);
+  background-color: var(--dark-3);
+  cursor: pointer;
 }

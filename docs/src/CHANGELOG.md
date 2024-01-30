@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.0.0] - 2024-01-26
+## [3.0.0] - 2024-02-01
 
 ### Change
 
@@ -8,6 +8,7 @@
 - Allow hints for integrated projects
 - Replace use of `FCC_OS_PORT` with `port` field in `freecodecamp.conf.json`
 - Make `version` field required in `freecodecamp.conf.json`
+- Move project title and description to curriculum markdown files
 
 ### Migration Guide
 
@@ -24,6 +25,7 @@
 
 2. Instead of `FCC_OS_PORT` environment variable, use `port` field in `freecodecamp.conf.json` file
 3. Add a SemVer compliant `version` field to `freecodecamp.conf.json` file
+4. Remove the `title` and `description` fields in the `project.json`, and add them to each corresponding Markdown file immediately after the heading
 
 ## [2.1.0] - 2024-01-23
 

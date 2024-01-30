@@ -171,11 +171,13 @@ impl Course {
             port: Some(8080),
             client: Some(Client {
                 assets: None,
-                landing: Some(Landing {
-                    description: "Course description".to_string(),
-                    faq_link: None,
-                    faq_text: None,
-                }),
+                landing: Some(json!({
+                    "english": Landing {
+                        description: "Course description".to_string(),
+                        faq_link: None,
+                        faq_text: None,
+                    }
+                })),
                 static_files,
             }),
             config: Config {
@@ -184,6 +186,7 @@ impl Course {
             },
             curriculum: Curriculum {
                 locales: Locales { english },
+                assertions: None,
             },
             hot_reload: Some(HotReload {
                 ignore: vec![
@@ -219,6 +222,8 @@ impl Course {
             let boilerplate = r"# Project {i}
 
 ## 0
+
+Project description.
 
 ### --description--
 

@@ -55,8 +55,8 @@ By default, the server and client communicate over port `8080`. To change this, 
 - `assets.header`: path relative to the root of the course - `string`
 - `assets.favicon`: path relative to the root of the course - `string`
 - `landing.description`: description of the course shown on the landing page - `string`
-- `landing.faq-link`: link to the FAQ page - `string`
-- `landing.faq-text`: text to display for the FAQ link - `string`
+- `landing.<locale>.faq-link`: link to the FAQ page - `string`
+- `landing.<locale>.faq-text`: text to display for the FAQ link - `string`
 - `static`: static resources to serve - `string | string[] | Record<string, string> | Record<string, string>[]`
 
 ````admonish example
@@ -92,6 +92,7 @@ By default, the server and client communicate over port `8080`. To change this, 
 #### `curriculum`
 
 - `locales`: an object of locale names and their corresponding paths relative to the root of the course - `Record<string, string>`
+- `assertions`: an onject of locale names and their corresponding paths to a JSON file containing custom assertions - `string`
 
 ````admonish example
 ```json
@@ -99,6 +100,9 @@ By default, the server and client communicate over port `8080`. To change this, 
   "curriculum": {
     "locales": {
       "english": "./curriculum/locales/english"
+    },
+    "assertions: {
+      "afrikaans": "./curriculum/assertions/afrikaans.json"
     }
   }
 }
@@ -144,9 +148,7 @@ Currently, `english` is a required locale, and is used as the default.
 ### Definitions
 
 - `id`: A unique, incremental integer - `number`
-- `title`: The human-readable title of the project - `string`
 - `dashedName`: The name of the project corresponding to the `curriculum/locales/<PROJECT_DASHED_NAME>.md` file - `string`
-- `description`: The description of the project shown on the landing page - `string`
 - `isIntegrated`: Whether or not to treat the project as a single-lesson project - `boolean` (default: `false`)
 - `isPublic`: Whether or not to enable the project for public viewing. **Note:** the project will still be visible on the landing page, but will be disabled - `boolean` (default: `false`)
 - `currentLesson`: The current lesson of the project - `number` (default: `1`)
@@ -177,9 +179,7 @@ Currently, `english` is a required locale, and is used as the default.
 [
   {
     "id": 0,
-    "title": "Learn X by Building Y",
     "dashedName": "learn-x-by-building-y",
-    "description": "In this project, you'll learn X by building Y",
     "isIntegrated": false,
     "isPublic": false,
     "currentLesson": 1,
