@@ -7,7 +7,8 @@ import {
   getLessonFromFile,
   getLessonTextsAndTests,
   getLessonSeed,
-  getProjectTitle
+  getProjectTitle,
+  getProjectDescription
 } from './parser.js';
 
 const CURRICULUM_PATH = join(
@@ -32,6 +33,7 @@ const CONFIG_PATH = join(ROOT, freeCodeCampConfig.config['projects.json']);
  * ### Projects
  *
  * - Each project has an H1 heading
+ * - Each project has a project description
  * - Each project is associated with a boilerplate
  * - Each project has congruent lesson numbers
  *   - First lesson is 0
@@ -268,6 +270,12 @@ export async function validateCurriculum() {
     const projectTitle = await getProjectTitle(projectPath);
     if (!projectTitle) {
       throw new Error(`Project "${project}" has no title: '${projectTitle}'`);
+    }
+    const projectDescription = await getProjectDescription(projectPath);
+    if (!projectDescription) {
+      throw new Error(
+        `Project "${project}" has no description: '${projectDescription}'`
+      );
     }
   }
 

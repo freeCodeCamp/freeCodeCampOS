@@ -105,15 +105,20 @@ export function updateError(ws, error) {
 }
 
 /**
+ * Update the current locale
+ * @param {WebSocket} ws WebSocket connection to the client
+ * @param {string} locale Locale string
+ */
+export function updateLocale(ws, locale) {
+  ws.send(parse({ event: 'update-locale', data: locale }));
+}
+
+/**
  * Handles the case when a project is finished
  * @param {WebSocket} ws WebSocket connection to the client
  */
 export function handleProjectFinish(ws) {
   ws.send(parse({ event: 'handle-project-finish' }));
-}
-
-export function updateLocale(ws, locale) {
-  ws.send(parse({ event: 'update-locale', data: locale }));
 }
 
 export function parse(obj) {

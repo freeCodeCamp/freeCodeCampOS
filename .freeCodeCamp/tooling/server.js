@@ -100,6 +100,11 @@ async function handleGoToPreviousLesson(ws, data) {
   ws.send(parse({ data: { event: data.event }, event: 'RESPONSE' }));
 }
 
+/**
+ * Gets the projects from `projects.json` and adds the title and description to each project object.
+ *
+ * The client relies on each project having a title and description.
+ */
 async function getProjects() {
   const projects = JSON.parse(
     await readFile(
@@ -108,7 +113,7 @@ async function getProjects() {
     )
   );
   const { locale } = await getState();
-  // Add title and description to projects
+
   for (const project of projects) {
     const projectFilePath = join(
       ROOT,
