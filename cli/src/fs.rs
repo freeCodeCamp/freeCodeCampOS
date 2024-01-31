@@ -220,10 +220,10 @@ impl Course {
             eprintln!("Failed to create curriculum directory: {e}");
         } else {
             let boilerplate = r"# Project {i}
+            
+Project description.
 
 ## 0
-
-Project description.
 
 ### --description--
 
@@ -459,23 +459,17 @@ window.onload = function () {
         if self.features.contains(&Features::PluginSystem) {
             let plugins = r"import { pluginEvents } from '@freecodecamp/freecodecamp-os/.freeCodeCamp/plugin/index.js';
 
-pluginEvents.onTestsStart = async (project, testsState) => {
-};
+pluginEvents.onTestsStart = async (project, testsState) => {};
 
-pluginEvents.onTestsEnd = async (project, testsState) => {
-};
+pluginEvents.onTestsEnd = async (project, testsState) => {};
 
-pluginEvents.onProjectStart = async project => {
-};
+pluginEvents.onProjectStart = async project => {};
 
-pluginEvents.onProjectFinished = async project => {
-};
+pluginEvents.onProjectFinished = async project => {};
 
-pluginEvents.onLessonFailed = async project => {
-};
+pluginEvents.onLessonFailed = async project => {};
 
-pluginEvents.onLessonPassed = async project => {
-};
+pluginEvents.onLessonPassed = async project => {};
 ";
             if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join("tooling")) {
                 eprintln!("Failed to create tooling directory: {e}");
@@ -495,10 +489,8 @@ pluginEvents.onLessonPassed = async project => {
             for i in 0..self.num_projects {
                 let project = Project {
                     id: u16::from(i),
-                    title: format!("Project {i}"),
                     dashed_name: format!("project-{i}"),
                     is_integrated: Some(false),
-                    description: format!("Project {i} description"),
                     is_public: Some(true),
                     current_lesson: 0,
                     run_tests_on_watch: Some(true),

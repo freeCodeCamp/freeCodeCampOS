@@ -95,8 +95,6 @@ pub fn add_project() -> InquireResult<()> {
     let project = Project {
         id,
         dashed_name,
-        title,
-        description,
         current_lesson: 0,
         is_integrated: Some(is_integrated),
         is_public: Some(is_public),
@@ -273,11 +271,13 @@ fn create_curriculum_file(
     let markdown = format!(
         r#"# {title}
 
+{description}
+
 ## 0
 
 ### --description--
 
-{description}
+Placeholder description.
 
 ### --tests--
 

@@ -113,12 +113,10 @@ impl<'a> Deserialize<'a> for Version {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Project {
     pub id: u16,
-    pub title: String,
     #[serde(rename = "dashedName")]
     pub dashed_name: String,
     #[serde(rename = "isIntegrated")]
     pub is_integrated: Option<bool>,
-    pub description: String,
     #[serde(rename = "isPublic")]
     pub is_public: Option<bool>,
     #[serde(rename = "currentLesson")]
