@@ -16,7 +16,7 @@ import './styles.css';
 import { E44o5 } from './components/error';
 
 // Dynamically construct the socket url based on `window.location`
-const socket = new WebSocket(
+let socket = new WebSocket(
   `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${
     window.location.host
   }`
@@ -41,9 +41,10 @@ const App = () => {
   const [debouncers, setDebouncers] = useState<string[]>([]);
   const [connected, setConnected] = useState<boolean>(false);
 
-  useEffect(() => {
+  function connectToWebSocket() {
     socket.onopen = function (_event) {
       setConnected(true);
+      setAlertCamper(null);
       sock(Events.CONNECT);
     };
     socket.onmessage = function (event) {
@@ -55,13 +56,24 @@ const App = () => {
     socket.onclose = function (_event) {
       setAlertCamper('Client has disconnected from local server');
       setConnected(false);
+      // Try to reconnect
+      setTimeout(() => {
+        socket = new WebSocket(
+          `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${
+            window.location.host
+          }`
+        );
+        connectToWebSocket();
+      }, 1000);
     };
 
     return () => {
       console.log('socket closing');
       socket.close();
     };
-  }, []);
+  }
+
+  useEffect(connectToWebSocket, []);
 
   const handle = {
     'handle-project-finish': handleProjectFinish,
