@@ -1,4 +1,6 @@
-# Title - Project
+# Project Title
+
+Project description.
 
 ## 0
 

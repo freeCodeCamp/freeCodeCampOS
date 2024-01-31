@@ -1,3 +1,4 @@
+/// Tests can be run from `self/`
 import {
   getProjectTitle,
   getLessonFromFile,
@@ -10,7 +11,8 @@ import {
   getFilesWithSeed,
   isForceFlag,
   extractStringFromCode,
-  getLessonHints
+  getLessonHints,
+  getProjectDescription
 } from '../tooling/parser.js';
 import { assert } from 'chai';
 import { Logger } from 'logover';
@@ -22,12 +24,14 @@ const logover = new Logger({
   timestamp: null
 });
 
-const EXPECTED_PATH = '.freeCodeCamp/tests/fixtures/expected-format.md';
-const POOR_PATH = '.freeCodeCamp/tests/fixtures/valid-poor-format.md';
+const EXPECTED_PATH = '../.freeCodeCamp/tests/fixtures/expected-format.md';
+const POOR_PATH = '../.freeCodeCamp/tests/fixtures/valid-poor-format.md';
 
 try {
   const projectTitle = await getProjectTitle(EXPECTED_PATH);
-  assert.deepEqual(projectTitle, 'Title - Project');
+  assert.deepEqual(projectTitle, 'Project Title');
+  const projectDescription = await getProjectDescription(EXPECTED_PATH);
+  assert.deepEqual(projectDescription, 'Project description.');
   const lesson = await getLessonFromFile(EXPECTED_PATH, 0);
 
   const lessonDescription = getLessonDescription(lesson);
@@ -84,7 +88,9 @@ try {
 
 try {
   const projectTitle = await getProjectTitle(POOR_PATH);
-  assert.deepEqual(projectTitle, 'Title - Project');
+  assert.deepEqual(projectTitle, 'Project Title');
+  const projectDescription = await getProjectDescription(EXPECTED_PATH);
+  assert.deepEqual(projectDescription, 'Project description.');
   const lesson = await getLessonFromFile(POOR_PATH, 0);
 
   const lessonDescription = getLessonDescription(lesson);

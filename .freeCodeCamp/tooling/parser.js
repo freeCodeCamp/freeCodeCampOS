@@ -67,7 +67,7 @@ export async function getProjectDescription(file) {
   if (!projectDescription) {
     throw new Error('Project description not found. See example format.');
   }
-  return projectDescription;
+  return projectDescription.trim();
 }
 
 /**

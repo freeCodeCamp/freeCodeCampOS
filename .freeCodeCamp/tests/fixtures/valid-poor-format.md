@@ -1,4 +1,5 @@
-# Title - Project
+# Project Title
+Project description.
 ## 0
 ### --description--
 This description has no spaces between the heading.
