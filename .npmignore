@@ -1,19 +1,20 @@
-.devcontainer
 # Included, because it helps with testing when importing straight from GitHub
 # .freeCodeCamp/client
 .freeCodeCamp/tests
 # .freeCodeCamp/tsconfig.json
 # .freeCodeCamp/webpack.config.cjs
 
+.devcontainer
 .github
+.vscode
 cli
 docs
 self
-
 .editorconfig
 .gitignore
 .gitpod.yml
 .prettierignore
 .prettierrc
+CONTRIBUTING.md
 Dockerfile
 renovate.json

@@ -102,33 +102,8 @@ cli$ cargo run
 
 ### Release
 
-Releases are done automatically on pushes to the `prod` branch.
-
-```admonish note title=" "
-The CI script will fail, if the `version` in `package.json` is not incremented, or the `package.json` and `package-lock.json` are out of sync.
-```
+Releases are done manually through the GitHub Actions.
 
 #### Making a Release
 
-1. Checkout the `upstream/prod` branch:
-
-```bash
-git fetch --all
-git checkout remotes/upstream/prod
-```
-
-2. Merge the `main` branch into `prod`:
-
-```bash
-git merge remotes/upstream/main
-```
-
-```admonish info title=" "
-Or, you can merge any specific commits from `main` into `prod`.
-```
-
-3. Push the `prod` branch:
-
-```bash
-git push upstream prod
-```
+In the `Actions` tab, select the `Publish to npm` workflow. Then, select `Run workflow`.
