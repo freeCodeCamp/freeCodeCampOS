@@ -9,6 +9,7 @@
 - Replace use of `FCC_OS_PORT` with `port` field in `freecodecamp.conf.json`
 - Make `version` field required in `freecodecamp.conf.json`
 - Move project title and description to curriculum markdown files
+- Rename `.terminal-out.log` to `.terminal_out.log`
 
 ### Migration Guide
 
@@ -26,6 +27,7 @@
 2. Instead of `FCC_OS_PORT` environment variable, use `port` field in `freecodecamp.conf.json` file
 3. Add a SemVer compliant `version` field to `freecodecamp.conf.json` file
 4. Remove the `title` and `description` fields in the `project.json`, and add the `description` to each corresponding Markdown file immediately after the `title`
+5. Rename the `.terminal-out.log` file to `.terminal_out.log`
 
 ## [2.1.0] - 2024-01-23
 
