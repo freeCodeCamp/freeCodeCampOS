@@ -5,3 +5,4 @@ Cargo.lock
 .freeCodeCamp/dist
 .DS_Store
 /docs/book
+self/.logs/

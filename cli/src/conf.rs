@@ -6,11 +6,7 @@ use serde_json::Value;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Conf {
     pub version: Version,
-    pub path: Option<String>,
-    pub prepare: Option<String>,
-    pub scripts: Scripts,
-    pub workspace: Option<Workspace>,
-    pub bash: Option<Bash>,
+    pub port: Option<u32>,
     pub client: Option<Client>,
     pub config: Config,
     pub curriculum: Curriculum,
@@ -27,48 +23,9 @@ pub struct Version {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Scripts {
-    #[serde(rename = "develop-course")]
-    pub develop_course: String,
-    #[serde(rename = "run-course")]
-    pub run_course: String,
-    pub test: Option<Test>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Test {
-    pub function_name: String,
-    pub arguments: Option<Vec<Value>>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Workspace {
-    #[serde(rename = "autoStart")]
-    pub auto_start: Option<bool>,
-    pub previews: Option<Vec<Preview>>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Preview {
-    pub open: bool,
-    pub url: String,
-    #[serde(rename = "showLoader")]
-    pub show_loader: bool,
-    pub timeout: u16,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Bash {
-    #[serde(rename = ".bashrc")]
-    pub bashrc: String,
-    #[serde(rename = "sourcerer.sh")]
-    pub sourcerer_sh: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
 pub struct Client {
     pub assets: Option<Assets>,
-    pub landing: Option<Landing>,
+    pub landing: Option<Value>,
     #[serde(rename = "static")]
     pub static_files: Option<Value>,
 }
@@ -99,6 +56,7 @@ pub struct Config {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Curriculum {
     pub locales: Locales,
+    pub assertions: Option<Value>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -155,31 +113,43 @@ impl<'a> Deserialize<'a> for Version {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Project {
     pub id: u16,
-    pub title: String,
+    #[serde(rename = "dashedName")]
     pub dashed_name: String,
+    #[serde(rename = "isIntegrated")]
     pub is_integrated: Option<bool>,
-    pub description: String,
+    #[serde(rename = "isPublic")]
     pub is_public: Option<bool>,
+    #[serde(rename = "currentLesson")]
     pub current_lesson: u16,
+    #[serde(rename = "runTestsOnWatch")]
     pub run_tests_on_watch: Option<bool>,
+    #[serde(rename = "seedEveryLesson")]
     pub seed_every_lesson: Option<bool>,
+    #[serde(rename = "isResetEnabled")]
     pub is_reset_enabled: Option<bool>,
+    #[serde(rename = "numberofLessons")]
     pub number_of_lessons: Option<u16>,
+    #[serde(rename = "blockingTests")]
     pub blocking_tests: Option<bool>,
+    #[serde(rename = "breakOnFailure")]
     pub break_on_failure: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct State {
+    #[serde(rename = "currentProject")]
     /// The current project the user is working on as a `String` or `Value::Null`
     pub current_project: Value,
     pub locale: String,
+    #[serde(rename = "lastSeed")]
     pub last_seed: Option<LastSeed>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct LastSeed {
+    #[serde(rename = "projectDashedName")]
     pub project_dashed_name: Value,
+    #[serde(rename = "lessonNumber")]
     /// The lesson number last seeded
     ///
     /// Can be -1, because lessons start at 0, and -1 is used to indicate that no lesson has been seeded

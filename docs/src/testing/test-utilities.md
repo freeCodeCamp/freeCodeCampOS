@@ -134,7 +134,7 @@ Output varies depending on emulator, terminal size, order text is typed, etc. Fo
 
 ## `getTerminalOutput`
 
-Get the `.logs/.terminal-out.log` file contents.
+Get the `.logs/.terminal_out.log` file contents.
 
 ```admonish danger title="Safety"
 Throws if file does not exist, or if read permission is denied.

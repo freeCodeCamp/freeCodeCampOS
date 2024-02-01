@@ -54,6 +54,23 @@ export async function getProjectTitle(file) {
 }
 
 /**
+ * Gets the project description
+ * @param {string} file - The relative path to the locale file
+ * @returns {Promise<string>} The project description
+ */
+export async function getProjectDescription(file) {
+  const fileContent = await readFile(file, 'utf8');
+  const fileContentSansCR = fileContent.replace(/\r/g, '');
+  const projectDescription = fileContentSansCR.match(
+    new RegExp(`#[^\n]+\n(.*?)\n## 0`, 's')
+  )?.[1];
+  if (!projectDescription) {
+    throw new Error('Project description not found. See example format.');
+  }
+  return projectDescription.trim();
+}
+
+/**
  * Gets all content within a lesson
  * @param {string} file - The relative path to the english locale file
  * @param {number} lessonNumber - The number of the lesson

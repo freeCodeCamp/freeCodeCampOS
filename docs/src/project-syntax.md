@@ -10,6 +10,16 @@ This is the Markdown syntax used to create projects in the curriculum.
 # <TITLE>
 ```
 
+Immediately after the title, the project description shown on the landing page is to follow:
+
+````admonish example collapsible=true
+```markdown
+# Learn X by Building Y
+
+This is a description.
+```
+````
+
 ### `## <N>`
 
 ```markdown
@@ -153,7 +163,9 @@ An EOF discriminator.
 
 `````admonish example collapsible=true title="<code>curriculum/locales/english/learn-x-by-building-y.md</code>"
 ````markdown
-# freeCodeCampOS - Learn X by Building Y
+# Learn X by Building Y
+
+In this course, you will learn X by building y.
 
 ## 0
 
@@ -323,7 +335,7 @@ It is also possible to add the seed for a lesson in a separate file named `<PROJ
 
 `````admonish example collapsible=true title="<code>curriculum/locales/english/learn-x-by-building-y-seed.md</code>"
 ````markdown
-## 1
+## 0
 
 ### --seed--
 

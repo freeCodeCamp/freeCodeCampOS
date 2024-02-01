@@ -20,10 +20,6 @@ Runs the `run-course` script in the `freecodecamp.conf.json` of the current work
 
 Disposes all terminals, and closes the visible text editors.
 
-`freeCodeCamp: Create New Course`
-
-Within an empty directory, this sets up the boilerplate for a new course.
-
 `freeCodeCamp: Open Course`
 
 Within a new directory, this command shows the available courses to clone and then clones the selected course in the current workspace.

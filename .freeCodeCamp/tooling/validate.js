@@ -7,7 +7,8 @@ import {
   getLessonFromFile,
   getLessonTextsAndTests,
   getLessonSeed,
-  getProjectTitle
+  getProjectTitle,
+  getProjectDescription
 } from './parser.js';
 
 const CURRICULUM_PATH = join(
@@ -32,6 +33,7 @@ const CONFIG_PATH = join(ROOT, freeCodeCampConfig.config['projects.json']);
  * ### Projects
  *
  * - Each project has an H1 heading
+ * - Each project has a project description
  * - Each project is associated with a boilerplate
  * - Each project has congruent lesson numbers
  *   - First lesson is 0
@@ -97,75 +99,93 @@ export async function validateCurriculum() {
 
   for (const config of projectsConfig) {
     if (config.id !== 0 && !config.id) {
-      throw new Error(`Config "${config}" does not have an id`);
+      throw new Error(`Config "${JSON.stringify(config)}" does not have an id`);
     }
     if (!config.dashedName) {
-      throw new Error(`Config "${config}" does not have a dashedName`);
+      throw new Error(
+        `Config "${JSON.stringify(config)}" does not have a dashedName`
+      );
     }
     if (config?.currentLesson < 0) {
-      throw new Error(`Config "${config}" has a currentLesson less than 0`);
+      throw new Error(
+        `Config "${JSON.stringify(config)}" has a currentLesson less than 0`
+      );
     }
     if (config?.currentLesson >= config.numberOfLessons) {
       throw new Error(
-        `Config "${config}" has a currentLesson >= than the number of lessons`
+        `Config "${JSON.stringify(
+          config
+        )}" has a currentLesson >= than the number of lessons`
       );
     }
     if (
       config.isIntegrated !== undefined &&
       typeof config.isIntegrated !== 'boolean'
     ) {
-      throw new Error(`Config "${config}" has a non-boolean isIntegrated`);
+      throw new Error(
+        `Config "${JSON.stringify(config)}" has a non-boolean isIntegrated`
+      );
     }
     if (config.isPublic !== undefined && typeof config.isPublic !== 'boolean') {
-      throw new Error(`Config "${config}" has a non-boolean isPublic`);
+      throw new Error(
+        `Config "${JSON.stringify(config)}" has a non-boolean isPublic`
+      );
     }
     if (
       config.runTestsOnWatch !== undefined &&
       typeof config.runTestsOnWatch !== 'boolean'
     ) {
-      throw new Error(`Config "${config}" has a non-boolean runTestsOnWatch`);
+      throw new Error(
+        `Config "${JSON.stringify(config)}" has a non-boolean runTestsOnWatch`
+      );
     }
     if (
       config.isResetEnabled !== undefined &&
       typeof config.isResetEnabled !== 'boolean'
     ) {
-      throw new Error(`Config "${config}" has a non-boolean isResetEnabled`);
+      throw new Error(
+        `Config "${JSON.stringify(config)}" has a non-boolean isResetEnabled`
+      );
     }
     if (
       config.seedEveryLesson !== undefined &&
       typeof config.seedEveryLesson !== 'boolean'
     ) {
-      throw new Error(`Config "${config}" has a non-boolean seedEveryLesson`);
+      throw new Error(
+        `Config "${JSON.stringify(config)}" has a non-boolean seedEveryLesson`
+      );
     }
     if (
       config.blockingTests !== undefined &&
       typeof config.blockingTests !== 'boolean'
     ) {
-      throw new Error(`Config "${config}" has a non-boolean blockingTests`);
+      throw new Error(
+        `Config "${JSON.stringify(config)}" has a non-boolean blockingTests`
+      );
     }
     if (
       config.breakOnFailure !== undefined &&
       typeof config.breakOnFailure !== 'boolean'
     ) {
-      throw new Error(`Config "${config}" has a non-boolean breakOnFailure`);
+      throw new Error(
+        `Config "${JSON.stringify(config)}" has a non-boolean breakOnFailure`
+      );
     }
     if (config.breakOnFailure && !config.blockingTests) {
       logover.warn(
-        `Config "${config}" has breakOnFailure=true but blockingTests=false. The breakOnFailure feature has no effect without blockingTests=true`
+        `Config "${JSON.stringify(
+          config
+        )}" has breakOnFailure=true but blockingTests=false. The breakOnFailure feature has no effect without blockingTests=true`
       );
-    }
-    if (!config.description) {
-      logover.warn(`Config "${config}" does not have a description`);
-    }
-    if (!config.title) {
-      logover.warn(`Config "${config}" does not have a title`);
     }
 
     const project = projects.find(
       file => file.replace('.md', '') === config.dashedName
     );
     if (!project) {
-      throw new Error(`Config "${config}" does not have a matching project`);
+      throw new Error(
+        `Config "${JSON.stringify(config)}" does not have a matching project`
+      );
     }
     const projectPath = join(CURRICULUM_PATH, project);
     const projectFile = await readFile(projectPath, 'utf8');
@@ -268,6 +288,12 @@ export async function validateCurriculum() {
     const projectTitle = await getProjectTitle(projectPath);
     if (!projectTitle) {
       throw new Error(`Project "${project}" has no title: '${projectTitle}'`);
+    }
+    const projectDescription = await getProjectDescription(projectPath);
+    if (!projectDescription) {
+      throw new Error(
+        `Project "${project}" has no description: '${projectDescription}'`
+      );
     }
   }
 

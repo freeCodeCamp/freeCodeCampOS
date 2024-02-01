@@ -2,23 +2,11 @@
 
 ## `freecodecamp.conf.json`
 
-### Definitions
-
-```admonish attention
-The following applies to version `2.1.0` of the freeCodeCamp - Courses extension.
-```
-
-The most up-to-date definitions can be found here: https://github.com/freeCodeCamp/courses-vscode-extension/blob/main/src/typings.ts
-
 ### Required Configuration
 
 ```json
 {
   "version": "0.0.1",
-  "scripts": {
-    "develop-course": "",
-    "run-course": ""
-  },
   "config": {
     "projects.json": "<PROJECTS_JSON>",
     "state.json": "<STATE_JSON>"
@@ -35,10 +23,6 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 ```json
 {
   "version": "0.0.1",
-  "scripts": {
-    "develop-course": "NODE_ENV=development node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js",
-    "run-course": "NODE_ENV=production node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js"
-  },
   "config": {
     "projects.json": "./config/projects.json",
     "state.json": "./config/state.json"
@@ -54,86 +38,25 @@ The most up-to-date definitions can be found here: https://github.com/freeCodeCa
 
 ### Optional Configuration (Features)
 
-#### `path`
+#### `port`
 
-This is a string representing the relative path to the course directory from the root of the workspace.
-
-````admonish example
-```json
-{
-  "path": "./courses/my-course"
-}
-```
-````
-
-#### `prepare`
-
-This is a string command run in the terminal before the course is opened.
+By default, the server and client communicate over port `8080`. To change this, add a `port` key to the configuration file:
 
 ````admonish example
 ```json
 {
-  "prepare": "npm i"
+  "port": 8080
 }
 ```
 ````
-
-#### `workspace`
-
-This configures files, terminals, and previews to open when the course is opened.
-
-- `autoStart`: whether or not to run the `run-course` script when VSCode opens - `boolean`
-- `files.path`: path relative to the root of the course - `string`
-- `terminals.directory`: path relative to the root of the course - `string`
-- `terminal.message`: message to echo in the terminal - `string`
-- `terminal.name`: name of the terminal - `string`
-- `terminal.show`: if `false`, runs the terminal in the background - `boolean`
-- `previews.open`: whether or not to open the preview - `boolean`
-- `previews.url`: url to open in the preview - `string`
-- `previews.showLoader`: whether or not to show the loader. This is useful if setup takes a long time - `boolean`
-- `previews.timeout`: how long to show the loader before trying the `url` - `number` (ms)
-
-````admonish example
-```json
-{
-  "workspace": {
-    "autoStart": false,
-    "files": [
-      {"path": "README.md"},
-    ],
-    "terminals": [
-      {
-        "directory": "client",
-        "message": "Starting client...",
-        "name": "Terminal 1",
-        "show": true
-      },
-    ],
-    "previews": [
-      {
-        "open": true,
-        "url": "http://localhost:8080",
-        "showLoader": true,
-        "timeout": 4000
-      }
-    ]
-  }
-}
-```
-````
-
-#### `bashrc`
-
-- `enabled`: whether or not source the `.bashrc` file - `boolean`
-- `path`: path relative to the root of the course - `string`
 
 #### `client`
 
 - `assets.header`: path relative to the root of the course - `string`
 - `assets.favicon`: path relative to the root of the course - `string`
 - `landing.description`: description of the course shown on the landing page - `string`
-- `landing.faq-link`: link to the FAQ page - `string`
-- `landing.faq-text`: text to display for the FAQ link - `string`
+- `landing.<locale>.faq-link`: link to the FAQ page - `string`
+- `landing.<locale>.faq-text`: text to display for the FAQ link - `string`
 - `static`: static resources to serve - `string | string[] | Record<string, string> | Record<string, string>[]`
 
 ````admonish example
@@ -169,6 +92,7 @@ This configures files, terminals, and previews to open when the course is opened
 #### `curriculum`
 
 - `locales`: an object of locale names and their corresponding paths relative to the root of the course - `Record<string, string>`
+- `assertions`: an onject of locale names and their corresponding paths to a JSON file containing custom assertions - `string`
 
 ````admonish example
 ```json
@@ -176,6 +100,9 @@ This configures files, terminals, and previews to open when the course is opened
   "curriculum": {
     "locales": {
       "english": "./curriculum/locales/english"
+    },
+    "assertions: {
+      "afrikaans": "./curriculum/assertions/afrikaans.json"
     }
   }
 }
@@ -221,9 +148,7 @@ Currently, `english` is a required locale, and is used as the default.
 ### Definitions
 
 - `id`: A unique, incremental integer - `number`
-- `title`: The human-readable title of the project - `string`
 - `dashedName`: The name of the project corresponding to the `curriculum/locales/<PROJECT_DASHED_NAME>.md` file - `string`
-- `description`: The description of the project shown on the landing page - `string`
 - `isIntegrated`: Whether or not to treat the project as a single-lesson project - `boolean` (default: `false`)
 - `isPublic`: Whether or not to enable the project for public viewing. **Note:** the project will still be visible on the landing page, but will be disabled - `boolean` (default: `false`)
 - `currentLesson`: The current lesson of the project - `number` (default: `1`)
@@ -254,9 +179,7 @@ Currently, `english` is a required locale, and is used as the default.
 [
   {
     "id": 0,
-    "title": "Learn X by Building Y",
     "dashedName": "learn-x-by-building-y",
-    "description": "In this project, you'll learn X by building Y",
     "isIntegrated": false,
     "isPublic": false,
     "currentLesson": 1,
@@ -278,9 +201,3 @@ Currently, `english` is a required locale, and is used as the default.
 ```admonish warning
 Resetting a step removes all untracked files from the project directory. To prevent this for specific files, add them to a boilerplate `.gitignore` file, or the one in root.
 ```
-
-## Environment
-
-### `FCC_OS_PORT`
-
-By default, the server and client communicate over port `8080`. If this is undesirable, the `FCC_OS_PORT` environment variable can be set.

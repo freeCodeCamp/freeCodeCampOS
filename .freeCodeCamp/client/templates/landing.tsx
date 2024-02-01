@@ -6,23 +6,25 @@ interface LandingProps {
   sock: (type: Events, data: {}) => void;
   projects: ProjectI[];
   freeCodeCampConfig: FreeCodeCampConfigI;
+  locale: string;
 }
 
 export const Landing = ({
   sock,
   projects,
-  freeCodeCampConfig
+  freeCodeCampConfig,
+  locale
 }: LandingProps) => {
   return (
     <>
       <p className='description'>
-        {freeCodeCampConfig.client?.landing?.description}
+        {freeCodeCampConfig.client?.landing?.[locale]?.description}
       </p>
       <a
         className='faq'
-        href={freeCodeCampConfig.client?.landing?.['faq-link']}
+        href={freeCodeCampConfig.client?.landing?.[locale]?.['faq-link']}
       >
-        {freeCodeCampConfig.client?.landing?.['faq-text']}
+        {freeCodeCampConfig.client?.landing?.[locale]?.['faq-text']}
       </a>
       <Selection {...{ sock, projects }} />
     </>

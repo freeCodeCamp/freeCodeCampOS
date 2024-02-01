@@ -7,7 +7,7 @@ import { Hints } from './hints';
 
 interface OutputProps {
   isLoading: boolean;
-  hints?: string[];
+  hints: string[];
   tests: TestType[];
   cons: ConsoleError[];
 }
@@ -40,7 +40,7 @@ export const Output = ({ isLoading, hints, tests, cons }: OutputProps) => {
             Console
           </button>
         </li>
-        {hints && (
+        {hints.length ? (
           <li>
             <button
               className='output-btn'
@@ -52,7 +52,7 @@ export const Output = ({ isLoading, hints, tests, cons }: OutputProps) => {
               Hints
             </button>
           </li>
-        )}
+        ) : null}
       </ul>
       {isLoading ? (
         <Loader />
@@ -65,7 +65,7 @@ export const Output = ({ isLoading, hints, tests, cons }: OutputProps) => {
               case 'console':
                 return <Console cons={cons} />;
               case 'hints':
-                return <Hints hints={hints!} />;
+                return <Hints hints={hints} />;
               default:
                 return <div>No content</div>;
             }

@@ -29,96 +29,66 @@
   "controlWrapper": {
     "scope": "javascript",
     "prefix": "__helpers.controlWrapper()",
-    "body": "__helpers.controlWrapper($1)",
-  },
-  "copyDirectory": {
-    "scope": "javascript",
-    "prefix": "__helpers.copyDirectory()",
-    "body": "__helpers.copyDirectory($1)",
-  },
-  "copyProjectFiles": {
-    "scope": "javascript",
-    "prefix": "__helpers.copyProjectFiles()",
-    "body": "__helpers.copyProjectFiles($1)",
-  },
-  "fileExists": {
-    "scope": "javascript",
-    "prefix": "__helpers.fileExists()",
-    "body": "__helpers.fileExists($1)",
+    "body": "__helpers.controlWrapper($1)"
   },
   "getBashHistory": {
     "scope": "javascript",
     "prefix": "__helpers.getBashHistory()",
-    "body": "__helpers.getBashHistory()",
+    "body": "__helpers.getBashHistory()"
   },
   "getCommandOutput": {
     "scope": "javascript",
     "prefix": "__helpers.getCommandOutput()",
-    "body": "__helpers.getCommandOutput($1)",
+    "body": "__helpers.getCommandOutput($1)"
   },
   "getCWD": {
     "scope": "javascript",
     "prefix": "__helpers.getCWD()",
-    "body": "__helpers.getCWD()",
-  },
-  "getDirectory": {
-    "scope": "javascript",
-    "prefix": "__helpers.getDirectory()",
-    "body": "__helpers.getDirectory($1)",
-  },
-  "getFile": {
-    "scope": "javascript",
-    "prefix": "__helpers.getFile()",
-    "body": "__helpers.getFile($1)",
-  },
-  "getJsonFile": {
-    "scope": "javascript",
-    "prefix": "__helpers.getJsonFile()",
-    "body": "__helpers.getJsonFile($1)",
+    "body": "__helpers.getCWD()"
   },
   "getLastCommand": {
     "scope": "javascript",
     "prefix": "__helpers.getLastCommand()",
-    "body": "__helpers.getLastCommand($1)",
+    "body": "__helpers.getLastCommand($1)"
   },
   "getLastCWD": {
     "scope": "javascript",
     "prefix": "__helpers.getLastCWD()",
-    "body": "__helpers.getLastCWD($1)",
+    "body": "__helpers.getLastCWD($1)"
   },
   "getTemp": {
     "scope": "javascript",
     "prefix": "__helpers.getTemp()",
-    "body": "__helpers.getTemp()",
+    "body": "__helpers.getTemp()"
   },
   "getTerminalOutput": {
     "scope": "javascript",
     "prefix": "__helpers.getTerminalOutput()",
-    "body": "__helpers.getTerminalOutput()",
+    "body": "__helpers.getTerminalOutput()"
   },
   "importSansCache": {
     "scope": "javascript",
     "prefix": "__helpers.importSansCache()",
-    "body": "__helpers.importSansCache($1)",
+    "body": "__helpers.importSansCache($1)"
   },
   "logover": {
     "scope": "javascript",
     "prefix": "__helpers.logover()",
-    "body": "__helpers.logover($1)",
+    "body": "__helpers.logover($1)"
   },
   "makeDirectory": {
     "scope": "javascript",
     "prefix": "__helpers.makeDirectory()",
-    "body": "__helpers.makeDirectory($1)",
+    "body": "__helpers.makeDirectory($1)"
   },
   "runCommand": {
     "scope": "javascript",
     "prefix": "__helpers.runCommand()",
-    "body": "__helpers.runCommand($1)",
+    "body": "__helpers.runCommand($1)"
   },
   "writeJsonFile": {
     "scope": "javascript",
     "prefix": "__helpers.writeJsonFile()",
-    "body": "__helpers.writeJsonFile($1)",
+    "body": "__helpers.writeJsonFile($1)"
   }
 }

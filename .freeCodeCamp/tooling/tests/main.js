@@ -25,6 +25,7 @@ import { runLesson } from '../lesson.js';
 import { join } from 'node:path';
 import { Worker } from 'node:worker_threads';
 import { pluginEvents } from '../../plugin/index.js';
+import { t } from '../t.js';
 
 try {
   const plugins = freeCodeCampConfig.tooling?.plugins;
@@ -167,6 +168,11 @@ export async function runTests(ws, projectDashedName) {
       if (error) {
         if (error.type !== 'AssertionError') {
           logover.error(`Test #${testId}:`, error);
+        }
+
+        if (error.text?.message) {
+          const assertionTranslation = await t(error.text.message, {});
+          error.text.message = assertionTranslation || error.text.message;
         }
 
         const consoleError = {

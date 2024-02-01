@@ -29,7 +29,7 @@ export function updateDescription(ws, description) {
 /**
  * Update the heading of the lesson
  * @param {WebSocket} ws WebSocket connection to the client
- * @param {string} projectHeading Project heading
+ * @param {{lessonNumber: number; title: string;}} projectHeading Project heading
  */
 export function updateProjectHeading(ws, projectHeading) {
   ws.send(
@@ -102,6 +102,15 @@ export function updateConsole(ws, cons) {
  */
 export function updateError(ws, error) {
   ws.send(parse({ event: 'update-error', data: { error } }));
+}
+
+/**
+ * Update the current locale
+ * @param {WebSocket} ws WebSocket connection to the client
+ * @param {string} locale Locale string
+ */
+export function updateLocale(ws, locale) {
+  ws.send(parse({ event: 'update-locale', data: locale }));
 }
 
 /**

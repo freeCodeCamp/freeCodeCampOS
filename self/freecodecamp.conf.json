@@ -1,44 +1,22 @@
 {
-  "path": ".",
   "version": "0.1.0",
-  "prepare": "sed -i 's#WD=/workspace/freeCodeCampOS#WD=$(pwd)#g' ./bash/.bashrc",
-  "scripts": {
-    "develop-course": "FCC_OS_PORT=8080 NODE_ENV=development npm run start",
-    "run-course": "FCC_OS_PORT=8080 NODE_ENV=production && npm run start",
-    "test": {
-      "functionName": "handleMessage",
-      "arguments": [
-        {
-          "message": "Hello World!",
-          "type": "info"
-        }
-      ]
-    }
-  },
-  "workspace": {
-    "autoStart": true,
-    "previews": [
-      {
-        "open": true,
-        "url": "http://localhost:8080",
-        "showLoader": true,
-        "timeout": 4000
-      }
-    ]
-  },
-  "bash": {
-    ".bashrc": "./bash/.bashrc",
-    "sourcerer.sh": "./bash/sourcerer.sh"
-  },
+  "port": 8080,
   "client": {
     "assets": {
       "header": "./client/assets/fcc_primary_large.svg",
       "favicon": "./client/assets/fcc_primary_small.svg"
     },
     "landing": {
-      "description": "Placeholder description",
-      "faq-link": "https://freecodecamp.org",
-      "faq-text": "Link to FAQ related to course"
+      "english": {
+        "description": "Placeholder description",
+        "faq-link": "https://freecodecamp.org",
+        "faq-text": "Link to FAQ related to course"
+      },
+      "afrikaans": {
+        "description": "Beskrywing",
+        "faq-link": "https://freecodecamp.org",
+        "faq-text": "Skakel na gereelde vra"
+      }
     },
     "static": {
       "/images": "./curriculum/images",
@@ -51,7 +29,11 @@
   },
   "curriculum": {
     "locales": {
-      "english": "./curriculum/locales/english"
+      "english": "./curriculum/locales/english",
+      "afrikaans": "./curriculum/locales/afrikaans"
+    },
+    "assertions": {
+      "afrikaans": "./curriculum/assertions/afrikaans.json"
     }
   },
   "hotReload": {

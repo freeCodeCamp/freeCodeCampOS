@@ -8,7 +8,7 @@ import { logover } from './logger.js';
 // ---------------
 // GENERIC HELPERS
 // ---------------
-const PATH_TERMINAL_OUT = join(ROOT, '.logs/.terminal-out.log');
+const PATH_TERMINAL_OUT = join(ROOT, '.logs/.terminal_out.log');
 const PATH_BASH_HISTORY = join(ROOT, '.logs/.bash_history.log');
 const PATH_CWD = join(ROOT, '.logs/.cwd.log');
 const PATH_TEMP = join(ROOT, '.logs/.temp.log');
@@ -48,7 +48,10 @@ async function controlWrapper(cb, { timeout = 10000, stepSize = 250 }) {
  * @returns {Promise<string>}
  */
 async function getBashHistory() {
-  const bashHistory = await readFile(PATH_BASH_HISTORY, 'utf8');
+  const bashHistory = await readFile(PATH_BASH_HISTORY, {
+    encoding: 'utf8',
+    flag: 'a+'
+  });
   return bashHistory;
 }
 
@@ -72,7 +75,10 @@ async function getCommandOutput(command, path = '') {
  * @returns {Promise<string>}
  */
 async function getCWD() {
-  const cwd = await readFile(PATH_CWD, 'utf8');
+  const cwd = await readFile(PATH_CWD, {
+    encoding: 'utf8',
+    flag: 'a+'
+  });
   return cwd;
 }
 
@@ -109,16 +115,22 @@ async function getLastCWD(howManyBack = 0) {
  * @returns {Promise<string>} The `.temp.log` file contents
  */
 async function getTemp() {
-  const tempLogs = await readFile(PATH_TEMP, 'utf8');
+  const tempLogs = await readFile(PATH_TEMP, {
+    encoding: 'utf8',
+    flag: 'a+'
+  });
   return tempLogs;
 }
 
 /**
- * Get the `.logs/.terminal-out.log` file contents, or `throw` if not found
- * @returns {Promise<string>} The `.terminal-out.log` file contents
+ * Get the `.logs/.terminal_out.log` file contents, or `throw` if not found
+ * @returns {Promise<string>} The `.terminal_out.log` file contents
  */
 async function getTerminalOutput() {
-  const terminalLogs = await readFile(PATH_TERMINAL_OUT, 'utf8');
+  const terminalLogs = await readFile(PATH_TERMINAL_OUT, {
+    encoding: 'utf8',
+    flag: 'a+'
+  });
   return terminalLogs;
 }
 

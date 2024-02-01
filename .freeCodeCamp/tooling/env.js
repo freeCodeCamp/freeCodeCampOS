@@ -1,6 +1,7 @@
 import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { logover } from './logger.js';
+import { getProjectTitle, getProjectDescription } from './parser.js';
 
 export const ROOT = process.env.INIT_CWD || process.cwd();
 
@@ -9,7 +10,6 @@ export async function getConfig() {
   const conf = JSON.parse(config);
   const defaultConfig = {
     curriculum: {
-      path: 'curriculum',
       locales: {
         english: 'curriculum/locales/english'
       }
@@ -64,9 +64,9 @@ export async function setState(obj) {
 }
 
 /**
- * @param {string} project Project dashed name
+ * @param {string} projectDashedName Project dashed name
  */
-export async function getProjectConfig(project) {
+export async function getProjectConfig(projectDashedName) {
   const projects = JSON.parse(
     await readFile(
       join(ROOT, freeCodeCampConfig.config['projects.json']),
@@ -74,7 +74,19 @@ export async function getProjectConfig(project) {
     )
   );
 
-  const proj = projects.find(p => p.dashedName === project);
+  const project = projects.find(p => p.dashedName === projectDashedName);
+
+  // Add title and description to project
+  const { locale } = await getState();
+  const projectFilePath = join(
+    ROOT,
+    freeCodeCampConfig.curriculum.locales[locale],
+    project.dashedName + '.md'
+  );
+  const title = await getProjectTitle(projectFilePath);
+  const description = await getProjectDescription(projectFilePath);
+  project.title = title;
+  project.description = description;
 
   const defaultConfig = {
     testPollingRate: 333,
@@ -86,10 +98,10 @@ export async function getProjectConfig(project) {
     breakOnFailure: false,
     useGitBuildOnProduction: false // TODO: Necessary?
   };
-  if (!proj) {
+  if (!project) {
     return defaultConfig;
   }
-  return { ...defaultConfig, ...proj };
+  return { ...defaultConfig, ...project };
 }
 
 /**

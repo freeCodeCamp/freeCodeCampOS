@@ -60,10 +60,9 @@ export async function runLesson(ws, projectDashedName) {
     }
     resetBottomPanel(ws);
 
-    const { projectTopic, currentProject } = await getProjectTitle(projectFile);
+    const title = await getProjectTitle(projectFile);
     updateProjectHeading(ws, {
-      projectTopic,
-      currentProject,
+      title,
       lessonNumber: currentLesson
     });
     updateDescription(ws, description);

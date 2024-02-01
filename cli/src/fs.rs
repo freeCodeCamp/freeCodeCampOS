@@ -5,8 +5,7 @@ use serde_json::{json, Value};
 
 use crate::{
     conf::{
-        Bash, Client, Conf, Config, Curriculum, HotReload, Landing, Locales, Preview, Project,
-        Scripts, State, Tooling, Workspace,
+        Client, Conf, Config, Curriculum, HotReload, Landing, Locales, Project, State, Tooling,
     },
     environment::Environment,
     features::Features,
@@ -47,8 +46,6 @@ impl Course {
         progress_bar.inc(1);
         self.touch_injectables();
         progress_bar.inc(1);
-        self.touch_logs();
-        progress_bar.inc(1);
         self.touch_plugins();
         progress_bar.inc(1);
         self.touch_projects();
@@ -70,7 +67,7 @@ impl Course {
     fn git_init(&self) {
         if self.is_git_repository {
             if let Err(e) = self.command("git", vec!["init"]) {
-                println!("Failed to run `git init`: {e}")
+                println!("Failed to run `git init`: {e}");
             }
         }
     }
@@ -107,7 +104,7 @@ impl Course {
           "author": "",
           "license": "MIT",
           "dependencies": {
-            "@freecodecamp/freecodecamp-os": "^2.0.0"
+            "@freecodecamp/freecodecamp-os": "^3.0.0"
           },
           "type": "module"
         });
@@ -144,15 +141,6 @@ impl Course {
     }
 
     fn touch_conf(&self) {
-        let bash = if self.features.contains(&Features::Terminal) {
-            Some(Bash {
-                bashrc: "./bash/.bashrc".to_string(),
-                sourcerer_sh: "./bash/sourcerer.sh".to_string(),
-            })
-        } else {
-            None
-        };
-
         let static_files = if self.features.contains(&Features::ScriptInjection) {
             Some(json!( {
                     "/scripts/injectable.js": "./client/injectable.js".to_string(),
@@ -180,32 +168,16 @@ impl Course {
 
         let conf = Conf {
             version: "0.0.1".try_into().unwrap(),
-            path: None,
-            prepare: Some(
-                "sed -i 's#WD=/workspace/freeCodeCampOS#WD=$(pwd)#g' ./bash/.bashrc".to_string(),
-            ),
-            scripts: Scripts {
-                develop_course: "FCC_OS_PORT=8080 NODE_ENV=development npm run start".to_string(),
-                run_course: "FCC_OS_PORT=8080 NODE_ENV=production && npm run start".to_string(),
-                test: None,
-            },
-            workspace: Some(Workspace {
-                auto_start: Some(true),
-                previews: Some(vec![Preview {
-                    open: true,
-                    url: "http://localhost:8080".to_string(),
-                    show_loader: true,
-                    timeout: 4000,
-                }]),
-            }),
-            bash,
+            port: Some(8080),
             client: Some(Client {
                 assets: None,
-                landing: Some(Landing {
-                    description: "Course description".to_string(),
-                    faq_link: None,
-                    faq_text: None,
-                }),
+                landing: Some(json!({
+                    "english": Landing {
+                        description: "Course description".to_string(),
+                        faq_link: None,
+                        faq_text: None,
+                    }
+                })),
                 static_files,
             }),
             config: Config {
@@ -214,6 +186,7 @@ impl Course {
             },
             curriculum: Curriculum {
                 locales: Locales { english },
+                assertions: None,
             },
             hot_reload: Some(HotReload {
                 ignore: vec![
@@ -247,6 +220,8 @@ impl Course {
             eprintln!("Failed to create curriculum directory: {e}");
         } else {
             let boilerplate = r"# Project {i}
+            
+Project description.
 
 ## 0
 
@@ -292,12 +267,39 @@ assert.fail();
         if self.environment.contains(&Environment::Codespaces)
             || self.environment.contains(&Environment::VSCode)
         {
-            unimplemented!();
+            let devcontainer = json!({
+              "customizations": {
+                "vscode": {
+                  "extensions": [
+                    "dbaeumer.vscode-eslint",
+                    "freeCodeCamp.freecodecamp-courses@3.0.0",
+                    "freeCodeCamp.freecodecamp-dark-vscode-theme"
+                  ]
+                }
+              },
+              "forwardPorts": [8080],
+              "workspaceFolder": "/workspace/freeCodeCampOS",
+              "dockerFile": "../Dockerfile",
+              "context": "..",
+              "updateRemoteUserUID": false,
+              "remoteUser": "gitpod",
+              "containerUser": "gitpod"
+            });
+            if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join(".devcontainer")) {
+                eprintln!("Failed to create .devcontainer directory: {e}");
+            } else if let Err(e) = std::fs::write(
+                self.canonicalized_path
+                    .join(".devcontainer/devcontainer.json"),
+                serde_json::to_string_pretty(&devcontainer)
+                    .expect("Failed to serialise devcontainer"),
+            ) {
+                eprintln!("Failed to create .devcontainer/devcontainer.json file: {e}");
+            }
         }
     }
 
     fn touch_docker(&self) {
-        let dockerfile = r"FROM gitpod/workspace-full:2024-01-17-19-15-31
+        let dockerfile = r"FROM gitpod/workspace-full
 
 WORKDIR /workspace/freeCodeCampOS
 
@@ -323,7 +325,7 @@ ports:
 
 vscode:
   extensions:
-    - https://github.com/freeCodeCamp/courses-vscode-extension/releases/download/v2.1.0/freecodecamp-courses-2.1.0.vsix
+    - https://github.com/freeCodeCamp/courses-vscode-extension/releases/download/v3.0.0/freecodecamp-courses-3.0.0.vsix
     - https://github.com/freeCodeCamp/freecodecamp-dark-vscode-theme/releases/download/v1.0.0/freecodecamp-dark-vscode-theme-1.0.0.vsix
 ";
             if let Err(e) = std::fs::write(self.canonicalized_path.join(".gitpod.yml"), gitpod) {
@@ -453,52 +455,21 @@ window.onload = function () {
         }
     }
 
-    fn touch_logs(&self) {
-        if self.features.contains(&Features::Terminal) {
-            let log_files = vec![
-                ".bash_history.log",
-                ".cwd.log",
-                ".history_cwd.log",
-                ".next_command.log",
-                ".temp.log",
-                ".terminal-out.log",
-            ];
-            if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join(".logs")) {
-                eprintln!("Failed to create .logs directory: {e}");
-            } else {
-                for log_file in log_files {
-                    if let Err(e) = std::fs::write(
-                        self.canonicalized_path.join(format!(".logs/{log_file}")),
-                        String::new(),
-                    ) {
-                        eprintln!("Failed to create .logs/{log_file} file: {e}");
-                    }
-                }
-            }
-        }
-    }
-
     fn touch_plugins(&self) {
         if self.features.contains(&Features::PluginSystem) {
             let plugins = r"import { pluginEvents } from '@freecodecamp/freecodecamp-os/.freeCodeCamp/plugin/index.js';
 
-pluginEvents.onTestsStart = async (project, testsState) => {
-};
+pluginEvents.onTestsStart = async (project, testsState) => {};
 
-pluginEvents.onTestsEnd = async (project, testsState) => {
-};
+pluginEvents.onTestsEnd = async (project, testsState) => {};
 
-pluginEvents.onProjectStart = async project => {
-};
+pluginEvents.onProjectStart = async project => {};
 
-pluginEvents.onProjectFinished = async project => {
-};
+pluginEvents.onProjectFinished = async project => {};
 
-pluginEvents.onLessonFailed = async project => {
-};
+pluginEvents.onLessonFailed = async project => {};
 
-pluginEvents.onLessonPassed = async project => {
-};
+pluginEvents.onLessonPassed = async project => {};
 ";
             if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join("tooling")) {
                 eprintln!("Failed to create tooling directory: {e}");
@@ -518,10 +489,8 @@ pluginEvents.onLessonPassed = async project => {
             for i in 0..self.num_projects {
                 let project = Project {
                     id: u16::from(i),
-                    title: format!("Project {i}"),
                     dashed_name: format!("project-{i}"),
                     is_integrated: Some(false),
-                    description: format!("Project {i} description"),
                     is_public: Some(true),
                     current_lesson: 0,
                     run_tests_on_watch: Some(true),
@@ -580,7 +549,19 @@ pluginEvents.onLessonPassed = async project => {
                         "./bash/sourcerer.sh"
                     ]
                 }
-            }
+            },
+            "freecodecamp-courses.autoStart": true,
+            "freecodecamp-courses.prepare": "sed -i \"s#WD=.*#WD=$(pwd)#g\" ./bash/.bashrc",
+            "freecodecamp-courses.scripts.develop-course": "NODE_ENV=development npm run start",
+            "freecodecamp-courses.scripts.run-course": "NODE_ENV=production npm run start",
+            "freecodecamp-courses.workspace.previews": [
+                {
+                    "open": true,
+                    "url": "http://localhost:8080",
+                    "showLoader": true,
+                    "timeout": 4000
+                }
+            ]
         });
         if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join(".vscode")) {
             eprintln!("Failed to create .vscode directory: {e}");

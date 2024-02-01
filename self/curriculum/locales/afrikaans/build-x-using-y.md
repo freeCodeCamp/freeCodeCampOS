@@ -1,12 +1,12 @@
-# Build X Using Y
+# Bou 'n X met behulp van Y
 
-In this course, you will build x using y.
+In hierdie kursus, sal jy 'n X bou met behulp van Y.
 
 ## 0
 
 ### --description--
 
-Some description here.
+'n Beskrywing here.
 
 ```rust
 fn main() {
@@ -14,13 +14,13 @@ fn main() {
 }
 ```
 
-Here is an image:
+Hier is 'n beeld:
 
 <img src="../../images/fcc_primary_large.png" width="300px" />
 
 ### --tests--
 
-First test using Chai.js `assert`.
+Eerste toets met Chai.js `assert`.
 
 ```js
 // 0
@@ -30,6 +30,7 @@ assert.equal(true, true);
 ```
 
 Second test using global variables passed from `before` hook.
+Tweede toets met behulp van globale veranderlikes wat vanaf die `before` haak oorgedra word.
 
 ```js
 // 1

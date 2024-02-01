@@ -1,24 +1,23 @@
 import { join } from 'path';
-import { getState } from './env.js';
+import { getConfig, getState } from './env.js';
+import { ROOT } from './env.js';
 
 export async function t(key, args = {}, forceLangToUse) {
   const { locale: loc } = await getState();
   // Get key from ./locales/{locale}/comments.json
   // Read file and parse JSON
   const locale = forceLangToUse ?? loc;
-  // TODO: Not used anywhere, but needs path fixing too.
-  const comments = import(
-    join(
-      '@freecodecamp/freecodecamp-os',
-      `.freeCodeCamp/tooling/locales/${locale}/comments.json`
-    ),
-    {
-      assert: { type: 'json' }
-    }
-  );
+  const config = await getConfig();
+  const assertions = config.curriculum?.assertions?.[locale];
+  if (!assertions) {
+    return key;
+  }
+  const comments = await import(join(ROOT, assertions), {
+    assert: { type: 'json' }
+  });
 
   // Get value from JSON
-  const value = comments[key];
+  const value = comments.default[key];
   // Replace placeholders in value with args
   const result =
     Object.values(args)?.length > 0
