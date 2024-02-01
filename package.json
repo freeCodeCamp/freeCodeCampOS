@@ -13,7 +13,7 @@
     "prepublishOnly": "npm run build:client"
   },
   "dependencies": {
-    "@types/node": "18.19.12",
+    "@types/node": "18.19.13",
     "chai": "4.4.1",
     "chokidar": "3.5.3",
     "express": "4.18.2",
