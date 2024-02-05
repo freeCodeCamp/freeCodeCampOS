@@ -38,6 +38,7 @@ pub struct Assets {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Landing {
+    pub title: String,
     pub description: String,
     #[serde(rename = "faq-link")]
     pub faq_link: Option<String>,
