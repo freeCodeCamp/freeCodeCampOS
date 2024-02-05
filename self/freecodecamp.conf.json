@@ -8,11 +8,13 @@
     },
     "landing": {
       "english": {
+        "title": "freeCodeCamp-OS",
         "description": "Placeholder description",
         "faq-link": "https://freecodecamp.org",
         "faq-text": "Link to FAQ related to course"
       },
       "afrikaans": {
+        "title": "freeCodeCamp-OS",
         "description": "Beskrywing",
         "faq-link": "https://freecodecamp.org",
         "faq-text": "Skakel na gereelde vra"

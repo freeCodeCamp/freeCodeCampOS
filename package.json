@@ -1,7 +1,7 @@
 {
   "name": "@freecodecamp/freecodecamp-os",
   "author": "freeCodeCamp",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Package used for freeCodeCamp projects with the freeCodeCamp Courses VSCode extension",
   "scripts": {
     "build:client": "NODE_ENV=production webpack --config ./.freeCodeCamp/webpack.config.cjs",
@@ -13,12 +13,11 @@
     "prepublishOnly": "npm run build:client"
   },
   "dependencies": {
-    "@types/node": "18.19.14",
     "chai": "4.4.1",
     "chokidar": "3.5.3",
     "express": "4.18.2",
     "logover": "2.0.0",
-    "nodemon": "3.0.3"
+    "ws": "8.16.0"
   },
   "devDependencies": {
     "@babel/core": "7.23.9",
@@ -27,6 +26,7 @@
     "@babel/preset-react": "7.23.3",
     "@babel/preset-typescript": "7.23.3",
     "@types/marked": "5.0.2",
+    "@types/node": "20.11.16",
     "@types/prismjs": "1.26.3",
     "@types/react": "18.2.53",
     "@types/react-dom": "18.2.18",
@@ -37,6 +37,7 @@
     "html-webpack-plugin": "5.6.0",
     "marked": "9.1.6",
     "marked-highlight": "2.1.0",
+    "nodemon": "3.0.3",
     "prismjs": "1.29.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",

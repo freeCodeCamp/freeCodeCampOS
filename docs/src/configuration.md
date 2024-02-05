@@ -54,7 +54,8 @@ By default, the server and client communicate over port `8080`. To change this, 
 
 - `assets.header`: path relative to the root of the course - `string`
 - `assets.favicon`: path relative to the root of the course - `string`
-- `landing.description`: description of the course shown on the landing page - `string`
+- `landing.<locale>.description`: description of the course shown on the landing page - `string`
+- `landing.<locale>.title`: title of the course shown on the landing page - `string`
 - `landing.<locale>.faq-link`: link to the FAQ page - `string`
 - `landing.<locale>.faq-text`: text to display for the FAQ link - `string`
 - `static`: static resources to serve - `string | string[] | Record<string, string> | Record<string, string>[]`

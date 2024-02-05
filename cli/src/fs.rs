@@ -104,7 +104,7 @@ impl Course {
           "author": "",
           "license": "MIT",
           "dependencies": {
-            "@freecodecamp/freecodecamp-os": "^3.0.0"
+            "@freecodecamp/freecodecamp-os": "^3.1.0"
           },
           "type": "module"
         });
@@ -173,6 +173,7 @@ impl Course {
                 assets: None,
                 landing: Some(json!({
                     "english": Landing {
+                        title: "Course title".to_string(),
                         description: "Course description".to_string(),
                         faq_link: None,
                         faq_text: None,
