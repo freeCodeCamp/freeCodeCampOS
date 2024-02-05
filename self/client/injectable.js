@@ -7,7 +7,6 @@ function checkForToken() {
       console.log(token);
       __result = token;
     } catch (e) {
-      console.error(e);
       __result = null;
     }`;
   socket.send(
