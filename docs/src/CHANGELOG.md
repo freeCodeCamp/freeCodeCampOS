@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.1.0] - 2024-02-05
+
+### Add
+
+- `client.landing.locale.title` field for landing page `h1`
+
+### Fix
+
+- Give `.description` element a `max-width` of `750px`
+- Add `ws` as dependency
+
 ## [3.0.0] - 2024-02-01
 
 ### Change

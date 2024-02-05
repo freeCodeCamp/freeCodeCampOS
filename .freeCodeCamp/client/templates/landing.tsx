@@ -15,8 +15,10 @@ export const Landing = ({
   freeCodeCampConfig,
   locale
 }: LandingProps) => {
+  const title = freeCodeCampConfig.client?.landing?.[locale]?.title;
   return (
     <>
+      {title && <h1>{title}</h1>}
       <p className='description'>
         {freeCodeCampConfig.client?.landing?.[locale]?.description}
       </p>
