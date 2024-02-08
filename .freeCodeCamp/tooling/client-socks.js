@@ -1,3 +1,5 @@
+import { parseMarkdown } from './parser.js';
+
 export function toggleLoaderAnimation(ws) {
   ws.send(parse({ event: 'toggle-loader-animation' }));
 }
@@ -8,7 +10,13 @@ export function toggleLoaderAnimation(ws) {
  * @param {Test[]} tests Array of Test objects
  */
 export function updateTests(ws, tests) {
-  ws.send(parse({ event: 'update-tests', data: { tests } }));
+  const renderedTests = tests?.map((test, i) => {
+    return {
+      ...test,
+      testText: parseMarkdown(test.testText)
+    };
+  });
+  ws.send(parse({ event: 'update-tests', data: { tests: renderedTests } }));
 }
 /**
  * Update single test in the tests state
@@ -16,7 +24,11 @@ export function updateTests(ws, tests) {
  * @param {Test} test Test object
  */
 export function updateTest(ws, test) {
-  ws.send(parse({ event: 'update-test', data: { test } }));
+  const renderedTest = {
+    ...test,
+    testText: parseMarkdown(test.testText)
+  };
+  ws.send(parse({ event: 'update-test', data: { test: renderedTest } }));
 }
 /**
  * Update the lesson description
@@ -24,7 +36,13 @@ export function updateTest(ws, test) {
  * @param {string} description Lesson description
  */
 export function updateDescription(ws, description) {
-  ws.send(parse({ event: 'update-description', data: { description } }));
+  const renderedDescription = parseMarkdown(description);
+  ws.send(
+    parse({
+      event: 'update-description',
+      data: { description: renderedDescription }
+    })
+  );
 }
 /**
  * Update the heading of the lesson
@@ -32,10 +50,14 @@ export function updateDescription(ws, description) {
  * @param {{lessonNumber: number; title: string;}} projectHeading Project heading
  */
 export function updateProjectHeading(ws, projectHeading) {
+  const renderedProjectHeading = {
+    lessonNumber: projectHeading.lessonNumber,
+    title: parseMarkdown(projectHeading.title)
+  };
   ws.send(
     parse({
       event: 'update-project-heading',
-      data: projectHeading
+      data: renderedProjectHeading
     })
   );
 }
@@ -45,10 +67,17 @@ export function updateProjectHeading(ws, projectHeading) {
  * @param {Project} project Project object
  */
 export function updateProject(ws, project) {
+  const renderedProject = project
+    ? {
+        title: parseMarkdown(project.title),
+        description: parseMarkdown(project.description),
+        ...project
+      }
+    : null;
   ws.send(
     parse({
       event: 'update-project',
-      data: project
+      data: renderedProject
     })
   );
 }
@@ -58,10 +87,17 @@ export function updateProject(ws, project) {
  * @param {Project[]} projects Array of Project objects
  */
 export function updateProjects(ws, projects) {
+  const renderedProjects = projects?.map(project => {
+    return {
+      title: parseMarkdown(project.title),
+      description: parseMarkdown(project.description),
+      ...project
+    };
+  });
   ws.send(
     parse({
       event: 'update-projects',
-      data: projects
+      data: renderedProjects
     })
   );
 }
@@ -84,7 +120,8 @@ export function updateFreeCodeCampConfig(ws, config) {
  * @param {string[]} hints Markdown strings
  */
 export function updateHints(ws, hints) {
-  ws.send(parse({ event: 'update-hints', data: { hints } }));
+  const renderedHints = hints?.map(hint => parseMarkdown(hint));
+  ws.send(parse({ event: 'update-hints', data: { hints: renderedHints } }));
 }
 /**
  *
@@ -92,6 +129,11 @@ export function updateHints(ws, hints) {
  * @param {{error: string; testText: string; passed: boolean;isLoading: boolean;testId: number;}} cons
  */
 export function updateConsole(ws, cons) {
+  cons.testText = parseMarkdown(cons.testText);
+  if (cons.error) {
+    const error = `\`\`\`json\n${cons.error}\n\`\`\``;
+    cons.error = parseMarkdown(error);
+  }
   ws.send(parse({ event: 'update-console', data: { cons } }));
 }
 
@@ -130,7 +172,7 @@ export function parse(obj) {
  * @param {WebSocket} ws WebSocket connection to the client
  */
 export function resetBottomPanel(ws) {
-  updateHints(ws, '');
+  updateHints(ws, []);
   updateTests(ws, []);
   updateConsole(ws, {});
 }

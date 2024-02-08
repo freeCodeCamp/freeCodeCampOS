@@ -1,6 +1,5 @@
 import { Loader } from './loader';
 import { TestType } from '../types';
-import { parseMarkdown } from '../utils';
 
 export const Test = ({ testText, passed, isLoading, testId }: TestType) => {
   return (
@@ -10,7 +9,7 @@ export const Test = ({ testText, passed, isLoading, testId }: TestType) => {
       </span>
       <div
         style={{ display: 'inline' }}
-        dangerouslySetInnerHTML={{ __html: parseMarkdown(testText) }}
+        dangerouslySetInnerHTML={{ __html: testText }}
       ></div>
     </li>
   );

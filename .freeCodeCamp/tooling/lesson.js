@@ -1,14 +1,6 @@
 // This file parses answer files for lesson content
 import { join } from 'path';
 import {
-  getLessonFromFile,
-  getLessonDescription,
-  getLessonTextsAndTests,
-  getProjectTitle,
-  getLessonSeed,
-  isForceFlag
-} from './parser.js';
-import {
   updateDescription,
   updateProjectHeading,
   updateTests,
@@ -29,16 +21,12 @@ import { pluginEvents } from '../plugin/index.js';
 export async function runLesson(ws, projectDashedName) {
   const project = await getProjectConfig(projectDashedName);
   const { isIntegrated, dashedName, seedEveryLesson, currentLesson } = project;
-  const { locale, lastSeed } = await getState();
-  const projectFile = join(
-    ROOT,
-    freeCodeCampConfig.curriculum.locales[locale],
-    dashedName + '.md'
-  );
+  const { lastSeed } = await getState();
   try {
-    const lesson = await getLessonFromFile(projectFile, currentLesson);
-
-    const description = getLessonDescription(lesson);
+    const { description, seed, isForce, tests } = await pluginEvents.getLesson(
+      projectDashedName,
+      currentLesson
+    );
 
     if (currentLesson === 0) {
       await pluginEvents.onProjectStart(project);
@@ -47,10 +35,9 @@ export async function runLesson(ws, projectDashedName) {
     updateProject(ws, project);
 
     if (!isIntegrated) {
-      const textsAndTestsArr = getLessonTextsAndTests(lesson);
       updateTests(
         ws,
-        textsAndTestsArr.reduce((acc, curr, i) => {
+        tests.reduce((acc, curr, i) => {
           return [
             ...acc,
             { passed: false, testText: curr[0], testId: i, isLoading: false }
@@ -60,7 +47,7 @@ export async function runLesson(ws, projectDashedName) {
     }
     resetBottomPanel(ws);
 
-    const title = await getProjectTitle(projectFile);
+    const { title } = await pluginEvents.getProjectMeta(projectDashedName);
     updateProjectHeading(ws, {
       title,
       lessonNumber: currentLesson
@@ -74,9 +61,7 @@ export async function runLesson(ws, projectDashedName) {
       (lastSeed?.projectDashedName === dashedName &&
         lastSeed?.lessonNumber !== currentLesson)
     ) {
-      const seed = getLessonSeed(lesson);
       if (seed) {
-        const isForce = isForceFlag(seed);
         // force flag overrides seed flag
         if ((seedEveryLesson && !isForce) || (!seedEveryLesson && isForce)) {
           await seedLesson(ws, dashedName);

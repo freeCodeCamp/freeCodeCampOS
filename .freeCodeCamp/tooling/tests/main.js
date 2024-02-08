@@ -5,15 +5,6 @@ import { logover } from '../logger.js';
 import { getProjectConfig, getState, setProjectConfig } from '../env.js';
 import { freeCodeCampConfig, ROOT } from '../env.js';
 import {
-  getLessonFromFile,
-  getBeforeAll,
-  getBeforeEach,
-  getAfterAll,
-  getAfterEach,
-  getLessonHints,
-  getLessonTextsAndTests
-} from '../parser.js';
-import {
   updateTest,
   updateTests,
   updateConsole,
@@ -51,18 +42,14 @@ export async function runTests(ws, projectDashedName) {
   const { locale } = await getState();
   // toggleLoaderAnimation(ws);
   const lessonNumber = project.currentLesson;
-  const projectFile = join(
-    ROOT,
-    freeCodeCampConfig.curriculum.locales[locale],
-    project.dashedName + '.md'
-  );
+
   let testsState = [];
   try {
-    const lesson = await getLessonFromFile(projectFile, lessonNumber);
-    const beforeAll = getBeforeAll(lesson);
-    const beforeEach = getBeforeEach(lesson);
-    const afterAll = getAfterAll(lesson);
-    const afterEach = getAfterEach(lesson);
+    const lesson = await pluginEvents.getLesson(
+      projectDashedName,
+      lessonNumber
+    );
+    const { beforeAll, beforeEach, afterAll, afterEach, hints, tests } = lesson;
 
     if (beforeAll) {
       try {
@@ -76,10 +63,7 @@ export async function runTests(ws, projectDashedName) {
     }
     // toggleLoaderAnimation(ws);
 
-    const hints = getLessonHints(lesson);
-
-    const textsAndTestsArr = getLessonTextsAndTests(lesson);
-    testsState = textsAndTestsArr.map((text, i) => {
+    testsState = tests.map((text, i) => {
       return {
         passed: false,
         testText: text[0],
@@ -120,7 +104,7 @@ export async function runTests(ws, projectDashedName) {
       });
 
       for (let i = 0; i < textsAndTestsArr.length; i++) {
-        const [text, testCode] = textsAndTestsArr[i];
+        const [_text, testCode] = textsAndTestsArr[i];
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
 

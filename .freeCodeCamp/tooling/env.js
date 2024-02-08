@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { logover } from './logger.js';
-import { getProjectTitle, getProjectDescription } from './parser.js';
+import { pluginEvents } from '../plugin/index.js';
 
 export const ROOT = process.env.INIT_CWD || process.cwd();
 
@@ -77,14 +77,9 @@ export async function getProjectConfig(projectDashedName) {
   const project = projects.find(p => p.dashedName === projectDashedName);
 
   // Add title and description to project
-  const { locale } = await getState();
-  const projectFilePath = join(
-    ROOT,
-    freeCodeCampConfig.curriculum.locales[locale],
-    project.dashedName + '.md'
+  const { title, description } = await pluginEvents.getProjectMeta(
+    projectDashedName
   );
-  const title = await getProjectTitle(projectFilePath);
-  const description = await getProjectDescription(projectFilePath);
   project.title = title;
   project.description = description;
 

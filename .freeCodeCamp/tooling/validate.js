@@ -2,14 +2,7 @@ import { join } from 'path';
 import { readdir, access, constants, readFile } from 'fs/promises';
 import { freeCodeCampConfig, ROOT } from './env.js';
 import { logover } from './logger.js';
-import {
-  getLessonDescription,
-  getLessonFromFile,
-  getLessonTextsAndTests,
-  getLessonSeed,
-  getProjectTitle,
-  getProjectDescription
-} from './parser.js';
+import { pluginEvents } from '../plugin/index.js';
 
 const CURRICULUM_PATH = join(
   ROOT,
@@ -241,15 +234,20 @@ export async function validateCurriculum() {
           `Project "${project}" has a lesson number mismatch. Expected "${expectedLessonNumber}" but got "${lessonNumber}"`
         );
       }
-      const lesson = await getLessonFromFile(projectPath, Number(lessonNumber));
-      const description = getLessonDescription(lesson);
+      const {
+        description,
+        seed: seedContents,
+        tests: textsAndTests
+      } = await pluginEvents.getLesson(
+        project.dashedName,
+        Number(lessonNumber)
+      );
       if (!description?.trim()) {
         logover.warn(
           `Project "${project}" has no description for lesson "${lessonNumber}"`
         );
       }
 
-      const seedContents = getLessonSeed(lesson);
       if (seed) {
         const seedPath = join(CURRICULUM_PATH, seed);
         const seedFile = await readFile(seedPath, 'utf8');
@@ -263,7 +261,6 @@ export async function validateCurriculum() {
         }
       }
 
-      const textsAndTests = getLessonTextsAndTests(lesson);
       if (!textsAndTests.length) {
         logover.warn(
           `Project "${project}" has no tests for lesson "${lessonNumber}"`
@@ -285,11 +282,11 @@ export async function validateCurriculum() {
       expectedLessonNumber++;
     }
 
-    const projectTitle = await getProjectTitle(projectPath);
+    const { title: projectTitle, description: projectDescription } =
+      await pluginEvents.getProjectMeta(project.dashedName);
     if (!projectTitle) {
       throw new Error(`Project "${project}" has no title: '${projectTitle}'`);
     }
-    const projectDescription = await getProjectDescription(projectPath);
     if (!projectDescription) {
       throw new Error(
         `Project "${project}" has no description: '${projectDescription}'`
