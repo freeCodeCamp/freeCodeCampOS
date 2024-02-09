@@ -9,12 +9,16 @@ export const Hints = ({ hints }: { hints: string[] }) => {
 };
 
 const HintElement = ({ hint, i }: { hint: string; i: number }) => {
+  const details = `<summary>Hint ${i + 1}</summary>
+  
+  ${hint}`;
   return (
     <div>
-      <details>
-        <summary>Hint ${i + 1}</summary>
-        {hint}
-      </details>
+      <details
+        dangerouslySetInnerHTML={{
+          __html: details
+        }}
+      ></details>
     </div>
   );
 };

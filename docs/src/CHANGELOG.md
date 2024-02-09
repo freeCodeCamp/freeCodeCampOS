@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.2.0] - 2024-02-12
+
+### Add
+
+- Parser API for curriculum files
+  - `pluginEvents.getProjectMeta`
+  - `pluginEvents.getLesson`
+
+### Fix
+
+- Refactor original regex Markdown parser to use `marked.lexer`
+  - This allows for more complex Markdown files to be parsed
+  - Render Markdown in server
+  - Pass HTML string to client to render
+
 ## [3.1.0] - 2024-02-05
 
 ### Add

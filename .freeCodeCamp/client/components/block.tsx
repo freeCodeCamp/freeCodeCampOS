@@ -60,7 +60,11 @@ export const Block = ({
           ) : null}
         </h2>
         <div className='block-info'>
-          <p>{description}</p>
+          <p
+            dangerouslySetInnerHTML={{
+              __html: description
+            }}
+          ></p>
           <span aria-hidden='true'>
             {lessonsCompleted}/{numberOfLessons}
           </span>

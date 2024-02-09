@@ -17,7 +17,7 @@ if (helpers) {
   __helpers = { ...__helpers_c, ...dynamicHelpers };
 }
 
-const { beforeEach = '' } = workerData;
+const { beforeEach = '', project } = workerData;
 
 parentPort.on('message', async ({ testCode, testId }) => {
   let passed = false;

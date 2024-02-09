@@ -10,13 +10,7 @@ export function toggleLoaderAnimation(ws) {
  * @param {Test[]} tests Array of Test objects
  */
 export function updateTests(ws, tests) {
-  const renderedTests = tests?.map((test, i) => {
-    return {
-      ...test,
-      testText: parseMarkdown(test.testText)
-    };
-  });
-  ws.send(parse({ event: 'update-tests', data: { tests: renderedTests } }));
+  ws.send(parse({ event: 'update-tests', data: { tests } }));
 }
 /**
  * Update single test in the tests state
@@ -24,11 +18,7 @@ export function updateTests(ws, tests) {
  * @param {Test} test Test object
  */
 export function updateTest(ws, test) {
-  const renderedTest = {
-    ...test,
-    testText: parseMarkdown(test.testText)
-  };
-  ws.send(parse({ event: 'update-test', data: { test: renderedTest } }));
+  ws.send(parse({ event: 'update-test', data: { test } }));
 }
 /**
  * Update the lesson description
@@ -36,11 +26,10 @@ export function updateTest(ws, test) {
  * @param {string} description Lesson description
  */
 export function updateDescription(ws, description) {
-  const renderedDescription = parseMarkdown(description);
   ws.send(
     parse({
       event: 'update-description',
-      data: { description: renderedDescription }
+      data: { description }
     })
   );
 }
@@ -50,14 +39,10 @@ export function updateDescription(ws, description) {
  * @param {{lessonNumber: number; title: string;}} projectHeading Project heading
  */
 export function updateProjectHeading(ws, projectHeading) {
-  const renderedProjectHeading = {
-    lessonNumber: projectHeading.lessonNumber,
-    title: parseMarkdown(projectHeading.title)
-  };
   ws.send(
     parse({
       event: 'update-project-heading',
-      data: renderedProjectHeading
+      data: projectHeading
     })
   );
 }
@@ -67,17 +52,10 @@ export function updateProjectHeading(ws, projectHeading) {
  * @param {Project} project Project object
  */
 export function updateProject(ws, project) {
-  const renderedProject = project
-    ? {
-        title: parseMarkdown(project.title),
-        description: parseMarkdown(project.description),
-        ...project
-      }
-    : null;
   ws.send(
     parse({
       event: 'update-project',
-      data: renderedProject
+      data: project
     })
   );
 }
@@ -87,17 +65,10 @@ export function updateProject(ws, project) {
  * @param {Project[]} projects Array of Project objects
  */
 export function updateProjects(ws, projects) {
-  const renderedProjects = projects?.map(project => {
-    return {
-      title: parseMarkdown(project.title),
-      description: parseMarkdown(project.description),
-      ...project
-    };
-  });
   ws.send(
     parse({
       event: 'update-projects',
-      data: renderedProjects
+      data: projects
     })
   );
 }
@@ -120,8 +91,7 @@ export function updateFreeCodeCampConfig(ws, config) {
  * @param {string[]} hints Markdown strings
  */
 export function updateHints(ws, hints) {
-  const renderedHints = hints?.map(hint => parseMarkdown(hint));
-  ws.send(parse({ event: 'update-hints', data: { hints: renderedHints } }));
+  ws.send(parse({ event: 'update-hints', data: { hints } }));
 }
 /**
  *
@@ -129,10 +99,15 @@ export function updateHints(ws, hints) {
  * @param {{error: string; testText: string; passed: boolean;isLoading: boolean;testId: number;}} cons
  */
 export function updateConsole(ws, cons) {
-  cons.testText = parseMarkdown(cons.testText);
-  if (cons.error) {
-    const error = `\`\`\`json\n${cons.error}\n\`\`\``;
-    cons.error = parseMarkdown(error);
+  if (Object.keys(cons).length) {
+    if (cons.error) {
+      const error = `\`\`\`json\n${JSON.stringify(
+        cons.error,
+        null,
+        2
+      )}\n\`\`\``;
+      cons.error = parseMarkdown(error);
+    }
   }
   ws.send(parse({ event: 'update-console', data: { cons } }));
 }

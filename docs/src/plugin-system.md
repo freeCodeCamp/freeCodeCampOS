@@ -30,6 +30,56 @@ Called when a lesson passes, after all tests are run **and** passed, and only ha
 
 Called when a lesson fails, after all tests are run **and** any fail.
 
+## Parser
+
+It is possible to define a custom parser for the curriculum files. This is useful when the curriculum files are not in the default format described in the [project syntax](./project-syntax.md) section.
+
+The first parameter of the parser functions is the project dashed name. This is the same as the `dashedName` field in the `projects.json` file.
+
+It is up to the parser to read, parse, and return the data in the format expected by the application.
+
+### `getProjectMeta`
+
+```ts
+(projectDashedName: string) =>
+  Promise<{
+    title: string;
+    description: string;
+    numberOfLessons: number;
+  }>;
+```
+
+The `title` and `description` fields are expected to be either plain strings, or HTML strings which are then rendered in the client.
+
+### `getLesson`
+
+```ts
+(projectDashedName: string, lessonNumber: number) =>
+  Promise<{
+    description: string;
+    tests: [[string, string]];
+    hints: string[];
+    seed: [{ filePath: string; fileSeed: string } | string];
+    isForce?: boolean;
+    beforeAll?: string;
+    afterAll?: string;
+    beforeEach?: string;
+    afterEach?: string;
+  }>;
+```
+
+The `description` field is expected to be either a plain string, or an HTML string which is then rendered in the client.
+
+The `tests[][0]` field is the test text, and the `tests[][1]` field is the test code. The test text is expected to be either a plain string, or an HTML string.
+
+The `hints` field is expected to be an array of plain strings, or an array of HTML strings.
+
+The `seed[].filePath` field is the relative path to the file from the workspace root. The `seed[].fileSeed` field is the file content to be written to the file.
+
+The `seed[]` field can also be a plain string, which is then treated as a `bash` command to be run in the workspace root.
+
+An example of this can be seen in the default parser used: https://github.com/freeCodeCamp/freeCodeCampOS/blob/main/.freeCodeCamp/plugin/index.js
+
 ## Example
 
 ````admonish example title=" "

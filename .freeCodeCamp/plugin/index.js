@@ -1,6 +1,6 @@
 import { readFile } from 'fs/promises';
 import { freeCodeCampConfig, getState, ROOT } from '../tooling/env.js';
-import { CoffeeDown } from '../tooling/parser.js';
+import { CoffeeDown, parseMarkdown } from '../tooling/parser.js';
 import { join } from 'path';
 
 /**
@@ -89,7 +89,11 @@ export const pluginEvents = {
     const projectFile = await readFile(projectFilePath, 'utf8');
     const coffeeDown = new CoffeeDown(projectFile);
     const projectMeta = coffeeDown.getProjectMeta();
-    return projectMeta;
+    // Remove `<p>` tags if present
+    const title = parseMarkdown(projectMeta.title).replace(/<p>|<\/p>/g, '');
+    const description = parseMarkdown(projectMeta.description);
+    const numberOfLessons = projectMeta.numberOfLessons;
+    return { title, description, numberOfLessons };
   },
 
   /**
@@ -107,6 +111,24 @@ export const pluginEvents = {
     const projectFile = await readFile(projectFilePath, 'utf8');
     const coffeeDown = new CoffeeDown(projectFile);
     const lesson = coffeeDown.getLesson(lessonNumber);
-    return lesson;
+    const { seed, afterAll, afterEach, beforeAll, beforeEach, isForce } =
+      lesson;
+    const description = parseMarkdown(lesson.description);
+    const tests = lesson.tests.map(([testText, test]) => [
+      parseMarkdown(testText),
+      test
+    ]);
+    const hints = lesson.hints.map(parseMarkdown);
+    return {
+      description,
+      tests,
+      hints,
+      seed,
+      beforeAll,
+      afterAll,
+      beforeEach,
+      afterEach,
+      isForce
+    };
   }
 };

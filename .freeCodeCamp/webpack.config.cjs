@@ -38,7 +38,10 @@ module.exports = {
                     'c',
                     'csharp',
                     'cpp',
-                    'dotnet'
+                    'dotnet',
+                    'python',
+                    'pug',
+                    'handlebars'
                   ],
                   plugins: [],
                   theme: 'okaidia',

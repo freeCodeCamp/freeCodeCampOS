@@ -217,7 +217,9 @@ export class CoffeeDown {
         hintTokens[currentHint].push(token);
       }
     }
-    const hints = hintTokens.map(t => t.map(t => t.raw).join(''));
+    const hints = hintTokens
+      .map(t => t.map(t => t.raw).join(''))
+      .filter(Boolean);
     return hints;
   }
 
@@ -262,6 +264,26 @@ function* seedToIterator(tokens) {
 import { marked } from 'marked';
 import { markedHighlight } from 'marked-highlight';
 import Prism from 'prismjs';
+import loadLanguages from 'prismjs/components/index.js';
+
+loadLanguages([
+  'javascript',
+  'css',
+  'html',
+  'json',
+  'markdown',
+  'sql',
+  'rust',
+  'typescript',
+  'jsx',
+  'c',
+  'csharp',
+  'cpp',
+  'dotnet',
+  'python',
+  'pug',
+  'handlebars'
+]);
 
 marked.use(
   markedHighlight({

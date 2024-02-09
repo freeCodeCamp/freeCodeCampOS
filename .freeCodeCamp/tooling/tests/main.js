@@ -80,7 +80,7 @@ export async function runTests(ws, projectDashedName) {
     // Create one worker for each test if non-blocking.
     // TODO: See if holding pool of workers is better.
     if (project.blockingTests) {
-      const worker = createWorker('blocking-worker', { beforeEach });
+      const worker = createWorker('blocking-worker', { beforeEach, project });
       WORKER_POOL.push(worker);
 
       // When result is received back from worker, update the client state
@@ -103,8 +103,8 @@ export async function runTests(ws, projectDashedName) {
         });
       });
 
-      for (let i = 0; i < textsAndTestsArr.length; i++) {
-        const [_text, testCode] = textsAndTestsArr[i];
+      for (let i = 0; i < tests.length; i++) {
+        const [_text, testCode] = tests[i];
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
 
@@ -112,12 +112,12 @@ export async function runTests(ws, projectDashedName) {
       }
     } else {
       // Run tests in parallel, and in own worker threads
-      for (let i = 0; i < textsAndTestsArr.length; i++) {
-        const [_text, testCode] = textsAndTestsArr[i];
+      for (let i = 0; i < tests.length; i++) {
+        const [_text, testCode] = tests[i];
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
 
-        const worker = createWorker(`worker-${i}`, { beforeEach });
+        const worker = createWorker(`worker-${i}`, { beforeEach, project });
         WORKER_POOL.push(worker);
 
         // When result is received back from worker, update the client state

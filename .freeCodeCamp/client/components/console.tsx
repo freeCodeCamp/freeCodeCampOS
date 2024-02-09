@@ -11,14 +11,14 @@ export const Console = ({ cons }: { cons: ConsoleError[] }) => {
 };
 
 const ConsoleElement = ({ testText, testId, error }: ConsoleError) => {
+  const details = `<summary>${testId + 1} ${testText}</summary>
+
+  ${error}`;
   return (
-    <div>
-      <details>
-        <summary>
-          {testId + 1} {testText}
-        </summary>
-        {error}
-      </details>
-    </div>
+    <details
+      dangerouslySetInnerHTML={{
+        __html: details
+      }}
+    ></details>
   );
 };
