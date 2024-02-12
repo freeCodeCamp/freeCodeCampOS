@@ -14,7 +14,7 @@ marked.use(
   })
 );
 
-export function parseMarkdown(markdown: string) {
+function parseMarkdown(markdown: string) {
   return marked.parse(markdown, { gfm: true });
 }
 

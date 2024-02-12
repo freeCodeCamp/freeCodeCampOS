@@ -1,8 +1,7 @@
-# Included, because it helps with testing when importing straight from GitHub
-# .freeCodeCamp/client
+.freeCodeCamp/client
 .freeCodeCamp/tests
-# .freeCodeCamp/tsconfig.json
-# .freeCodeCamp/webpack.config.cjs
+.freeCodeCamp/tsconfig.json
+.freeCodeCamp/webpack.config.cjs
 
 .devcontainer
 .github

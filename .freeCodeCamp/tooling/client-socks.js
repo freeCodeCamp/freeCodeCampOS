@@ -1,3 +1,5 @@
+import { parseMarkdown } from './parser.js';
+
 export function toggleLoaderAnimation(ws) {
   ws.send(parse({ event: 'toggle-loader-animation' }));
 }
@@ -24,7 +26,12 @@ export function updateTest(ws, test) {
  * @param {string} description Lesson description
  */
 export function updateDescription(ws, description) {
-  ws.send(parse({ event: 'update-description', data: { description } }));
+  ws.send(
+    parse({
+      event: 'update-description',
+      data: { description }
+    })
+  );
 }
 /**
  * Update the heading of the lesson
@@ -92,6 +99,16 @@ export function updateHints(ws, hints) {
  * @param {{error: string; testText: string; passed: boolean;isLoading: boolean;testId: number;}} cons
  */
 export function updateConsole(ws, cons) {
+  if (Object.keys(cons).length) {
+    if (cons.error) {
+      const error = `\`\`\`json\n${JSON.stringify(
+        cons.error,
+        null,
+        2
+      )}\n\`\`\``;
+      cons.error = parseMarkdown(error);
+    }
+  }
   ws.send(parse({ event: 'update-console', data: { cons } }));
 }
 
@@ -130,7 +147,7 @@ export function parse(obj) {
  * @param {WebSocket} ws WebSocket connection to the client
  */
 export function resetBottomPanel(ws) {
-  updateHints(ws, '');
+  updateHints(ws, []);
   updateTests(ws, []);
   updateConsole(ws, {});
 }

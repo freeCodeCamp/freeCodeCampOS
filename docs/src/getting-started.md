@@ -40,19 +40,6 @@ Add the following required configuration:
 }
 ```
 
-````admonish attention
-Technically, the `develop-course` and `run-course` scripts have to be specific values (see below), but you can customize the command with other conditions.
-
-```json
-{
-  "scripts": {
-    "develop-course": "NODE_ENV=development node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js",
-    "run-course": "NODE_ENV=production node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js"
-  }
-}
-```
-````
-
 ````admonish example collapsible=true
 ```json
 {

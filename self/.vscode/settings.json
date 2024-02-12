@@ -17,7 +17,8 @@
     "README.md": true,
     "renovate.json": true,
     "build-x-using-y": true,
-    "learn-freecodecamp-os": false
+    "learn-freecodecamp-os": true,
+    "external-seed": false
   },
   "terminal.integrated.defaultProfile.linux": "bash",
   "terminal.integrated.profiles.linux": {

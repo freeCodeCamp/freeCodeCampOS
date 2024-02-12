@@ -10,7 +10,7 @@ import {
 import { Loader } from './components/loader';
 import { Landing } from './templates/landing';
 import { Project } from './templates/project';
-import { parseMarkdown, parse } from './utils/index';
+import { parse } from './utils/index';
 import { Header } from './components/header';
 import './styles.css';
 import { E44o5 } from './components/error';
@@ -129,7 +129,7 @@ const App = () => {
   }
 
   function updateDescription({ description }: { description: string }) {
-    setDescription(parseMarkdown(description));
+    setDescription(description);
   }
 
   function updateTests({ tests }: { tests: TestType[] }) {

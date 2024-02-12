@@ -1,6 +1,6 @@
 # Learn freeCodeCampOS
 
-In this course, you will learn how to use the @freecodecamp/freecodecamp-os package to develop courses.jy
+In this course, you will learn how to use the @freecodecamp/freecodecamp-os package to develop courses.
 
 ## 0
 
@@ -100,7 +100,7 @@ The `curriculum/locales/english/learn-freecodecamp-os.md` file should contain th
 ```js
 const { readFile } = await import('fs/promises');
 const file = await readFile(
-  'curriculum/locales/english/learn-freecodecamp-os.md',
+  join(ROOT, 'curriculum/locales/english/learn-freecodecamp-os.md'),
   'utf-8'
 );
 assert.include(file.slice(0, 100), 'Welcome to freeCodeCampOS!');
@@ -175,7 +175,7 @@ try {
 }
 ```
 
-Version `>=2` should be installed.
+Version `>=3` should be installed.
 
 ```js
 try {
@@ -183,7 +183,7 @@ try {
     'npm list',
     project.dashedName
   );
-  assert.include(stdout, '@freecodecamp/freecodecamp-os@2');
+  assert.include(stdout, '@freecodecamp/freecodecamp-os@3');
 } catch (e) {
   assert.fail(e);
 }
@@ -289,7 +289,7 @@ assert.equal(__projects[0].id, 0);
 ```js
 const { readFile } = await import('fs/promises');
 const file = await readFile(
-  join(project.dashedName, 'config/projects.json'),
+  join(ROOT, project.dashedName, 'config/projects.json'),
   'utf-8'
 );
 const __projects = JSON.parse(file);
@@ -391,8 +391,8 @@ try {
 
 Add a title to the `learn-freecodecamp-os.md` file.
 
-```text
-  # freeCodeCampOS Title
+```markdown
+# freeCodeCampOS Title
 ```
 
 ### --tests--
@@ -417,10 +417,10 @@ assert(file.startsWith(), '# freeCodeCampOS Title');
 
 Add the first lesson to the `learn-freecodecamp-os.md` file, with a description heading:
 
-```text
-  ## 0
+```markdown
+## 0
 
-  ### --description--
+### --description--
 ```
 
 ### --tests--
@@ -459,8 +459,8 @@ assert(file.includes('\n### --description--'));
 
 Signify the end of the file, by adding the following:
 
-```text
-  ## --fcc-end--
+```markdown
+## --fcc-end--
 ```
 
 ### --tests--
@@ -507,10 +507,6 @@ Within the `freecodecamp.conf.json` file, add the following:
 ```json
 {
   "version": "0.0.1",
-  "scripts": {
-    "develop-course": "",
-    "run-course": ""
-  },
   "config": {
     "projects.json": "<PROJECTS_JSON>",
     "state.json": "<STATE_JSON>"
@@ -541,36 +537,6 @@ The `freecodecamp.conf.json` file should contain the `scripts` property.
 
 ```js
 assert.hasAllKeys(__conf, ['scripts']);
-```
-
-The `scripts` property should be an object.
-
-```js
-assert.isObject(__conf.scripts);
-```
-
-The `scripts` property should contain the `develop-course` property.
-
-```js
-assert.hasAllKeys(__conf.scripts, ['develop-course']);
-```
-
-The `develop-course` property should be a string.
-
-```js
-assert.isString(__conf.scripts['develop-course']);
-```
-
-The `scripts` property should contain the `run-course` property.
-
-```js
-assert.hasAllKeys(__conf.scripts, ['run-course']);
-```
-
-The `run-course` property should be a string.
-
-```js
-assert.isString(__conf.scripts['run-course']);
 ```
 
 The `freecodecamp.conf.json` file should contain the `config` property.
@@ -773,7 +739,7 @@ The terminal should have a warning about the first lesson description being empt
 
 Fix this by adding the following text:
 
-```text
+```markdown
 Welcome to freeCodeCampOS! 👋
 
 This example project will walk you through some of the features of freeCodeCampOS, and how to use them for your own course.
@@ -832,16 +798,16 @@ Also, there should be a warning about the first lesson not having any tests.
 
 Add a test by placing the 3rd-level heading `### --tests--` within the 2nd-level heading `## 0`:
 
-````txt
-  ### --tests--
+````markdown
+### --tests--
 
-  This is a test that will always fail.
+This is a test that will always fail.
 
-  ```js
-  assert.fail(
-    'This is a custom test assertion message. Click the > button to go to the next lesson'
-  );
-  ```
+```js
+assert.fail(
+  'This is a custom test assertion message. Click the > button to go to the next lesson'
+);
+```
 ````
 
 ### --hints--
@@ -850,20 +816,20 @@ Add a test by placing the 3rd-level heading `### --tests--` within the 2nd-level
 
 Tests take the form:
 
-````text
-  ### --tests--
+````markdown
+### --tests--
 
-  <TEST_TEXT>
+<TEST_TEXT>
 
-  ```js
-  <TEST_CODE>
-  ```
+```js
+<TEST_CODE>
+```
 
-  <SECOND_TEST_TEXT>
+<SECOND_TEST_TEXT>
 
-  ```js
-  <TEST_CODE>
-  ```
+```js
+<TEST_CODE>
+```
 ````
 
 #### 1

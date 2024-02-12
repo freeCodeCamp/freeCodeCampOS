@@ -5,15 +5,6 @@ import { logover } from '../logger.js';
 import { getProjectConfig, getState, setProjectConfig } from '../env.js';
 import { freeCodeCampConfig, ROOT } from '../env.js';
 import {
-  getLessonFromFile,
-  getBeforeAll,
-  getBeforeEach,
-  getAfterAll,
-  getAfterEach,
-  getLessonHints,
-  getLessonTextsAndTests
-} from '../parser.js';
-import {
   updateTest,
   updateTests,
   updateConsole,
@@ -51,18 +42,14 @@ export async function runTests(ws, projectDashedName) {
   const { locale } = await getState();
   // toggleLoaderAnimation(ws);
   const lessonNumber = project.currentLesson;
-  const projectFile = join(
-    ROOT,
-    freeCodeCampConfig.curriculum.locales[locale],
-    project.dashedName + '.md'
-  );
+
   let testsState = [];
   try {
-    const lesson = await getLessonFromFile(projectFile, lessonNumber);
-    const beforeAll = getBeforeAll(lesson);
-    const beforeEach = getBeforeEach(lesson);
-    const afterAll = getAfterAll(lesson);
-    const afterEach = getAfterEach(lesson);
+    const lesson = await pluginEvents.getLesson(
+      projectDashedName,
+      lessonNumber
+    );
+    const { beforeAll, beforeEach, afterAll, afterEach, hints, tests } = lesson;
 
     if (beforeAll) {
       try {
@@ -76,10 +63,7 @@ export async function runTests(ws, projectDashedName) {
     }
     // toggleLoaderAnimation(ws);
 
-    const hints = getLessonHints(lesson);
-
-    const textsAndTestsArr = getLessonTextsAndTests(lesson);
-    testsState = textsAndTestsArr.map((text, i) => {
+    testsState = tests.map((text, i) => {
       return {
         passed: false,
         testText: text[0],
@@ -96,7 +80,7 @@ export async function runTests(ws, projectDashedName) {
     // Create one worker for each test if non-blocking.
     // TODO: See if holding pool of workers is better.
     if (project.blockingTests) {
-      const worker = createWorker('blocking-worker', { beforeEach });
+      const worker = createWorker('blocking-worker', { beforeEach, project });
       WORKER_POOL.push(worker);
 
       // When result is received back from worker, update the client state
@@ -119,8 +103,8 @@ export async function runTests(ws, projectDashedName) {
         });
       });
 
-      for (let i = 0; i < textsAndTestsArr.length; i++) {
-        const [text, testCode] = textsAndTestsArr[i];
+      for (let i = 0; i < tests.length; i++) {
+        const [_text, testCode] = tests[i];
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
 
@@ -128,12 +112,12 @@ export async function runTests(ws, projectDashedName) {
       }
     } else {
       // Run tests in parallel, and in own worker threads
-      for (let i = 0; i < textsAndTestsArr.length; i++) {
-        const [_text, testCode] = textsAndTestsArr[i];
+      for (let i = 0; i < tests.length; i++) {
+        const [_text, testCode] = tests[i];
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
 
-        const worker = createWorker(`worker-${i}`, { beforeEach });
+        const worker = createWorker(`worker-${i}`, { beforeEach, project });
         WORKER_POOL.push(worker);
 
         // When result is received back from worker, update the client state

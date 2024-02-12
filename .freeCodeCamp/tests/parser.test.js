@@ -1,21 +1,7 @@
 /// Tests can be run from `self/`
-import {
-  getProjectTitle,
-  getLessonFromFile,
-  getLessonDescription,
-  getLessonTextsAndTests,
-  getLessonSeed,
-  getBeforeAll,
-  getBeforeEach,
-  getCommands,
-  getFilesWithSeed,
-  isForceFlag,
-  extractStringFromCode,
-  getLessonHints,
-  getProjectDescription
-} from '../tooling/parser.js';
 import { assert } from 'chai';
 import { Logger } from 'logover';
+import { pluginEvents } from '../plugin/index.js';
 
 const logover = new Logger({
   debug: '\x1b[33m[parser.test]\x1b[0m',
@@ -24,116 +10,110 @@ const logover = new Logger({
   timestamp: null
 });
 
-const EXPECTED_PATH = '../.freeCodeCamp/tests/fixtures/expected-format.md';
-const POOR_PATH = '../.freeCodeCamp/tests/fixtures/valid-poor-format.md';
-
 try {
-  const projectTitle = await getProjectTitle(EXPECTED_PATH);
-  assert.deepEqual(projectTitle, 'Project Title');
-  const projectDescription = await getProjectDescription(EXPECTED_PATH);
-  assert.deepEqual(projectDescription, 'Project description.');
-  const lesson = await getLessonFromFile(EXPECTED_PATH, 0);
+  const {
+    title,
+    description: projectDescription,
+    numberOfLessons
+  } = await pluginEvents.getProjectMeta('build-x-using-y');
+  const {
+    description: lessonDescription,
+    tests,
+    hints,
+    seed,
+    isForce,
+    beforeAll,
+    beforeEach,
+    afterAll,
+    afterEach
+  } = await pluginEvents.getLesson('build-x-using-y', 0);
 
-  const lessonDescription = getLessonDescription(lesson);
-  assert.equal(
+  assert.deepEqual(title, 'Build X Using Y');
+  assert.deepEqual(
+    projectDescription,
+    'In this course, you will build x using y.'
+  );
+  assert.deepEqual(numberOfLessons, 1);
+
+  assert.deepEqual(
     lessonDescription,
-    '\n\nSome description.\n\nMaybe some code:\n\n```js\nconst a = 1;\n// A comment at the end?\n```\n\n'
-  );
+    `Some description here.
 
-  const lessonTextsAndTests = getLessonTextsAndTests(lesson);
-
-  assert.equal(lessonTextsAndTests[0][0], 'Test text with many words.');
-  assert.equal(
-    lessonTextsAndTests[0][1],
-    "// First test code\nconst a = 'test';\n"
-  );
-  assert.equal(
-    lessonTextsAndTests[1][0],
-    'Second test text with `inline-code`.'
-  );
-  assert.equal(
-    lessonTextsAndTests[1][1],
-    "const a = 'test2';\n// Second test code;\n"
-  );
-
-  const lessonSeed = getLessonSeed(lesson);
-
-  const lessonHints = getLessonHints(lesson);
-
-  assert.equal(lessonHints.length, 2);
-  assert.equal(lessonHints.at(0), 'Hint 1.');
-  assert.equal(
-    lessonHints.at(1),
-    'Hint 2, with multiple lines.\n\n```js\nconst a = 0;\n```'
-  );
-
-  const beforeAll = getBeforeAll(lesson);
-  assert.equal(beforeAll, "global.__beforeAll = 'before-all';\n");
-
-  const beforeEach = getBeforeEach(lesson);
-  assert.equal(beforeEach, "global.__beforeEach = 'before-each';\n");
-
-  const commands = getCommands(lessonSeed);
-
-  const filesWithSeed = getFilesWithSeed(lessonSeed);
-
-  const isForce = isForceFlag(lessonSeed);
-} catch (e) {
-  throw logover.error(e);
+\`\`\`rust
+fn main() {
+    println!("Hello, world!");
 }
-
-// -----------------
-// VALID POOR FORMAT
-// -----------------
-
-try {
-  const projectTitle = await getProjectTitle(POOR_PATH);
-  assert.deepEqual(projectTitle, 'Project Title');
-  const projectDescription = await getProjectDescription(EXPECTED_PATH);
-  assert.deepEqual(projectDescription, 'Project description.');
-  const lesson = await getLessonFromFile(POOR_PATH, 0);
-
-  const lessonDescription = getLessonDescription(lesson);
-  assert.equal(
-    lessonDescription,
-    '\nThis description has no spaces between the heading.\n```rs\n\n//Same goes for this code.\nlet mut a = 1;\n// comment\n```\n'
-  );
-
-  const lessonTextsAndTests = getLessonTextsAndTests(lesson);
-
-  assert.equal(lessonTextsAndTests[0][0], 'Test text at top.');
-  assert.equal(
-    lessonTextsAndTests[0][1],
-    '// First test no space\n// No code?\n\n'
-  );
-  assert.equal(
-    lessonTextsAndTests[1][0],
-    'Second test text with `inline-code`.'
-  );
-  assert.equal(
-    lessonTextsAndTests[1][1],
-    "// Too many spaces?\nconst a = 'test2';\n"
-  );
-
-  const lessonSeed = getLessonSeed(lesson);
-
-  const beforeAll = getBeforeAll(lesson);
-  assert.equal(beforeAll, "global.__beforeAll = 'before-all';\n");
-} catch (e) {
-  throw logover.error(e);
-}
-
-try {
-  let stringFromCode = extractStringFromCode(`\`\`\`js
-const a = 1;
-\`\`\``);
-  assert.equal(stringFromCode, 'const a = 1;\n');
-  stringFromCode = extractStringFromCode(`\`\`\`js
-const a = 1;
-// comment
 \`\`\`
-`);
-  assert.equal(stringFromCode, 'const a = 1;\n// comment\n');
+
+Here is an image:
+
+<img src="../../images/fcc_primary_large.png" width="300px" />
+
+`
+  );
+
+  const expectedTests = [
+    [
+      'First test using Chai.js `assert`.',
+      '// 0\n// Timeout for 3 seconds\nawait new Promise(resolve => setTimeout(resolve, 3000));\nassert.equal(true, true);'
+    ],
+    [
+      'Second test using global variables passed from `before` hook.',
+      "// 1\nawait new Promise(resolve => setTimeout(resolve, 4000));\nassert.equal(__projectLoc, 'example global variable for tests');"
+    ],
+    [
+      'Dynamic helpers should be imported.',
+      "// 2\nawait new Promise(resolve => setTimeout(resolve, 1000));\nassert.equal(__helpers.testDynamicHelper(), 'Helper success!');"
+    ]
+  ];
+
+  for (const [i, [testText, testCode]] of tests.entries()) {
+    assert.deepEqual(testText, expectedTests[i][0]);
+    assert.deepEqual(testCode, expectedTests[i][1]);
+  }
+
+  const expectedHints = [
+    'Inline hint with `some` code `blocks`.\n\n',
+    'Multi-line hint with:\n\n```js\nconst code_block = true;\n```\n\n'
+  ];
+
+  for (const [i, hint] of hints.entries()) {
+    assert.deepEqual(hint, expectedHints[i]);
+  }
+
+  const expectedSeed = [
+    {
+      filePath: 'build-x-using-y/readme.md',
+      fileSeed: '# Build X Using Y\n\nIn this course\n\n## 0\n\nHello'
+    },
+    'npm install'
+  ];
+
+  let i = 0;
+  for (const s of seed) {
+    assert.deepEqual(s, expectedSeed[i]);
+    i++;
+  }
+  assert.deepEqual(i, 2);
+
+  assert.deepEqual(isForce, true);
+
+  assert.deepEqual(
+    beforeEach,
+    "await new Promise(resolve => setTimeout(resolve, 1000));\nconst __projectLoc = 'example global variable for tests';"
+  );
+  assert.deepEqual(
+    afterEach,
+    "await new Promise(resolve => setTimeout(resolve, 1000));\nlogover.info('after each');"
+  );
+  assert.deepEqual(
+    beforeAll,
+    "await new Promise(resolve => setTimeout(resolve, 1000));\nlogover.info('before all');"
+  );
+  assert.deepEqual(
+    afterAll,
+    "await new Promise(resolve => setTimeout(resolve, 1000));\nlogover.info('after all');"
+  );
 } catch (e) {
   throw logover.error(e);
 }

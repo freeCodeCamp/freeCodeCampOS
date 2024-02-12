@@ -1,6 +1,5 @@
 // This file handles seeding the lesson contents with the seed in markdown.
 import { join } from 'path';
-import { getLessonFromFile, getLessonSeed, seedToIterator } from './parser.js';
 import {
   ROOT,
   getState,
@@ -14,6 +13,7 @@ import { exec } from 'child_process';
 import { logover } from './logger.js';
 import { updateError } from './client-socks.js';
 import { watcher } from './hot-reload.js';
+import { pluginEvents } from '../plugin/index.js';
 const execute = promisify(exec);
 
 /**
@@ -24,17 +24,13 @@ const execute = promisify(exec);
 export async function seedLesson(ws, projectDashedName) {
   // TODO: Use ws to display loader whilst seeding
   const project = await getProjectConfig(projectDashedName);
-  const { currentLesson, dashedName } = project;
-  const { locale } = await getState();
-  const projectFile = join(
-    ROOT,
-    freeCodeCampConfig.curriculum.locales[locale],
-    dashedName + '.md'
-  );
+  const { currentLesson } = project;
 
   try {
-    const lesson = await getLessonFromFile(projectFile, currentLesson);
-    const seed = getLessonSeed(lesson);
+    const { seed } = await pluginEvents.getLesson(
+      projectDashedName,
+      currentLesson
+    );
 
     await runLessonSeed(seed, currentLesson);
     await setState({
@@ -94,9 +90,8 @@ export async function runSeed(fileSeed, filePath) {
  * @param {number} currentLesson
  */
 export async function runLessonSeed(seed, currentLesson) {
-  const seedGenerator = seedToIterator(seed);
   try {
-    for (const cmdOrFile of seedGenerator) {
+    for (const cmdOrFile of seed) {
       if (typeof cmdOrFile === 'string') {
         const { stdout, stderr } = await runCommand(cmdOrFile);
         if (stdout || stderr) {

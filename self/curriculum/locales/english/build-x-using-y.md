@@ -43,7 +43,6 @@ Dynamic helpers should be imported.
 // 2
 await new Promise(resolve => setTimeout(resolve, 1000));
 assert.equal(__helpers.testDynamicHelper(), 'Helper success!');
-// assert.fail('test');
 ```
 
 ### --before-each--
@@ -72,6 +71,42 @@ logover.info('before all');
 ```js
 await new Promise(resolve => setTimeout(resolve, 1000));
 logover.info('after all');
+```
+
+### --hints--
+
+#### 0
+
+Inline hint with `some` code `blocks`.
+
+#### 1
+
+Multi-line hint with:
+
+```js
+const code_block = true;
+```
+
+### --seed--
+
+#### --force--
+
+#### --"build-x-using-y/readme.md"--
+
+```markdown
+# Build X Using Y
+
+In this course
+
+## 0
+
+Hello
+```
+
+#### --cmd--
+
+```bash
+npm install
 ```
 
 ## --fcc-end--

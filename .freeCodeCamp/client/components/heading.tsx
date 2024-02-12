@@ -28,6 +28,7 @@ export const Heading = ({
   const canGoForward =
     lessonNumberExists && numberOfLessons && lessonNumber < numberOfLessons - 1;
 
+  const h1 = title + (lessonNumberExists ? ' - Lesson ' + lessonNumber : '');
   return (
     <nav className='heading'>
       {goToPreviousLesson && (
@@ -40,10 +41,13 @@ export const Heading = ({
           {'<'}
         </button>
       )}
-      <h1 id='project-heading' className={anim}>
-        {title}
-        {lessonNumberExists && ' - Lesson ' + lessonNumber}
-      </h1>
+      <h1
+        id='project-heading'
+        className={anim}
+        dangerouslySetInnerHTML={{
+          __html: h1
+        }}
+      ></h1>
       {goToNextLesson && (
         <button
           className='next-lesson-btn'

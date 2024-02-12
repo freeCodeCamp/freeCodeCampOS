@@ -21,13 +21,9 @@ import { hotReload } from './hot-reload.js';
 import { hideAll, showFile, showAll } from './utils.js';
 import { join } from 'path';
 import { logover } from './logger.js';
-import {
-  getProjectDescription,
-  getProjectTitle,
-  getTotalLessons
-} from './parser.js';
 import { resetProject } from './reset.js';
 import { validateCurriculum } from './validate.js';
+import { pluginEvents } from '../plugin/index.js';
 
 const freeCodeCampConfig = await getConfig();
 
@@ -112,16 +108,11 @@ async function getProjects() {
       'utf-8'
     )
   );
-  const { locale } = await getState();
 
   for (const project of projects) {
-    const projectFilePath = join(
-      ROOT,
-      freeCodeCampConfig.curriculum.locales[locale],
-      project.dashedName + '.md'
+    const { title, description } = await pluginEvents.getProjectMeta(
+      project.dashedName
     );
-    const title = await getProjectTitle(projectFilePath);
-    const description = await getProjectDescription(projectFilePath);
     project.title = title;
     project.description = description;
   }
@@ -303,7 +294,9 @@ async function updateProjectConfig() {
       freeCodeCampConfig.curriculum.locales['english'],
       project.dashedName + '.md'
     );
-    const numberOfLessons = (await getTotalLessons(projectFilePath)) || 1;
+    const { numberOfLessons } = await pluginEvents.getProjectMeta(
+      project.dashedName
+    );
     await setProjectConfig(project.dashedName, { numberOfLessons });
   }
 }
