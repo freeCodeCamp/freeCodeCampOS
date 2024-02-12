@@ -2,6 +2,7 @@ import { readFile } from 'fs/promises';
 import { freeCodeCampConfig, getState, ROOT } from '../tooling/env.js';
 import { CoffeeDown, parseMarkdown } from '../tooling/parser.js';
 import { join } from 'path';
+import { logover } from '../tooling/logger.js';
 
 /**
  * Project config from `config/projects.json`
@@ -111,8 +112,24 @@ export const pluginEvents = {
     const projectFile = await readFile(projectFilePath, 'utf8');
     const coffeeDown = new CoffeeDown(projectFile);
     const lesson = coffeeDown.getLesson(lessonNumber);
-    const { seed, afterAll, afterEach, beforeAll, beforeEach, isForce } =
-      lesson;
+    let seed = lesson.seed;
+    if (!seed.length) {
+      // Check for external seed file
+      const seedFilePath = projectFilePath.replace(/.md$/, '-seed.md');
+      try {
+        const seedContent = await readFile(seedFilePath, 'utf-8');
+        const coffeeDown = new CoffeeDown(seedContent);
+        seed = coffeeDown.getLesson(lessonNumber).seed;
+      } catch (e) {
+        if (e?.code !== 'ENOENT') {
+          logover.debug(e);
+          throw new Error(
+            `Error reading external seed for lesson ${lessonNumber}`
+          );
+        }
+      }
+    }
+    const { afterAll, afterEach, beforeAll, beforeEach, isForce } = lesson;
     const description = parseMarkdown(lesson.description);
     const tests = lesson.tests.map(([testText, test]) => [
       parseMarkdown(testText),

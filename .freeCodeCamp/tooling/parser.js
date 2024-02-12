@@ -232,7 +232,8 @@ export class CoffeeDown {
   }
 }
 
-function* seedToIterator(tokens) {
+function seedToIterator(tokens) {
+  const seed = [];
   const sectionTokens = {};
   let currentSection = 0;
   for (const token of tokens) {
@@ -251,14 +252,15 @@ function* seedToIterator(tokens) {
   }
   for (const [filePath, { text }] of Object.entries(sectionTokens)) {
     if (filePath === '--cmd--') {
-      yield text;
+      seed.push(text);
     } else {
-      yield {
+      seed.push({
         filePath: filePath.slice(3, filePath.length - 3),
         fileSeed: text
-      };
+      });
     }
   }
+  return seed;
 }
 
 import { marked } from 'marked';
