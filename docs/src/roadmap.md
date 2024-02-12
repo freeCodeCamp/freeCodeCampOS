@@ -8,4 +8,3 @@ For the most part, this roadmap outlines todos for `freecodecamp-os`. If this ro
 
 - [ ] Loader to show progress of "Reset Step"
 - [ ] Crowdin translation integration
-  - Possibly, this will include UI to select available languages

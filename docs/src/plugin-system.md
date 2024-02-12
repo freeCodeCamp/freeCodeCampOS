@@ -53,7 +53,11 @@ The `title` and `description` fields are expected to be either plain strings, or
 
 ### `getLesson`
 
-```ts
+```admonish attention
+This function can be called multiple times per lesson. Therefore, it is expected to be <dfn title="An operation that can be applied multiple times without changing the result after the initial application.">idempotent</dfn>.
+```
+
+```typescript
 (projectDashedName: string, lessonNumber: number) =>
   Promise<{
     description: string;
@@ -78,7 +82,7 @@ The `seed[].filePath` field is the relative path to the file from the workspace 
 
 The `seed[]` field can also be a plain string, which is then treated as a `bash` command to be run in the workspace root.
 
-An example of this can be seen in the default parser used: https://github.com/freeCodeCamp/freeCodeCampOS/blob/main/.freeCodeCamp/plugin/index.js
+An example of this can be seen in the default parser used: <https://github.com/freeCodeCamp/freeCodeCampOS/blob/main/.freeCodeCamp/plugin/index.js>
 
 ## Example
 

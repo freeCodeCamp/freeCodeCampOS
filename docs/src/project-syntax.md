@@ -1,6 +1,6 @@
 # Project Syntax
 
-This is the Markdown syntax used to create projects in the curriculum.
+This is the Markdown syntax used to create projects in the curriculum using the default parser. The parser can be configured using the [plugin-system](./plugin-system.md).
 
 ## Markers
 

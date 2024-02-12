@@ -100,15 +100,15 @@ h6:target::before {
 .page {
   outline: 0;
   padding: 0 var(--page-padding);
-  margin-top: calc(
-    0px - var(--menu-bar-height)
-  ); /* Compensate for the #menu-bar-hover-placeholder */
+  margin-top: calc(0px - var(--menu-bar-height));
+  /* Compensate for the #menu-bar-hover-placeholder */
 }
 .page-wrapper {
   box-sizing: border-box;
 }
 .js:not(.sidebar-resizing) .page-wrapper {
-  transition: margin-left 0.3s ease, transform 0.3s ease; /* Animation: slide away */
+  transition: margin-left 0.3s ease, transform 0.3s ease;
+  /* Animation: slide away */
 }
 
 .content {
@@ -213,10 +213,10 @@ kbd {
   visibility: hidden;
   color: #fff;
   background-color: #333;
-  transform: translateX(
-    -50%
-  ); /* Center by moving tooltip 50% of its width left */
-  left: -8px; /* Half of the width of the icon */
+  transform: translateX(-50%);
+  /* Center by moving tooltip 50% of its width left */
+  left: -8px;
+  /* Half of the width of the icon */
   top: -35px;
   font-size: 0.8em;
   text-align: center;
@@ -237,4 +237,8 @@ kbd {
 
 .result-no-output {
   font-style: italic;
+}
+
+dfn[title] {
+  text-decoration: underline dotted;
 }
