@@ -8,6 +8,9 @@
     "runTestsOnWatch": true,
     "seedEveryLesson": false,
     "isResetEnabled": true,
+    "numberofLessons": null,
+    "blockingTests": null,
+    "breakOnFailure": null,
     "numberOfLessons": 27
   },
   {
@@ -16,8 +19,26 @@
     "isIntegrated": true,
     "isPublic": true,
     "currentLesson": 0,
-    "numberOfLessons": 1,
+    "runTestsOnWatch": null,
+    "seedEveryLesson": null,
+    "isResetEnabled": null,
+    "numberofLessons": null,
     "blockingTests": true,
-    "breakOnFailure": false
+    "breakOnFailure": false,
+    "numberOfLessons": 1
+  },
+  {
+    "id": 2,
+    "dashedName": "external-seed",
+    "isIntegrated": false,
+    "isPublic": true,
+    "currentLesson": 0,
+    "runTestsOnWatch": false,
+    "seedEveryLesson": true,
+    "isResetEnabled": true,
+    "numberofLessons": null,
+    "blockingTests": false,
+    "breakOnFailure": false,
+    "numberOfLessons": 2
   }
 ]
