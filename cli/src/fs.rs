@@ -143,7 +143,7 @@ impl Course {
     fn touch_conf(&self) {
         let static_files = if self.features.contains(&Features::ScriptInjection) {
             Some(json!( {
-                    "/scripts/injectable.js": "./client/injectable.js".to_string(),
+                    "/script/injectable.js": "./client/injectable.js".to_string(),
             }))
         } else {
             None
