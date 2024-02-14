@@ -46,10 +46,11 @@ It is up to the parser to read, parse, and return the data in the format expecte
     title: string;
     description: string;
     numberOfLessons: number;
+    tags: string[];
   }>;
 ```
 
-The `title` and `description` fields are expected to be either plain strings, or HTML strings which are then rendered in the client.
+The `title`, `tags`, and `description` fields are expected to be either plain strings, or HTML strings which are then rendered in the client.
 
 ### `getLesson`
 

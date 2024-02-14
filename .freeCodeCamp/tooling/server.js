@@ -97,9 +97,9 @@ async function handleGoToPreviousLesson(ws, data) {
 }
 
 /**
- * Gets the projects from `projects.json` and adds the title and description to each project object.
+ * Gets the projects from `projects.json` and adds the neta to each project object.
  *
- * The client relies on each project having a title and description.
+ * The client relies on each project having a title, description, and tags.
  */
 async function getProjects() {
   const projects = JSON.parse(
@@ -110,9 +110,12 @@ async function getProjects() {
   );
 
   for (const project of projects) {
-    const { title, description } = await pluginEvents.getProjectMeta(
-      project.dashedName
-    );
+    const {
+      title,
+      description,
+      tags = []
+    } = await pluginEvents.getProjectMeta(project.dashedName);
+    project.tags = tags;
     project.title = title;
     project.description = description;
   }
@@ -289,11 +292,6 @@ async function updateProjectConfig() {
     )
   );
   for (const project of projects) {
-    const projectFilePath = join(
-      ROOT,
-      freeCodeCampConfig.curriculum.locales['english'],
-      project.dashedName + '.md'
-    );
     const { numberOfLessons } = await pluginEvents.getProjectMeta(
       project.dashedName
     );

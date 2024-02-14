@@ -78,7 +78,7 @@ export const pluginEvents = {
 
   /**
    * @param {string} projectDashedName
-   * @returns {Promise<{title: string; description: string; numberOfLessons: number}>}
+   * @returns {Promise<{title: string; description: string; numberOfLessons: number; tags: string[]}>}
    */
   getProjectMeta: async projectDashedName => {
     const { locale } = await getState();
@@ -93,8 +93,9 @@ export const pluginEvents = {
     // Remove `<p>` tags if present
     const title = parseMarkdown(projectMeta.title).replace(/<p>|<\/p>/g, '');
     const description = parseMarkdown(projectMeta.description);
+    const tags = projectMeta.tags;
     const numberOfLessons = projectMeta.numberOfLessons;
-    return { title, description, numberOfLessons };
+    return { title, description, numberOfLessons, tags };
   },
 
   /**

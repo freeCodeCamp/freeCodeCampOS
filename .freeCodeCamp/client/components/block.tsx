@@ -16,6 +16,7 @@ export const Block = ({
   numberOfLessons,
   currentLesson,
   completedDate,
+  tags,
   sock
 }: BlockProps) => {
   function selectProject() {
@@ -46,9 +47,9 @@ export const Block = ({
         }
       >
         <div className={'tags-row'}>
-          {isPublic && isIntegrated && <Tag text='Integrated Project' />}
-
-          {!isPublic && <Tag text='Coming Soon' />}
+          {tags.map(text => {
+            return <Tag text={text} />;
+          })}
         </div>
 
         <h2>

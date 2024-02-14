@@ -20,8 +20,26 @@ export class CoffeeDown {
     const title = this.tokens.find(
       t => t.type === 'heading' && t.depth === 1
     ).text;
-    // The first paragraph should be the description
-    const description = this.tokens.find(t => t.type === 'paragraph').text;
+
+    const firstLessonMarker = this.tokens.findIndex(t => {
+      return (
+        t.type === 'heading' &&
+        t.depth === 2 &&
+        Number.isInteger(parseFloat(t.text))
+      );
+    });
+    const tokensBeforeFirstLesson = this.tokens.slice(0, firstLessonMarker);
+
+    // The first paragraph before the lesson marker should be the description
+    const description = tokensBeforeFirstLesson.find(
+      t => t.type === 'paragraph'
+    ).text;
+
+    // First codeblock before the lesson marker is extra meta within a JSON codeblock
+    const jsonMeta =
+      tokensBeforeFirstLesson.find(t => t.type === 'code' && t.lang === 'json')
+        ?.text ?? '{}';
+    const meta = JSON.parse(jsonMeta);
 
     // All H2 elements with an integer for text are lesson headings
     const numberOfLessons = this.tokens.filter(
@@ -30,7 +48,7 @@ export class CoffeeDown {
         t.depth === 2 &&
         Number.isInteger(parseFloat(t.text))
     ).length;
-    return { title, description, numberOfLessons };
+    return { title, description, numberOfLessons, ...meta };
   }
 
   getHeading(depth, text, caller) {
