@@ -12,7 +12,7 @@ This is the Markdown syntax used to create projects in the curriculum using the 
 
 The first paragraph is used as the description of the project. The first `json` code block is used for extra metadata such as tags:
 
-``````admonish example collapsible=true
+`````admonish example collapsible=true
 ````markdown
 # Learn X by Building Y
 
@@ -23,8 +23,8 @@ The first paragraph is used as the description of the project. The first `json` 
 ```
 
 This is a description.
-```
 ````
+`````
 
 ### `## <N>`
 
@@ -81,7 +81,7 @@ await new Promise(resolve => setTimeout(resolve, 2000));
 assert.equal(true, true);
 ```
 ````
-``````
+`````
 
 ### `### --seed--`
 
