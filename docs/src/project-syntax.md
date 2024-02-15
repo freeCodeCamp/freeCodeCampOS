@@ -10,15 +10,21 @@ This is the Markdown syntax used to create projects in the curriculum using the 
 # <TITLE>
 ```
 
-Immediately after the title, the project description shown on the landing page is to follow:
+The first paragraph is used as the description of the project. The first `json` code block is used for extra metadata such as tags:
 
-````admonish example collapsible=true
-```markdown
+`````admonish example collapsible=true
+````markdown
 # Learn X by Building Y
 
-This is a description.
+```json
+{
+  "tags": ["Coming Soon!"]
+}
 ```
+
+This is a description.
 ````
+`````
 
 ### `## <N>`
 

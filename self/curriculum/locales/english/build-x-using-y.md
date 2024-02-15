@@ -1,5 +1,11 @@
 # Build X Using Y
 
+```json
+{
+  "tags": ["Integrated Project", "Coming soon!"]
+}
+```
+
 In this course, you will build x using y.
 
 ## 0

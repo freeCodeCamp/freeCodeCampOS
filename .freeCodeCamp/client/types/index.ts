@@ -37,6 +37,7 @@ export interface ProjectI {
   numberOfLessons: number;
   isResetEnabled?: boolean;
   completedDate: null | number;
+  tags: string[];
 }
 
 export type ConsoleError = {

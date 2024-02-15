@@ -102,7 +102,7 @@ By default, the server and client communicate over port `8080`. To change this, 
     "locales": {
       "english": "./curriculum/locales/english"
     },
-    "assertions: {
+    "assertions": {
       "afrikaans": "./curriculum/assertions/afrikaans.json"
     }
   }
