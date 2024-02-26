@@ -24,9 +24,12 @@ export async function resetProject(ws) {
   try {
     await gitResetCurrentProjectDir();
     while (lessonNumber <= currentLesson) {
-      const { seed } = pluginEvents.getLesson(currentProject, lessonNumber);
+      const { seed } = await pluginEvents.getLesson(
+        currentProject,
+        lessonNumber
+      );
       if (seed) {
-        await runLessonSeed(seed, currentProject, lessonNumber);
+        await runLessonSeed(seed, lessonNumber);
       }
       lessonNumber++;
       updateLoader(ws, {
