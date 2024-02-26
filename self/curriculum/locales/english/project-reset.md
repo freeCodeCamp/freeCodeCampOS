@@ -78,4 +78,32 @@ File from lesson 2
 echo "Lesson 2" && sleep 2
 ```
 
+## 3
+
+### --description--
+
+This lesson's seed adds the `c.md` file, and runs a command which takes 2 seconds to complete.
+
+### --tests--
+
+This test always passes for testing.
+
+```js
+await new Promise(resolve => setTimeout(resolve, 1000));
+```
+
+### --seed--
+
+#### --"project-reset/c.md"--
+
+```md
+File from lesson 3
+```
+
+#### --cmd--
+
+```bash
+echo "Lesson 3" && sleep 2
+```
+
 ## --fcc-end--
