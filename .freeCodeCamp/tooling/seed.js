@@ -11,7 +11,7 @@ import { writeFile } from 'fs/promises';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { logover } from './logger.js';
-import { updateError } from './client-socks.js';
+import { updateLoader, updateError } from './client-socks.js';
 import { watcher } from './hot-reload.js';
 import { pluginEvents } from '../plugin/index.js';
 const execute = promisify(exec);
@@ -22,7 +22,10 @@ const execute = promisify(exec);
  * @param {string} projectDashedName
  */
 export async function seedLesson(ws, projectDashedName) {
-  // TODO: Use ws to display loader whilst seeding
+  updateLoader(ws, {
+    isLoading: true,
+    progress: { total: 2, count: 1 }
+  });
   const project = await getProjectConfig(projectDashedName);
   const { currentLesson } = project;
 
@@ -43,6 +46,7 @@ export async function seedLesson(ws, projectDashedName) {
     updateError(ws, e);
     logover.error(e);
   }
+  updateLoader(ws, { isLoading: false, progress: { total: 1, count: 1 } });
 }
 
 /**

@@ -1,6 +1,6 @@
 import { Description } from '../components/description';
 import { Heading } from '../components/heading';
-import { ConsoleError, F, ProjectI, TestType } from '../types';
+import { ConsoleError, F, LoaderT, ProjectI, TestType } from '../types';
 import { Controls } from '../components/controls';
 import { Output } from '../components/output';
 import './project.css';
@@ -14,7 +14,7 @@ export interface ProjectProps {
   cons: ConsoleError[];
   description: string;
   hints: string[];
-  isLoading: boolean;
+  loader: LoaderT;
   lessonNumber: number;
   project: ProjectI;
   tests: TestType[];
@@ -26,7 +26,7 @@ export const Project = ({
   resetProject,
   goToNextLesson,
   goToPreviousLesson,
-  isLoading,
+  loader,
   project,
   lessonNumber,
   description,
@@ -67,7 +67,7 @@ export const Project = ({
               })}
         />
 
-        <Output {...{ isLoading, hints, tests, cons }} />
+        <Output {...{ loader, hints, tests, cons }} />
       </div>
     </>
   );

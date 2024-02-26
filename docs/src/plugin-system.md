@@ -30,6 +30,10 @@ Called when a lesson passes, after all tests are run **and** passed, and only ha
 
 Called when a lesson fails, after all tests are run **and** any fail.
 
+### `onLessonLoad`
+
+Called once when a lesson is loaded, after the `onProjectStart` if the first lesson.
+
 ## Parser
 
 It is possible to define a custom parser for the curriculum files. This is useful when the curriculum files are not in the default format described in the [project syntax](./project-syntax.md) section.

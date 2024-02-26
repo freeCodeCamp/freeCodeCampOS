@@ -4,6 +4,7 @@ import {
   ConsoleError,
   Events,
   FreeCodeCampConfigI,
+  LoaderT,
   ProjectI,
   TestType
 } from './types/index';
@@ -34,7 +35,10 @@ const App = () => {
   const [tests, setTests] = useState<TestType[]>([]);
   const [hints, setHints] = useState<string[]>([]);
   const [cons, setCons] = useState<ConsoleError[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loader, setLoader] = useState({
+    isLoading: false,
+    progress: { count: 0, total: 1 }
+  });
   const [alertCamper, setAlertCamper] = useState<null | string>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -171,8 +175,8 @@ const App = () => {
     setCons([]);
   }
 
-  function toggleLoaderAnimation() {
-    setIsLoading(prev => !prev);
+  function toggleLoaderAnimation({ loader }: { loader: LoaderT }) {
+    setLoader(loader);
   }
 
   function runTests() {
@@ -215,7 +219,7 @@ const App = () => {
               goToNextLesson,
               goToPreviousLesson,
               hints,
-              isLoading,
+              loader,
               lessonNumber,
               project,
               resetProject,

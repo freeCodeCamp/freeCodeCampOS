@@ -77,6 +77,11 @@ export const pluginEvents = {
   onLessonFailed: async project => {},
 
   /**
+   * @param {Project} project
+   */
+  onLessonLoad: async project => {},
+
+  /**
    * @param {string} projectDashedName
    * @returns {Promise<{title: string; description: string; numberOfLessons: number; tags: string[]}>}
    */

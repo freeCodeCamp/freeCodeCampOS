@@ -1,5 +1,5 @@
 // Handles all the resetting of the projects
-import { resetBottomPanel, updateError } from './client-socks.js';
+import { resetBottomPanel, updateError, updateLoader } from './client-socks.js';
 import { getProjectConfig, getState } from './env.js';
 import { logover } from './logger.js';
 import { runCommand, runLessonSeed } from './seed.js';
@@ -15,6 +15,10 @@ export async function resetProject(ws) {
   const { currentProject } = await getState();
   const project = await getProjectConfig(currentProject);
   const { currentLesson } = project;
+  updateLoader(ws, {
+    isLoading: true,
+    progress: { total: currentLesson, count: 0 }
+  });
 
   let lessonNumber = 0;
   try {
@@ -25,11 +29,19 @@ export async function resetProject(ws) {
         await runLessonSeed(seed, currentProject, lessonNumber);
       }
       lessonNumber++;
+      updateLoader(ws, {
+        isLoading: true,
+        progress: { total: currentLesson, count: lessonNumber }
+      });
     }
   } catch (err) {
     updateError(ws, err);
     logover.error(err);
   }
+  updateLoader(ws, {
+    isLoading: false,
+    progress: { total: 1, count: 1 }
+  });
 }
 
 async function gitResetCurrentProjectDir() {

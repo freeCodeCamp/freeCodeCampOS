@@ -27,6 +27,14 @@ export type TestType = {
   testId: number;
 };
 
+export type LoaderT = {
+  isLoading: boolean;
+  progress: {
+    total: number;
+    count: number;
+  };
+};
+
 export interface ProjectI {
   id: number;
   title: string;

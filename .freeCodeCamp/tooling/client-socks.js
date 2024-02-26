@@ -1,7 +1,7 @@
 import { parseMarkdown } from './parser.js';
 
-export function toggleLoaderAnimation(ws) {
-  ws.send(parse({ event: 'toggle-loader-animation' }));
+export function updateLoader(ws, loader) {
+  ws.send(parse({ event: 'update-loader', data: { loader } }));
 }
 
 /**

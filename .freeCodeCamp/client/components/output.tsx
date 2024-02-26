@@ -1,18 +1,26 @@
 import { useState } from 'react';
-import { Loader } from './loader';
-import { ConsoleError, TestType } from '../types';
+import { ConsoleError, LoaderT, TestType } from '../types';
 import { Tests } from './tests';
 import { Console } from './console';
 import { Hints } from './hints';
+import { Progress } from './progress';
 
 interface OutputProps {
-  isLoading: boolean;
+  loader: LoaderT;
   hints: string[];
   tests: TestType[];
   cons: ConsoleError[];
 }
 
-export const Output = ({ isLoading, hints, tests, cons }: OutputProps) => {
+export const Output = ({
+  loader: {
+    isLoading,
+    progress: { total, count }
+  },
+  hints,
+  tests,
+  cons
+}: OutputProps) => {
   const [selectedBtn, setSelectedBtn] = useState('tests');
 
   return (
@@ -55,7 +63,7 @@ export const Output = ({ isLoading, hints, tests, cons }: OutputProps) => {
         ) : null}
       </ul>
       {isLoading ? (
-        <Loader />
+        <Progress count={count} total={total} />
       ) : (
         <div className='project-output-content'>
           {(() => {
