@@ -116,24 +116,40 @@ pub struct Project {
     pub id: u16,
     #[serde(rename = "dashedName")]
     pub dashed_name: String,
-    #[serde(rename = "isIntegrated")]
-    pub is_integrated: Option<bool>,
-    #[serde(rename = "isPublic")]
-    pub is_public: Option<bool>,
-    #[serde(rename = "currentLesson")]
+    #[serde(rename = "isIntegrated", default = "default_false")]
+    pub is_integrated: bool,
+    #[serde(rename = "isPublic", default = "default_true")]
+    pub is_public: bool,
+    #[serde(rename = "currentLesson", default = "default_0")]
     pub current_lesson: u16,
-    #[serde(rename = "runTestsOnWatch")]
-    pub run_tests_on_watch: Option<bool>,
-    #[serde(rename = "seedEveryLesson")]
-    pub seed_every_lesson: Option<bool>,
-    #[serde(rename = "isResetEnabled")]
-    pub is_reset_enabled: Option<bool>,
-    #[serde(rename = "numberofLessons")]
-    pub number_of_lessons: Option<u16>,
-    #[serde(rename = "blockingTests")]
-    pub blocking_tests: Option<bool>,
-    #[serde(rename = "breakOnFailure")]
-    pub break_on_failure: Option<bool>,
+    #[serde(rename = "runTestsOnWatch", default = "default_false")]
+    pub run_tests_on_watch: bool,
+    #[serde(rename = "seedEveryLesson", default = "default_false")]
+    pub seed_every_lesson: bool,
+    #[serde(rename = "isResetEnabled", default = "default_false")]
+    pub is_reset_enabled: bool,
+    #[serde(rename = "numberofLessons", default = "default_1")]
+    pub number_of_lessons: u16,
+    #[serde(rename = "blockingTests", default = "default_false")]
+    pub blocking_tests: bool,
+    #[serde(rename = "breakOnFailure", default = "default_false")]
+    pub break_on_failure: bool,
+}
+
+fn default_false() -> bool {
+    false
+}
+
+fn default_true() -> bool {
+    true
+}
+
+fn default_1() -> u16 {
+    1
+}
+
+fn default_0() -> u16 {
+    0
 }
 
 #[derive(Serialize, Deserialize, Debug)]
