@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { F, ProjectI, TestType } from '../types';
+import { F, LoaderT, ProjectI, TestType } from '../types';
 
 interface ControlsProps {
   cancelTests: F<void, void>;
@@ -7,6 +7,26 @@ interface ControlsProps {
   resetProject?: F<void, void>;
   isResetEnabled?: ProjectI['isResetEnabled'];
   tests: TestType[];
+  loader?: LoaderT;
+}
+
+// Changes the Reset button background to a filling progress bar when the seed is running
+function progressStyle(loader?: LoaderT) {
+  if (!loader) {
+    return {};
+  }
+
+  const {
+    isLoading,
+    progress: { total, count }
+  } = loader;
+  if (isLoading) {
+    return {
+      background: `linear-gradient(to right, #0065A9 ${
+        (count / total) * 100
+      }%, rgba(0,0,0,0) 0%)`
+    };
+  }
 }
 
 export const Controls = ({
@@ -14,7 +34,8 @@ export const Controls = ({
   runTests,
   resetProject,
   isResetEnabled,
-  tests
+  tests,
+  loader
 }: ControlsProps) => {
   const [isTestsRunning, setIsTestsRunning] = useState(false);
 
@@ -34,6 +55,8 @@ export const Controls = ({
     }
   }
 
+  const resetDisabled = !isResetEnabled || loader?.isLoading;
+
   return (
     <section className='project-controls'>
       <button className='secondary-cta' onClick={handleTests}>
@@ -41,8 +64,11 @@ export const Controls = ({
       </button>
       {resetProject && (
         <button
-          disabled={!isResetEnabled}
-          style={isResetEnabled ? {} : { cursor: 'not-allowed' }}
+          disabled={resetDisabled}
+          style={{
+            ...progressStyle(loader),
+            cursor: resetDisabled ? 'not-allowed' : 'pointer'
+          }}
           onClick={() => resetProject()}
         >
           Reset Step

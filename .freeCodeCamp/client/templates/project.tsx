@@ -63,11 +63,12 @@ export const Project = ({
                 runTests,
                 resetProject,
                 isResetEnabled: project.isResetEnabled,
-                tests
+                tests,
+                loader
               })}
         />
 
-        <Output {...{ loader, hints, tests, cons }} />
+        <Output {...{ hints, tests, cons }} />
       </div>
     </>
   );

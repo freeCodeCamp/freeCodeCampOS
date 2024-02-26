@@ -12,5 +12,9 @@ export function Progress({ total, count }: ProgressProps) {
     setValue(count / total);
   }, [count]);
 
-  return <progress value={value}></progress>;
+  return (
+    <label>
+      Resetting: <progress value={value}></progress>
+    </label>
+  );
 }

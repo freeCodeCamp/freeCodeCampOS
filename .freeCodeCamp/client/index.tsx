@@ -81,7 +81,7 @@ const App = () => {
 
   const handle = {
     'handle-project-finish': handleProjectFinish,
-    'toggle-loader-animation': toggleLoaderAnimation,
+    'update-loader': updateLoader,
     'update-test': updateTest,
     'update-tests': updateTests,
     'update-hints': updateHints,
@@ -163,6 +163,10 @@ const App = () => {
 
   function updateError({ error }: { error: Error }) {
     setError(error);
+  }
+
+  function updateLoader({ loader }: { loader: LoaderT }) {
+    setLoader(loader);
   }
 
   function resetTests() {
