@@ -1,4 +1,5 @@
 #![warn(clippy::pedantic)]
+#![allow(clippy::struct_excessive_bools)]
 
 use clap::Parser;
 use clapper::{add_project, create_course, Cli, SubCommand};

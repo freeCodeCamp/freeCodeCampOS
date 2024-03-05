@@ -31,6 +31,7 @@ export async function runLesson(ws, projectDashedName) {
     if (currentLesson === 0) {
       await pluginEvents.onProjectStart(project);
     }
+    await pluginEvents.onLessonLoad(project);
 
     updateProject(ws, project);
 

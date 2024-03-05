@@ -96,14 +96,14 @@ pub fn add_project() -> InquireResult<()> {
         id,
         dashed_name,
         current_lesson: 0,
-        is_integrated: Some(is_integrated),
-        is_public: Some(is_public),
-        run_tests_on_watch: Some(run_tests_on_watch),
-        seed_every_lesson: Some(seed_every_lesson),
-        is_reset_enabled: Some(is_reset_enabled),
-        blocking_tests: Some(blocking_tests),
-        break_on_failure: Some(break_on_failure),
-        number_of_lessons: None,
+        is_integrated,
+        is_public,
+        run_tests_on_watch,
+        seed_every_lesson,
+        is_reset_enabled,
+        blocking_tests,
+        break_on_failure,
+        number_of_lessons: 1,
     };
     projects.push(project);
     create_project_metadata(&freecodecamp_conf, &projects);

@@ -4,7 +4,7 @@
     "dashedName": "learn-freecodecamp-os",
     "isIntegrated": false,
     "isPublic": true,
-    "currentLesson": 0,
+    "currentLesson": 1,
     "runTestsOnWatch": true,
     "seedEveryLesson": false,
     "isResetEnabled": true,
@@ -40,5 +40,19 @@
     "blockingTests": false,
     "breakOnFailure": false,
     "numberOfLessons": 2
+  },
+  {
+    "id": 3,
+    "dashedName": "project-reset",
+    "isIntegrated": false,
+    "isPublic": true,
+    "currentLesson": 0,
+    "runTestsOnWatch": false,
+    "seedEveryLesson": false,
+    "isResetEnabled": true,
+    "numberofLessons": null,
+    "blockingTests": false,
+    "breakOnFailure": false,
+    "numberOfLessons": 4
   }
 ]

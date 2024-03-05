@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0] - 2024-02-05
+
+### Add
+
+- `pluginEvents.onLessonLoad`
+- Loader showing progress for reset step
+
 ## [3.2.0] - 2024-02-12
 
 ### Add

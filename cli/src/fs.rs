@@ -491,15 +491,15 @@ pluginEvents.onLessonPassed = async project => {};
                 let project = Project {
                     id: u16::from(i),
                     dashed_name: format!("project-{i}"),
-                    is_integrated: Some(false),
-                    is_public: Some(true),
+                    is_integrated: false,
+                    is_public: true,
                     current_lesson: 0,
-                    run_tests_on_watch: Some(true),
-                    seed_every_lesson: Some(false),
-                    is_reset_enabled: Some(false),
-                    number_of_lessons: None,
-                    blocking_tests: None,
-                    break_on_failure: None,
+                    run_tests_on_watch: true,
+                    seed_every_lesson: false,
+                    is_reset_enabled: false,
+                    number_of_lessons: 1,
+                    blocking_tests: false,
+                    break_on_failure: false,
                 };
                 projects.push(project);
             }

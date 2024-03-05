@@ -29,6 +29,11 @@ export function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
   let testsRunning = false;
   let isClearConsole = false;
 
+  // hotReload is called on connection, which can happen mulitple times due to client reload/disconnect.
+  // This ensures the following does not happen:
+  // > MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 all listeners added to [FSWatcher].
+  watcher.removeAllListeners('all');
+
   watcher.on('all', async (event, name) => {
     if (name && !pathsToIgnore.find(p => name.includes(p))) {
       if (isWait) return;
