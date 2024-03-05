@@ -2,7 +2,7 @@
   "name": "self",
   "private": true,
   "author": "freeCodeCamp",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "Test repo for @freecodecamp/freecodecamp-os",
   "scripts": {
     "start": "node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js"
