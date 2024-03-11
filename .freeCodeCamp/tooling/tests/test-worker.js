@@ -30,7 +30,9 @@ parentPort.on('message', async ({ testCode, testId }) => {
     passed = true;
   } catch (e) {
     error = {};
-    error.text = e;
+    Object.getOwnPropertyNames(e).forEach(key => {
+      error[key] = e[key];
+    });
     // Cannot pass `e` "as is", because classes cannot be passed between threads
     error.type = e instanceof AssertionError ? 'AssertionError' : 'Error';
   }

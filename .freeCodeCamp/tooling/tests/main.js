@@ -154,9 +154,9 @@ export async function runTests(ws, projectDashedName) {
           logover.error(`Test #${testId}:`, error);
         }
 
-        if (error.text?.message) {
-          const assertionTranslation = await t(error.text.message, {});
-          error.text.message = assertionTranslation || error.text.message;
+        if (error.message) {
+          const assertionTranslation = await t(error.message, {});
+          error.message = assertionTranslation || error.message;
         }
 
         const consoleError = {

@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.4.1] - 2024-03-11
+
+### Fix
+
+- Convert `Error` class to object in worker before sending to parent
+
 ## [3.4.0] - 2024-03-05
 
 ### Add
