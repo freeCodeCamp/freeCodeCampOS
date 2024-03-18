@@ -42,6 +42,25 @@ Zero-based numbering, because of course
 ```
 ````
 
+### `meta`
+
+````markdown
+## <N>
+
+```json
+{
+  "watch": ["path/relative/to/root"],
+  "ignore": ["path/relative/to/root"]
+}
+```
+````
+
+The `meta.watch` field is used to specify specific files to watch during a lesson. The `meta.ignore` field is used to specify specific files to ignore during a lesson. The watcher is affected once on lesson load.
+
+```admonish note title=""
+The `watch` and `ignore` fields are optional. It does not make sense to provide both at the same time.
+```
+
 ### `### --description--`
 
 ```markdown
@@ -218,6 +237,12 @@ await __helpers.javascriptTest(filePath, test, cb);
 ```
 
 ## 1
+
+```json
+{
+  "watch": ["learn-x-by-building-y/test/index.js"]
+}
+```
 
 ### --description--
 

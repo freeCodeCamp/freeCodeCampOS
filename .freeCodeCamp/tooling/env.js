@@ -34,7 +34,10 @@ export async function getState() {
       // or not is based on the current lesson matching the last seeded lesson
       // So, to ensure the first lesson is seeded, this is -1
       lessonNumber: -1
-    }
+    },
+    // All lessons start at 0, but the logic for whether to run certain effects
+    // is based on the current lesson matching the last lesson
+    lastWatchChange: -1
   };
   try {
     const state = JSON.parse(

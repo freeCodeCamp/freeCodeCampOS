@@ -43,10 +43,10 @@
       ".logs/.temp.log",
       "config/",
       "/node_modules/",
-      ".git",
+      ".git/",
       "/target/",
       "/test-ledger/",
-      ".vscode",
+      ".vscode/",
       "freecodecamp.conf.json"
     ]
   },

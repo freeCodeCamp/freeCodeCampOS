@@ -1,4 +1,5 @@
 /// Tests can be run from `self/`
+/// node ../.freeCodeCamp/tests/parser.test.js
 import { assert } from 'chai';
 import { Logger } from 'logover';
 import { pluginEvents } from '../plugin/index.js';
@@ -17,6 +18,7 @@ try {
     numberOfLessons
   } = await pluginEvents.getProjectMeta('build-x-using-y');
   const {
+    meta,
     description: lessonDescription,
     tests,
     hints,
@@ -29,40 +31,37 @@ try {
   } = await pluginEvents.getLesson('build-x-using-y', 0);
 
   assert.deepEqual(title, 'Build X Using Y');
+  assert.deepEqual(meta, {
+    watch: ['some/file.js'],
+    ignore: ['another/file.js']
+  });
   assert.deepEqual(
     projectDescription,
-    'In this course, you will build x using y.'
+    '<p>In this course, you will build x using y.</p>'
   );
   assert.deepEqual(numberOfLessons, 1);
 
   assert.deepEqual(
     lessonDescription,
-    `Some description here.
-
-\`\`\`rust
-fn main() {
-    println!("Hello, world!");
-}
-\`\`\`
-
-Here is an image:
-
-<img src="../../images/fcc_primary_large.png" width="300px" />
-
-`
+    `<p>Some description here.</p>
+<pre><code class="language-rust"><span class="token keyword">fn</span> <span class="token function-definition function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token macro property">println!</span><span class="token punctuation">(</span><span class="token string">"Hello, world!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre><p>Here is an image:</p>
+<img src="../../images/fcc_primary_large.png" width="300px" />`
   );
 
   const expectedTests = [
     [
-      'First test using Chai.js `assert`.',
+      '<p>First test using Chai.js <code>assert</code>.</p>',
       '// 0\n// Timeout for 3 seconds\nawait new Promise(resolve => setTimeout(resolve, 3000));\nassert.equal(true, true);'
     ],
     [
-      'Second test using global variables passed from `before` hook.',
+      '<p>Second test using global variables passed from <code>before</code> hook.</p>',
       "// 1\nawait new Promise(resolve => setTimeout(resolve, 4000));\nassert.equal(__projectLoc, 'example global variable for tests');"
     ],
     [
-      'Dynamic helpers should be imported.',
+      '<p>Dynamic helpers should be imported.</p>',
       "// 2\nawait new Promise(resolve => setTimeout(resolve, 1000));\nassert.equal(__helpers.testDynamicHelper(), 'Helper success!');"
     ]
   ];
@@ -73,8 +72,10 @@ Here is an image:
   }
 
   const expectedHints = [
-    'Inline hint with `some` code `blocks`.\n\n',
-    'Multi-line hint with:\n\n```js\nconst code_block = true;\n```\n\n'
+    '<p>Inline hint with <code>some</code> code <code>blocks</code>.</p>',
+    `<p>Multi-line hint with:</p>
+<pre><code class="language-js"><span class="token keyword">const</span> code_block <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+</code></pre>`
   ];
 
   for (const [i, hint] of hints.entries()) {

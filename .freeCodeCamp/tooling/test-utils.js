@@ -8,10 +8,10 @@ import { logover } from './logger.js';
 // ---------------
 // GENERIC HELPERS
 // ---------------
-const PATH_TERMINAL_OUT = join(ROOT, '.logs/.terminal_out.log');
-const PATH_BASH_HISTORY = join(ROOT, '.logs/.bash_history.log');
-const PATH_CWD = join(ROOT, '.logs/.cwd.log');
-const PATH_TEMP = join(ROOT, '.logs/.temp.log');
+export const PATH_TERMINAL_OUT = join(ROOT, '.logs/.terminal_out.log');
+export const PATH_BASH_HISTORY = join(ROOT, '.logs/.bash_history.log');
+export const PATH_CWD = join(ROOT, '.logs/.cwd.log');
+export const PATH_TEMP = join(ROOT, '.logs/.temp.log');
 
 /**
  * @typedef ControlWrapperOptions

@@ -8,10 +8,16 @@ import {
   updateError,
   resetBottomPanel
 } from './client-socks.js';
-import { ROOT, getState, getProjectConfig, freeCodeCampConfig } from './env.js';
+import { ROOT, getState, getProjectConfig, setState } from './env.js';
 import { logover } from './logger.js';
 import { seedLesson } from './seed.js';
 import { pluginEvents } from '../plugin/index.js';
+import {
+  unwatchAll,
+  watchAll,
+  watchPathRelativeToRoot,
+  watcher
+} from './hot-reload.js';
 
 /**
  * Runs the lesson from the `projectDashedName` config.
@@ -21,12 +27,14 @@ import { pluginEvents } from '../plugin/index.js';
 export async function runLesson(ws, projectDashedName) {
   const project = await getProjectConfig(projectDashedName);
   const { isIntegrated, dashedName, seedEveryLesson, currentLesson } = project;
-  const { lastSeed } = await getState();
+  const { lastSeed, lastWatchChange } = await getState();
   try {
-    const { description, seed, isForce, tests } = await pluginEvents.getLesson(
-      projectDashedName,
-      currentLesson
-    );
+    const { description, seed, isForce, tests, meta } =
+      await pluginEvents.getLesson(projectDashedName, currentLesson);
+
+    // TODO: Consider performance optimizations
+    // - Do not run at all if whole project does not contain any `meta`.
+    await handleWatcher(meta, { lastWatchChange, currentLesson });
 
     if (currentLesson === 0) {
       await pluginEvents.onProjectStart(project);
@@ -73,4 +81,24 @@ export async function runLesson(ws, projectDashedName) {
     updateError(ws, err);
     logover.error(err);
   }
+}
+
+async function handleWatcher(meta, { lastWatchChange, currentLesson }) {
+  // Calling `watcher` methods takes a performance hit. So, check is behind a check that the lesson has changed.
+  if (lastWatchChange !== currentLesson) {
+    if (meta?.watch) {
+      unwatchAll();
+      for (const path of meta.watch) {
+        const toWatch = join(ROOT, path);
+        watchPathRelativeToRoot(toWatch);
+      }
+    } else if (meta?.ignore) {
+      await watchAll();
+      watcher.unwatch(meta.ignore);
+    } else {
+      // Reset watcher back to default/freecodecamp.conf.json
+      await watchAll();
+    }
+  }
+  await setState({ lastWatchChange: currentLesson });
 }
