@@ -32,6 +32,7 @@ import { logover } from '../tooling/logger.js';
 
 /**
  * @typedef {Object} Lesson
+ * @property {{watch?: string[]; ignore?: string[]} | undefined} meta
  * @property {string} description
  * @property {[[string, string]]} tests
  * @property {string[]} hints
@@ -96,8 +97,10 @@ export const pluginEvents = {
     const coffeeDown = new CoffeeDown(projectFile);
     const projectMeta = coffeeDown.getProjectMeta();
     // Remove `<p>` tags if present
-    const title = parseMarkdown(projectMeta.title).replace(/<p>|<\/p>/g, '');
-    const description = parseMarkdown(projectMeta.description);
+    const title = parseMarkdown(projectMeta.title)
+      .replace(/<p>|<\/p>/g, '')
+      .trim();
+    const description = parseMarkdown(projectMeta.description).trim();
     const tags = projectMeta.tags;
     const numberOfLessons = projectMeta.numberOfLessons;
     return { title, description, numberOfLessons, tags };
@@ -135,14 +138,16 @@ export const pluginEvents = {
         }
       }
     }
-    const { afterAll, afterEach, beforeAll, beforeEach, isForce } = lesson;
-    const description = parseMarkdown(lesson.description);
+    const { afterAll, afterEach, beforeAll, beforeEach, isForce, meta } =
+      lesson;
+    const description = parseMarkdown(lesson.description).trim();
     const tests = lesson.tests.map(([testText, test]) => [
-      parseMarkdown(testText),
+      parseMarkdown(testText).trim(),
       test
     ]);
-    const hints = lesson.hints.map(parseMarkdown);
+    const hints = lesson.hints.map(h => parseMarkdown(h).trim());
     return {
+      meta,
       description,
       tests,
       hints,

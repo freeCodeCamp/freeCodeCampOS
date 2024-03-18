@@ -1,5 +1,31 @@
 # Changelog
 
+## [3.6.0] -
+
+### Add
+
+- Use bash's `script` command to record terminal input and output
+  - Gated behind a feature flag
+  - Existing `.logs/` files will be deprecated in favour of `script` command in `4.0`
+
+## [3.5.1] -
+
+### Fix
+
+- Use `worker.postMessage` to cause side-effects in main thread
+
+## [3.5.0] - 2024-03-18
+
+### Add
+
+- `meta` to `getLesson`
+  - `meta.watch` and `meta.ignore` to alter watch behaviour when lesson loads
+
+### Fix
+
+- Add `/` to end of `.git` in `defaultPathsToIgnore` to prevent files starting with `.git` from being ignored
+- Trim `description` and `title` fields from parser
+
 ## [3.4.1] - 2024-03-11
 
 ### Fix

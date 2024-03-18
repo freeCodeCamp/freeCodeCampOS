@@ -96,7 +96,10 @@ export class CoffeeDown {
     const afterAll = lesson.getAfterAll().code;
     const beforeEach = lesson.getBeforeEach().code;
     const afterEach = lesson.getAfterEach().code;
+
+    const meta = lesson.getMeta();
     return {
+      meta,
       description,
       tests,
       seed,
@@ -163,6 +166,17 @@ export class CoffeeDown {
 
   getAfterEach() {
     return this.getHeading(3, '--after-each--', 'getAfterEach');
+  }
+
+  getMeta() {
+    const firstHeadingMarker = this.tokens.findIndex(t => {
+      return t.type === 'heading' && t.depth === 3;
+    });
+    const tokensBeforeFirstHeading = this.tokens.slice(0, firstHeadingMarker);
+    const jsonMeta =
+      tokensBeforeFirstHeading.find(t => t.type === 'code' && t.lang === 'json')
+        ?.text ?? '{}';
+    return JSON.parse(jsonMeta);
   }
 
   /**

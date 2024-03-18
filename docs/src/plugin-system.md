@@ -65,6 +65,7 @@ This function can be called multiple times per lesson. Therefore, it is expected
 ```typescript
 (projectDashedName: string, lessonNumber: number) =>
   Promise<{
+    meta?: { watch?: string[]; ignore?: string[] };
     description: string;
     tests: [[string, string]];
     hints: string[];
@@ -76,6 +77,8 @@ This function can be called multiple times per lesson. Therefore, it is expected
     afterEach?: string;
   }>;
 ```
+
+The `meta` field is expected to be an object with either a `watch` or `ignore` field. The `watch` field is expected to be an array of strings, and the `ignore` field is expected to be an array of strings.
 
 The `description` field is expected to be either a plain string, or an HTML string which is then rendered in the client.
 

@@ -371,7 +371,8 @@ export async function validateCurriculum() {
         afterAll,
         beforeEach,
         afterEach,
-        isForce
+        isForce,
+        meta
       } = lesson;
       if (!description) {
         warn(
@@ -488,6 +489,13 @@ export async function validateCurriculum() {
           `Invalid afterEach in lesson ${i} of ${dashedName}`,
           afterEach,
           'afterEach should be a string'
+        );
+      }
+      if (meta?.watch && meta?.ignore) {
+        panic(
+          `Invalid meta in lesson ${i} of ${dashedName}`,
+          meta,
+          'Lesson should not have both `watch` and `ignore`'
         );
       }
     }

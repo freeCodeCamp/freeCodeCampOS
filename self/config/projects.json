@@ -54,5 +54,19 @@
     "blockingTests": false,
     "breakOnFailure": false,
     "numberOfLessons": 4
+  },
+  {
+    "id": 4,
+    "dashedName": "lesson-watch",
+    "isIntegrated": false,
+    "isPublic": true,
+    "currentLesson": 0,
+    "runTestsOnWatch": true,
+    "seedEveryLesson": false,
+    "isResetEnabled": false,
+    "numberofLessons": null,
+    "blockingTests": false,
+    "breakOnFailure": false,
+    "numberOfLessons": 3
   }
 ]
