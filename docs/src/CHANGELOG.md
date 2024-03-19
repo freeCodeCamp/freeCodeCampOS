@@ -8,11 +8,11 @@
   - Gated behind a feature flag
   - Existing `.logs/` files will be deprecated in favour of `script` command in `4.0`
 
-## [3.5.1] -
+## [3.5.1] - 2024-03-19
 
 ### Fix
 
-- Use `worker.postMessage` to cause side-effects in main thread
+- Remove `watcher` from context in worker
 
 ## [3.5.0] - 2024-03-18
 

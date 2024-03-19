@@ -2,7 +2,6 @@ import { parentPort, workerData } from 'node:worker_threads';
 // These are used in the local scope of the `eval` in `runTests`
 import { assert, AssertionError, expect, config as chaiConfig } from 'chai';
 import __helpers_c from '../test-utils.js';
-import { watcher } from '../hot-reload.js';
 
 import { freeCodeCampConfig, ROOT } from '../env.js';
 import { join } from 'path';
