@@ -32,6 +32,10 @@ The root of the workspace.
 
 ### `watcher`
 
+```admonish note
+This is only available in the `beforeAll` and `beforeEach` context - on the main thread.
+```
+
 The [Chokidar](https://www.npmjs.com/package/chokidar) `FSWatcher` instance.
 
 This is useful if you want to stop watching a directory during a test:
