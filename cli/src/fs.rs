@@ -191,7 +191,7 @@ impl Course {
             },
             hot_reload: Some(HotReload {
                 ignore: vec![
-                    ".logs/.temp.log".to_string(),
+                    ".logs/.script_out.log".to_string(),
                     "config/".to_string(),
                     "/node_modules/".to_string(),
                     ".git".to_string(),

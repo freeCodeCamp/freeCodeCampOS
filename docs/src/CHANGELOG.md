@@ -1,12 +1,19 @@
 # Changelog
 
-## [3.6.0] -
+## [4.0.0]
+
+### Change
+
+- Remove `__helpers.getTemp`
+- Remove `__helpers.getTerminalOut`
+
+## [3.6.0] - 2024-03-20
 
 ### Add
 
 - Use bash's `script` command to record terminal input and output
-  - Gated behind a feature flag
   - Existing `.logs/` files will be deprecated in favour of `script` command in `4.0`
+  - `__helpers.getScriptOut` to get `.logs/.script_out.log` file
 
 ## [3.5.1] - 2024-03-19
 
