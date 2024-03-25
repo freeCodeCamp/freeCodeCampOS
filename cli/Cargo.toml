@@ -9,7 +9,7 @@ homepage = "https://opensource.freecodecamp.org/freeCodeCampOS/"
 repository = "https://github.com/freeCodeCamp/freeCodeCampOS"
 
 [dependencies]
-clap = { version = "4.5.3", features = ["derive"] }
+clap = { version = "4.5.4", features = ["derive"] }
 indicatif = "0.17.7"
 inquire = "0.6.2"
 serde = { version = "1.0.197", features = ["derive"] }
