@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - uses: taiki-e/install-action@cross
-      - uses: taiki-e/upload-rust-binary-action@01cb791d87a54d260100e35916d83c4030ee58b4 # v1
+      - uses: taiki-e/upload-rust-binary-action@582c0333888d1fa4c2bd75562fa6873bc19c2560 # v1
         with:
           # (required) Comma-separated list of binary names (non-extension portion of filename) to build and upload.
           # Note that glob pattern is not supported yet.
