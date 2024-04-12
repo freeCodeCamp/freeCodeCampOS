@@ -27,7 +27,7 @@ assert.match(scriptIn, /dot logs/);
 
 ### --description--
 
-As
+Well done.
 
 ### --tests--
 
