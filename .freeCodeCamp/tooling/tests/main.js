@@ -1,9 +1,13 @@
 import { assert, AssertionError, expect, config as chaiConfig } from 'chai';
-import { watcher } from '../hot-reload.js';
 import { logover } from '../logger.js';
 
-import { getProjectConfig, getState, setProjectConfig } from '../env.js';
-import { freeCodeCampConfig, ROOT } from '../env.js';
+import {
+  getProjectConfig,
+  getState,
+  setProjectConfig,
+  freeCodeCampConfig,
+  ROOT
+} from '../env.js';
 import {
   updateTest,
   updateTests,
@@ -17,6 +21,7 @@ import { join } from 'node:path';
 import { Worker } from 'node:worker_threads';
 import { pluginEvents } from '../../plugin/index.js';
 import { t } from '../t.js';
+import { watchPath, unwatchPath } from '../watcher/watcher.js';
 
 try {
   const plugins = freeCodeCampConfig.tooling?.plugins;

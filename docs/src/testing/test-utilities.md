@@ -10,6 +10,7 @@ Many of the exported functions are _convinience wrappers_ around Nodejs' `fs` an
 - [`getCWD`](#getcwd)
 - [`getLastCommand`](#getlastcommand)
 - [`getLastCWD`](#getlastcwd)
+- [`getScriptIn`](#getscriptin)
 - [`getScriptOut`](#getscriptout)
 - [`getTemp`](#gettemp)
 - [`getTerminalOutput`](#getterminaloutput)
@@ -119,6 +120,26 @@ function getLastCWD(n = 0): Promise<string>;
 
 ```javascript
 const lastCWD = await __helpers.getLastCWD();
+```
+
+## `getScriptIn`
+
+Get the `.logs/.script_in.log` file contents.
+
+```admonish danger title="Safety"
+Throws if file does not exist, or if read permission is denied.
+```
+
+```typescript
+function getScriptIn(): Promise<string>;
+```
+
+```javascript
+const scriptIn = await __helpers.getScriptIn();
+```
+
+```admonish note
+The output does not include _untyped_ characters. That is, if tab completion is used, the output will not include the final command, but only up to the point of completion.
 ```
 
 ## `getScriptOut`

@@ -1,20 +1,30 @@
-import { it, describe, before, after } from 'node:test';
+import { it, describe, before, beforeEach, after, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   compareEquivalency,
-  maybeAddRelativePathToPTI
+  maybeAddRelativePath,
+  shouldWatch,
+  PATHS_TO_WATCH,
+  PATHS_TO_IGNORE,
+  unwatchPath,
+  watchPath
 } from '../tooling/watcher/watcher.js';
-import { PATHS_TO_IGNORE } from '../tooling/hot-reload.js';
+
+import { watcher } from '../tooling/hot-reload.js';
 
 describe('watcher', async () => {
   let initial_PTI;
   before(() => {
     initial_PTI = [...PATHS_TO_IGNORE];
-    const TEST_PTI = ['/node_modules/'];
-    PATHS_TO_IGNORE.splice(0, PATHS_TO_IGNORE.length, ...TEST_PTI);
+  });
+  beforeEach(() => {
+    PATHS_TO_IGNORE.splice(0, PATHS_TO_IGNORE.length);
+  });
+  afterEach(() => {
+    PATHS_TO_IGNORE.splice(0, PATHS_TO_IGNORE.length, ...initial_PTI);
   });
   after(() => {
-    PATHS_TO_IGNORE.splice(0, PATHS_TO_IGNORE.length, ...initial_PTI);
+    watcher.close();
   });
 
   it('compareEquivalency', () => {
@@ -30,9 +40,31 @@ describe('watcher', async () => {
     });
   });
 
-  it('maybeAddRelativePathToPTI', () => {
+  it('maybeAddRelativePath', () => {
+    assert.deepEqual(PATHS_TO_IGNORE, []);
+    maybeAddRelativePath(PATHS_TO_IGNORE, '/node_modules/');
     assert.deepEqual(PATHS_TO_IGNORE, ['/node_modules/']);
-    maybeAddRelativePathToPTI('node_modules');
+    maybeAddRelativePath(PATHS_TO_IGNORE, 'node_modules');
     assert.deepEqual(PATHS_TO_IGNORE, ['node_modules']);
+    maybeAddRelativePath(PATHS_TO_IGNORE, '/node_modules/foo/bar');
+    assert.deepEqual(PATHS_TO_IGNORE, ['node_modules']);
+    maybeAddRelativePath(PATHS_TO_IGNORE, 'a/node_modules');
+    assert.deepEqual(PATHS_TO_IGNORE, ['node_modules']);
+    maybeAddRelativePath(PATHS_TO_IGNORE, '/a/node_modules/b/');
+    assert.deepEqual(PATHS_TO_IGNORE, ['node_modules']);
+
+    maybeAddRelativePath(PATHS_TO_IGNORE, '/a/b/');
+    assert.deepEqual(PATHS_TO_IGNORE, ['node_modules', '/a/b/']);
+  });
+
+  it('shouldWatch', () => {
+    assert(shouldWatch('node_modules/foo/bar'));
+    unwatchPath('/node_modules/');
+    assert(!shouldWatch('/node_modules/foo/bar'));
+    assert(shouldWatch('example/node_modules/foo/bar'));
+    unwatchPath('node_modules');
+    assert(!shouldWatch('example/node_modules/foo/bar'));
+    watchPath('/node_modules/foo');
+    assert(shouldWatch('/node_modules/foo/bar'));
   });
 });

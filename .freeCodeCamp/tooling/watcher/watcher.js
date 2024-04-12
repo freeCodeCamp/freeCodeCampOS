@@ -1,6 +1,49 @@
 import path from 'path';
-import { PATHS_TO_IGNORE } from '../hot-reload.js';
-import { ROOT } from '../env.js';
+import { ROOT, freeCodeCampConfig } from '../env.js';
+
+const defaultPathsToIgnore = [
+  '/.logs/.script_out.log',
+  '/.logs/.script_in.log',
+  '/.logs/.temp.log',
+  '/config/',
+  'node_modules/',
+  '.git/',
+  'target/',
+  'test-ledger/'
+];
+
+/**
+ * Paths following the following convention:
+ * - If path starts with `/`, it is relative to `ROOT`
+ * - Else, path is anywhere in tree
+ *
+ * **Examples:**
+ *
+ * - ["/node_modules/"] - ignore only `node_modules` in ROOT
+ * - ["node_modules/"] - ignore `node_modules` anywhere in the tree
+ *
+ * **NOTE:** Globs are NOT supported
+ * @type {string[]}
+ */
+export const PATHS_TO_IGNORE =
+  freeCodeCampConfig.hotReload?.ignore || defaultPathsToIgnore;
+
+/**
+ * Overrides `PATHS_TO_IGNORE`.
+ *
+ * Paths following the following convention:
+ * - If path starts with `/`, it is relative to `ROOT`
+ * - Else, path is anywhere in tree
+ *
+ * **Examples:**
+ *
+ * - ["/node_modules/"] - watch only `node_modules` in ROOT
+ * - ["node_modules/"] - watch `node_modules` anywhere in the tree
+ *
+ * **NOTE:** Globs are NOT supported
+ * @type {string[]}
+ */
+export const PATHS_TO_WATCH = [];
 
 // TODO:
 // 1. Ensure all paths start with `ROOT` so comparisions work
@@ -13,19 +56,31 @@ import { ROOT } from '../env.js';
 // - `PATHS_TO_IGNORE` should be relative to `ROOT`
 //   - Must include the full path to the file/directory wanting to be ignored from `ROOT`
 
-export function unwatchPath(pathRelativeToRoot) {}
-
-export function watchPath(pathRelativeToRoot) {}
+/**
+ *
+ * @param {string} pathRelativeToRoot
+ */
+export function unwatchPath(pathRelativeToRoot) {
+  maybeAddRelativePath(PATHS_TO_IGNORE, pathRelativeToRoot);
+}
 
 /**
- * Add `pathRelativeToRoot` to `PATHS_TO_IGNORE`, if it is not already **equivalently** added
+ *
+ * @param {string} pathRelativeToRoot
+ */
+export function watchPath(pathRelativeToRoot) {
+  maybeAddRelativePath(PATHS_TO_WATCH, pathRelativeToRoot);
+}
+
+/**
+ * Add `pathRelativeToRoot` to `list`, if it is not already **equivalently** added
  *
  * **Examples**
  *
  * ```js
  * const PATHS_TO_IGNORE = ["node_modules/"];
  * const pathRelativeToRoot = "/node_modules/foo/bar";
- * maybeAddRelativePathToPTI(pathRelativeToRoot);
+ * maybeAddRelativePath(PATHS_TO_IGNORE,pathRelativeToRoot);
  * console.log(PATHS_TO_IGNORE);
  * // ["node_modules/"]
  * ```
@@ -36,25 +91,26 @@ export function watchPath(pathRelativeToRoot) {}
  * ```js
  * const PATHS_TO_IGNORE = ["/node_modules/"];
  * const pathRelativeToRoot = "node_modules/foo/bar";
- * maybeAddRelativePathToPTI(pathRelativeToRoot);
+ * maybeAddRelativePath(PATHS_TO_IGNORE,pathRelativeToRoot);
  * console.log(PATHS_TO_IGNORE);
  * // ["/node_modules/", "node_modules/foo/bar"]
  * ```
  *
  * `node_modules/foo/bar` is added, because `/node_modules/` does not encompass all equivalents.
  *
+ * @param {string[]} list
  * @param {string} pathRelativeToRoot
  */
-export function maybeAddRelativePathToPTI(pathRelativeToRoot) {
-  if (!PATHS_TO_IGNORE.some(p => compareEquivalency(p, pathRelativeToRoot))) {
+export function maybeAddRelativePath(list, pathRelativeToRoot) {
+  if (!list.some(p => compareEquivalency(p, pathRelativeToRoot))) {
     // If reverse equivalency exists for any elements already in PATHS_TO_IGNORE, remove less covered path
-    PATHS_TO_IGNORE.forEach(p => {
+    list.forEach(p => {
       if (compareEquivalency(pathRelativeToRoot, p)) {
-        PATHS_TO_IGNORE.splice(PATHS_TO_IGNORE.indexOf(p), 1);
+        list.splice(list.indexOf(p), 1);
       }
     });
 
-    PATHS_TO_IGNORE.push(pathRelativeToRoot);
+    list.push(pathRelativeToRoot);
   }
 }
 
@@ -65,7 +121,7 @@ export function maybeAddRelativePathToPTI(pathRelativeToRoot) {
  * - Allows optional trailing `/`
  * - If one path is a subset of the other, then they are equivalent
  * @param {string} covered_path Path already covered
- * @param {string} compated_path Path to be covered
+ * @param {string} compared_path Path to be covered
  * @returns {boolean} If `covered_path` accounts for `compared_path`
  */
 export function compareEquivalency(covered_path, compared_path) {
@@ -88,4 +144,38 @@ export function compareEquivalency(covered_path, compared_path) {
   }
 
   return path_compared.includes(path_covered);
+}
+
+/**
+ *
+ * @param {string[]} list
+ * @param {string} compared_path
+ * @returns {boolean}
+ */
+export function pathIsIn(list, compared_path) {
+  return list.some(p => compareEquivalency(p, compared_path));
+}
+
+/**
+ *
+ * @param {string} absolutePath
+ * @returns {boolean}
+ */
+export function shouldWatch(absolutePath) {
+  if (pathIsIn(PATHS_TO_WATCH, absolutePath)) {
+    return true;
+  }
+
+  if (pathIsIn(PATHS_TO_IGNORE, absolutePath)) {
+    return false;
+  }
+
+  return true;
+}
+
+export function resetPathLists() {
+  const initial_paths_to_ignore =
+    freeCodeCampConfig.hotReload?.ignore || defaultPathsToIgnore;
+  PATHS_TO_IGNORE.splice(0, PATHS_TO_IGNORE.length, ...initial_paths_to_ignore);
+  PATHS_TO_WATCH.splice(0, PATHS_TO_WATCH.length);
 }

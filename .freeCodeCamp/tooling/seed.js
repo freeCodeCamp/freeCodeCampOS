@@ -1,19 +1,13 @@
 // This file handles seeding the lesson contents with the seed in markdown.
 import { join } from 'path';
-import {
-  ROOT,
-  getState,
-  freeCodeCampConfig,
-  getProjectConfig,
-  setState
-} from './env.js';
+import { ROOT, getProjectConfig, setState } from './env.js';
 import { writeFile } from 'fs/promises';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { logover } from './logger.js';
 import { updateLoader, updateError } from './client-socks.js';
-import { watcher } from './hot-reload.js';
 import { pluginEvents } from '../plugin/index.js';
+import { resetPathLists, unwatchPath } from './watcher/watcher.js';
 const execute = promisify(exec);
 
 /**
@@ -104,9 +98,9 @@ export async function runLessonSeed(seed, currentLesson) {
       } else {
         const { filePath, fileSeed } = cmdOrFile;
         // Stop watching file being seeded to prevent triggering tests on hot reload
-        watcher.unwatch(filePath);
+        unwatchPath(filePath);
         await runSeed(fileSeed, filePath);
-        watcher.add(filePath);
+        resetPathLists();
       }
     }
   } catch (e) {

@@ -4,6 +4,12 @@ The `.logs/` folder and features
 
 ## 0
 
+```json
+{
+  "watch": [".logs/.script_in.log"]
+}
+```
+
 ### --description--
 
 In a new terminal, start typing `dot logs`, and the tests should run.
@@ -13,8 +19,8 @@ In a new terminal, start typing `dot logs`, and the tests should run.
 Placeholder test.
 
 ```js
-const scriptOut = await __helpers.getScriptOut();
-assert.match(scriptOut, /dot logs/);
+const scriptIn = await __helpers.getScriptInEquivalent();
+assert.match(scriptIn, /dot logs/);
 ```
 
 ## 1
