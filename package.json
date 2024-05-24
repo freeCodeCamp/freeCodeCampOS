@@ -23,11 +23,11 @@
     "ws": "8.17.0"
   },
   "devDependencies": {
-    "@babel/core": "7.24.5",
-    "@babel/plugin-syntax-import-assertions": "7.24.1",
-    "@babel/preset-env": "7.24.5",
-    "@babel/preset-react": "7.24.1",
-    "@babel/preset-typescript": "7.24.1",
+    "@babel/core": "7.24.6",
+    "@babel/plugin-syntax-import-assertions": "7.24.6",
+    "@babel/preset-env": "7.24.6",
+    "@babel/preset-react": "7.24.6",
+    "@babel/preset-typescript": "7.24.6",
     "@types/marked": "5.0.2",
     "@types/node": "20.12.12",
     "@types/prismjs": "1.26.4",
