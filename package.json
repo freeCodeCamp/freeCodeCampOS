@@ -23,7 +23,7 @@
     "ws": "8.18.0"
   },
   "devDependencies": {
-    "@babel/core": "7.24.8",
+    "@babel/core": "7.24.9",
     "@babel/plugin-syntax-import-assertions": "7.24.7",
     "@babel/preset-env": "7.24.8",
     "@babel/preset-react": "7.24.7",
