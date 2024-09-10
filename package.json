@@ -15,7 +15,7 @@
   "dependencies": {
     "chai": "4.5.0",
     "chokidar": "3.6.0",
-    "express": "4.19.2",
+    "express": "4.20.0",
     "logover": "2.0.0",
     "marked": "9.1.6",
     "marked-highlight": "2.1.4",
