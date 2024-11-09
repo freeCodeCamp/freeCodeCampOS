@@ -18,7 +18,7 @@
     "express": "4.21.1",
     "logover": "2.0.0",
     "marked": "9.1.6",
-    "marked-highlight": "2.2.0",
+    "marked-highlight": "2.2.1",
     "prismjs": "1.29.0",
     "ws": "8.18.0"
   },
