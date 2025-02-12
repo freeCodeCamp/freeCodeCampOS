@@ -196,10 +196,6 @@ async function handleChangeLanguage(ws, data) {
 
 const PORT = freeCodeCampConfig.port || 8080;
 
-// const server = app.listen(PORT, () => {
-//   logover.info(`Server listening at http://localhost:${PORT}`);
-// });
-
 const handle = {
   connect: (ws, data) => {
     handleConnect(ws);
@@ -215,82 +211,7 @@ const handle = {
   "__run-client-code": handleRunClientCode,
 };
 
-// const staticRoutes = {};
-
 const distDir = join(import.meta.dir, "..", "client", "dist");
-// try {
-//   await recurseStatics(distDir);
-//   // Handle `/`
-//   staticRoutes["/"] = staticRoutes["/index.html"];
-// } catch (e) {
-//   logover.error(e);
-// }
-
-// async function recurseStatics(path: string): Promise<void> {
-//   try {
-//     const file = Bun.file(path);
-//     const fileStat = await file.stat();
-
-//     if (fileStat.isFile()) {
-//       const fileBytes = await Bun.file(path).arrayBuffer();
-//       const basePath = path.substring(
-//         path.indexOf("client/dist") + "client/dist".length
-//       );
-//       staticRoutes[basePath] = new Response(fileBytes, {
-//         headers: { "Content-Type": pathToFileType(path) },
-//       });
-//     } else if (fileStat.isDirectory()) {
-//       const entries = await readdir(path, { withFileTypes: true });
-//       for (const entry of entries) {
-//         const fullPath = join(path, entry.name);
-//         await recurseStatics(fullPath); // Recursive call
-//       }
-//     } else {
-//       console.warn(`Skipping unknown file type: ${path}`);
-//     }
-//   } catch (err) {
-//     console.error(`Error processing path ${path}:`, err);
-//   }
-// }
-
-// function pathToFileType(path: string): string {
-//   const ext = path.split(".").pop();
-//   switch (ext) {
-//     case "html":
-//       return "text/html";
-//     case "css":
-//       return "text/css";
-//     case "js":
-//       return "text/javascript";
-//     case "json":
-//       return "application/json";
-//     case "svg":
-//       return "image/svg+xml";
-//     case "png":
-//       return "image/png";
-//     case "jpg":
-//     case "jpeg":
-//       return "image/jpeg";
-//     case "gif":
-//       return "image/gif";
-//     case "ico":
-//       return "image/x-icon";
-//     case "webp":
-//       return "image/webp";
-//     case "mp4":
-//       return "video/mp4";
-//     case "webm":
-//       return "video/webm";
-//     case "woff":
-//       return "font/woff";
-//     case "woff2":
-//       return "font/woff2";
-//     case "ttf":
-//       return "font/ttf";
-//     default:
-//       return "text/plain";
-//   }
-// }
 
 const app = new Hono();
 app.use("*", cors({ origin: "*" }));
@@ -317,17 +238,6 @@ if (Array.isArray(staticDir)) {
 
 const { upgradeWebSocket, websocket } = createBunWebSocket();
 
-const server = Bun.serve({
-  port: PORT,
-  // static: staticRoutes,
-  error: (error) => {
-    logover.error(error);
-    return new Response("Error: " + error.message, { status: 500 });
-  },
-  fetch: app.fetch,
-  websocket,
-});
-
 app.get(
   "/ws",
   upgradeWebSocket(() => ({
@@ -343,6 +253,26 @@ app.get(
     },
   }))
 );
+
+app.get("/api/projects", async (c) => {
+  const projects = await getProjects();
+  c.json(projects);
+});
+
+app.get("/api/projects/:projectDashedName", async (c) => {
+  const project = await getProjectConfig(c.req.param("projectDashedName"));
+  c.json(project);
+});
+
+const server = Bun.serve({
+  port: PORT,
+  error: (error) => {
+    logover.error(error);
+    return new Response("Error: " + error.message, { status: 500 });
+  },
+  fetch: app.fetch,
+  websocket,
+});
 
 logover.info(`Server listening at ${server.url}`);
 

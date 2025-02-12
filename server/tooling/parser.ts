@@ -1,11 +1,26 @@
-import { lexer } from "marked";
+import { lexer, Token, Tokens, TokensList } from "marked";
 import { defaultProjectMeta } from "./env";
+
+/**
+ * Asserts `T` is one of `Tokens`
+ */
+function isType<
+  T extends Tokens.Paragraph | Tokens.Heading | Tokens.Code | Tokens.List
+>(token: Token, type: string): token is T {
+  return token.type === type;
+}
 
 /**
  * A class that  takes a Markdown string, uses the markedjs package to tokenize it, and provides convenience methods to access different tokens in the token tree
  */
 export class CoffeeDown {
-  constructor(tokensOrMarkdown, caller = null) {
+  tokens: Token[];
+  caller: string | null;
+
+  constructor(
+    tokensOrMarkdown: string | Token[] | Token,
+    caller: string | null = null
+  ) {
     this.caller = caller;
     if (typeof tokensOrMarkdown == "string") {
       this.tokens = lexer(tokensOrMarkdown);
@@ -16,15 +31,20 @@ export class CoffeeDown {
     }
   }
 
-  getProjectMeta() {
+  getProjectMeta(): ProjectConfig {
     // There should only be one H1 in the project which is the title
     const title = this.tokens.find(
-      (t) => t.type === "heading" && t.depth === 1
-    ).text;
+      (t) => isType<Tokens.Heading>(t, "heading") && t.depth === 1
+      // @ts-expect-error TS is wrong
+    )?.text;
+
+    if (!title) {
+      throw new Error("Project title not found");
+    }
 
     const firstLessonMarker = this.tokens.findIndex((t) => {
       return (
-        t.type === "heading" &&
+        isType<Tokens.Heading>(t, "heading") &&
         t.depth === 2 &&
         Number.isInteger(parseFloat(t.text))
       );
@@ -32,13 +52,14 @@ export class CoffeeDown {
     const tokensBeforeFirstLesson = this.tokens.slice(0, firstLessonMarker);
 
     // The first paragraph before the lesson marker should be the description
-    const description = tokensBeforeFirstLesson.find(
-      (t) => t.type === "paragraph"
-    ).text;
+    const description = tokensBeforeFirstLesson.find((t) =>
+      isType<Tokens.Paragraph>(t, "paragraph")
+    )?.text;
 
     // First codeblock before the lesson marker is extra meta within a JSON codeblock
     const jsonMeta = tokensBeforeFirstLesson.find(
-      (t) => t.type === "code" && t.lang === "json"
+      (t) => isType<Tokens.Code>(t, "code") && t.lang === "json"
+      // @ts-expect-error No idea why ts does not recognise this as a Code token
     )?.text;
 
     const meta = {
@@ -49,7 +70,7 @@ export class CoffeeDown {
     // All H2 elements with an integer for text are lesson headings
     const numberOfLessons = this.tokens.filter(
       (t) =>
-        t.type === "heading" &&
+        isType<Tokens.Heading>(t, "heading") &&
         t.depth === 2 &&
         Number.isInteger(parseFloat(t.text))
     ).length;
@@ -63,11 +84,11 @@ export class CoffeeDown {
         `${caller} must be called on getLesson. Called on ${this.caller}`
       );
     }
-    const tokens = [];
+    const tokens: Token[] = [];
     let take = false;
     for (const token of this.tokens) {
       if (
-        token.type === "heading" &&
+        isType<Tokens.Heading>(token, "heading") &&
         token.depth <= depth &&
         TOKENS.some((t) => t.marker === token.text)
       ) {
@@ -77,7 +98,7 @@ export class CoffeeDown {
         tokens.push(token);
       }
       if (
-        token.type === "heading" &&
+        isType<Tokens.Heading>(token, "heading") &&
         token.depth === depth &&
         token.text === text
       ) {
@@ -87,16 +108,11 @@ export class CoffeeDown {
     return new CoffeeDown(tokens, caller);
   }
 
-  getLesson(lessonNumber) {
+  getLesson(lessonNumber: number): Lesson {
     const lesson = this.#getLesson(lessonNumber);
     const description = lesson.getDescription().markdown;
     const tests = lesson.getTests().tests;
     const seed = lesson.getSeed().seed;
-    const isForce = lesson
-      .getSeed()
-      .tokens.some(
-        (t) => t.type === "heading" && t.depth === 4 && t.text === "--force--"
-      );
     const hints = lesson.getHints().hints;
     const beforeAll = lesson.getBeforeAll().code;
     const afterAll = lesson.getAfterAll().code;
@@ -114,16 +130,15 @@ export class CoffeeDown {
       afterAll,
       beforeEach,
       afterEach,
-      isForce,
     };
   }
 
-  #getLesson(lessonNumber) {
-    const tokens = [];
+  #getLesson(lessonNumber: number) {
+    const tokens: Token[] = [];
     let take = false;
     for (const token of this.tokens) {
       if (
-        token.type === "heading" &&
+        isType<Tokens.Heading>(token, "heading") &&
         token.depth === 2 &&
         (parseInt(token.text, 10) === lessonNumber + 1 ||
           token.text === "--fcc-end--")
@@ -133,7 +148,7 @@ export class CoffeeDown {
       if (take) {
         tokens.push(token);
       }
-      if (token.type === "heading" && token.depth === 2) {
+      if (isType<Tokens.Heading>(token, "heading") && token.depth === 2) {
         if (parseInt(token.text, 10) === lessonNumber) {
           take = true;
         }
@@ -176,12 +191,13 @@ export class CoffeeDown {
 
   getMeta() {
     const firstHeadingMarker = this.tokens.findIndex((t) => {
-      return t.type === "heading" && t.depth === 3;
+      return isType<Tokens.Heading>(t, "heading") && t.depth === 3;
     });
     const tokensBeforeFirstHeading = this.tokens.slice(0, firstHeadingMarker);
     const jsonMeta =
       tokensBeforeFirstHeading.find(
-        (t) => t.type === "code" && t.lang === "json"
+        (t) => isType<Tokens.Code>(t, "code") && t.lang === "json"
+        // @ts-expect-error TS is wrong
       )?.text ?? "{}";
     return JSON.parse(jsonMeta);
   }
@@ -198,14 +214,14 @@ export class CoffeeDown {
       "getBeforeEach",
       "getAfterEach",
     ];
-    if (!callers.includes(this.caller)) {
+    if (!callers.includes(this.caller || "")) {
       throw new Error(
         `code must be called on "${callers.join(", ")}". Called on ${
           this.caller
         }`
       );
     }
-    return this.tokens.find((t) => t.type === "code")?.text;
+    return this.tokens.find((t) => isType<Tokens.Code>(t, "code"))?.text;
   }
 
   get seed() {
@@ -217,19 +233,19 @@ export class CoffeeDown {
     return seedToIterator(this.tokens);
   }
 
-  get tests() {
+  get tests(): [string, string][] {
     if (this.caller !== "getTests") {
       throw new Error(
         `textsAndTests must be called on getTests. Called on ${this.caller}`
       );
     }
-    const textTokens = [];
-    const testTokens = [];
+    const textTokens: Tokens.Paragraph[] = [];
+    const testTokens: Tokens.Code[] = [];
     for (const token of this.tokens) {
-      if (token.type === "paragraph") {
+      if (isType<Tokens.Paragraph>(token, "paragraph")) {
         textTokens.push(token);
       }
-      if (token.type === "code") {
+      if (isType<Tokens.Code>(token, "code")) {
         testTokens.push(token);
       }
     }
@@ -244,12 +260,12 @@ export class CoffeeDown {
         `hints must be called on getHints. Called on ${this.caller}`
       );
     }
-    const hintTokens = [[]];
+    const hintTokens: Token[][] = [[]];
     let currentHint = 0;
     for (const token of this.tokens) {
-      if (token.type === "heading" && token.depth === 4) {
-        if (token.text != currentHint) {
-          currentHint = token.text;
+      if (isType<Tokens.Heading>(token, "heading") && token.depth === 4) {
+        if (Number(token.text) != currentHint) {
+          currentHint = Number(token.text);
           hintTokens[currentHint] = [];
         }
       } else {
@@ -267,29 +283,39 @@ export class CoffeeDown {
   }
 
   get text() {
-    return this.tokens.map((t) => t.text).join("");
+    return this.tokens
+      .map((t) => {
+        if ("text" in t && typeof t.text === "string") {
+          return t.text;
+        }
+
+        return t.raw;
+      })
+      .join("");
   }
 }
 
-function seedToIterator(tokens) {
-  const seed = [];
+function seedToIterator(tokens: Token[]) {
+  const seed: Seed[] = [];
   const sectionTokens = {};
   let currentSection = 0;
   for (const token of tokens) {
     if (
-      token.type === "heading" &&
+      isType<Tokens.Heading>(token, "heading") &&
       token.depth === 4 &&
       token.text !== "--force--"
     ) {
-      if (token.text !== currentSection) {
-        currentSection = token.text;
+      if (Number(token.text) !== currentSection) {
+        currentSection = Number(token.text);
         sectionTokens[currentSection] = {};
       }
-    } else if (token.type === "code") {
+    } else if (isType<Tokens.Code>(token, "code")) {
       sectionTokens[currentSection] = token;
     }
   }
-  for (const [filePath, { text }] of Object.entries(sectionTokens)) {
+  for (const [filePath, { text }] of Object.entries<{ text: string }>(
+    sectionTokens
+  )) {
     if (filePath === "--cmd--") {
       seed.push(text);
     } else {
@@ -306,6 +332,7 @@ import { marked } from "marked";
 import { markedHighlight } from "marked-highlight";
 import Prism from "prismjs";
 import loadLanguages from "prismjs/components/index.js";
+import { Lesson, ProjectConfig, Seed, Test } from "../../types";
 
 loadLanguages([
   "javascript",
