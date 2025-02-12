@@ -17,7 +17,8 @@ fn main() -> InquireResult<()> {
 
     match args.sub_commands {
         Some(SubCommand::AddProject) => {
-            add_project()?;
+            unimplemented!()
+            // add_project()?;
         }
         None => {
             create_course()?;

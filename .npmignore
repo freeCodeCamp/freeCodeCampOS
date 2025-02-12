@@ -1,7 +1,6 @@
-.freeCodeCamp/client
-.freeCodeCamp/tests
-.freeCodeCamp/tsconfig.json
-.freeCodeCamp/webpack.config.cjs
+client
+server/tests
+tsconfig.json
 
 .devcontainer
 .github
@@ -17,3 +16,5 @@ self
 CONTRIBUTING.md
 Dockerfile
 renovate.json
+
+!client/dist

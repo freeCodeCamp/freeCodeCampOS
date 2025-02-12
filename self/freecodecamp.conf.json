@@ -7,13 +7,13 @@
       "favicon": "./client/assets/fcc_primary_small.svg"
     },
     "landing": {
-      "english": {
+      "en": {
         "title": "freeCodeCamp-OS",
         "description": "Placeholder description",
         "faq-link": "https://freecodecamp.org",
         "faq-text": "Link to FAQ related to course"
       },
-      "afrikaans": {
+      "af": {
         "title": "freeCodeCamp-OS",
         "description": "Beskrywing",
         "faq-link": "https://freecodecamp.org",
@@ -26,16 +26,15 @@
     }
   },
   "config": {
-    "projects.json": "./config/projects.json",
     "state.json": "./config/state.json"
   },
   "curriculum": {
     "locales": {
-      "english": "./curriculum/locales/english",
-      "afrikaans": "./curriculum/locales/afrikaans"
+      "en": "./curriculum/locales/en",
+      "af": "./curriculum/locales/af"
     },
     "assertions": {
-      "afrikaans": "./curriculum/assertions/afrikaans.json"
+      "af": "./curriculum/assertions/af.json"
     }
   },
   "hotReload": {

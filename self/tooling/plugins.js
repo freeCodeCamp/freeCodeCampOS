@@ -1,4 +1,4 @@
-import { pluginEvents } from '@freecodecamp/freecodecamp-os/.freeCodeCamp/plugin/index.js';
+import { pluginEvents } from '@freecodecamp/freecodecamp-os/server/plugin/index.js';
 
 pluginEvents.onTestsStart = async (project, testsState) => {};
 

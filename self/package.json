@@ -5,7 +5,7 @@
   "version": "3.4.0",
   "description": "Test repo for @freecodecamp/freecodecamp-os",
   "scripts": {
-    "start": "node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js"
+    "start": "bun run ./node_modules/@freecodecamp/freecodecamp-os/server/index.ts"
   },
   "dependencies": {
     "@freecodecamp/freecodecamp-os": "../"
