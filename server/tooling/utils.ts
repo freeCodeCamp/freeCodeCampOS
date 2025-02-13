@@ -4,7 +4,9 @@ import { fileURLToPath } from "url";
 import { promisify } from "util";
 import { exec } from "child_process";
 import { readdirSync } from "fs";
-import { ROOT } from "./env";
+import { freeCodeCampConfig, getState, ROOT } from "./env";
+import { CoffeeDown } from "./parser";
+import { logover } from "./logger";
 const execute = promisify(exec);
 
 const __filename = fileURLToPath(import.meta.url);
@@ -121,4 +123,34 @@ async function copyNonWDirToProject(project) {
       force: true,
     });
   });
+}
+
+export async function getProjectFileById(id: number) {
+  const state = await getState();
+  const curriculumDir = join(
+    ROOT,
+    freeCodeCampConfig.curriculum.locales[state.locale]
+  );
+
+  const files = await readdir(curriculumDir, { withFileTypes: true });
+
+  for (const file of files) {
+    const f = Bun.file(join(curriculumDir, file.name));
+    const fStat = await f.stat();
+    if (fStat.isFile()) {
+      const content = await f.text();
+      const coffeeDown = new CoffeeDown(content);
+      try {
+        const projectConfig = coffeeDown.getProjectMeta();
+
+        if (projectConfig.id === id) {
+          return content;
+        }
+      } catch (e) {
+        logover.debug(`Unable to parse ${file.name}`);
+        logover.debug(e);
+        continue;
+      }
+    }
+  }
 }

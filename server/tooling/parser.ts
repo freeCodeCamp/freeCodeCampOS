@@ -1,5 +1,5 @@
-import { lexer, Token, Tokens, TokensList } from "marked";
-import { defaultProjectMeta } from "./env";
+import { lexer, Token, Tokens } from "marked";
+import { defaultProjectConfig } from "./env";
 
 /**
  * Asserts `T` is one of `Tokens`
@@ -33,12 +33,12 @@ export class CoffeeDown {
 
   getProjectMeta(): ProjectConfig {
     // There should only be one H1 in the project which is the title
-    const title = this.tokens.find(
+    const titleMd = this.tokens.find(
       (t) => isType<Tokens.Heading>(t, "heading") && t.depth === 1
       // @ts-expect-error TS is wrong
     )?.text;
 
-    if (!title) {
+    if (!titleMd) {
       throw new Error("Project title not found");
     }
 
@@ -52,7 +52,7 @@ export class CoffeeDown {
     const tokensBeforeFirstLesson = this.tokens.slice(0, firstLessonMarker);
 
     // The first paragraph before the lesson marker should be the description
-    const description = tokensBeforeFirstLesson.find((t) =>
+    const descriptionMd = tokensBeforeFirstLesson.find((t) =>
       isType<Tokens.Paragraph>(t, "paragraph")
     )?.text;
 
@@ -63,7 +63,7 @@ export class CoffeeDown {
     )?.text;
 
     const meta = {
-      ...defaultProjectMeta,
+      ...defaultProjectConfig,
       ...JSON.parse(jsonMeta),
     };
 
@@ -74,6 +74,11 @@ export class CoffeeDown {
         t.depth === 2 &&
         Number.isInteger(parseFloat(t.text))
     ).length;
+
+    const title = parseMarkdown(titleMd)
+      .replace(/<p>|<\/p>/g, "")
+      .trim();
+    const description = parseMarkdown(descriptionMd ?? "").trim();
 
     return { title, description, numberOfLessons, ...meta };
   }
@@ -110,16 +115,23 @@ export class CoffeeDown {
 
   getLesson(lessonNumber: number): Lesson {
     const lesson = this.#getLesson(lessonNumber);
-    const description = lesson.getDescription().markdown;
-    const tests = lesson.getTests().tests;
+    const descriptionMd = lesson.getDescription().markdown;
+    const testsMd = lesson.getTests().tests;
     const seed = lesson.getSeed().seed;
-    const hints = lesson.getHints().hints;
+    const hintsMd = lesson.getHints().hints;
     const beforeAll = lesson.getBeforeAll().code;
     const afterAll = lesson.getAfterAll().code;
     const beforeEach = lesson.getBeforeEach().code;
     const afterEach = lesson.getAfterEach().code;
 
     const meta = lesson.getMeta();
+
+    const description = parseMarkdown(descriptionMd).trim();
+    const tests: Test[] = testsMd.map(([testText, test]) => [
+      parseMarkdown(testText).trim(),
+      test,
+    ]);
+    const hints = hintsMd.map((h) => parseMarkdown(h).trim());
     return {
       meta,
       description,
@@ -293,6 +305,20 @@ export class CoffeeDown {
       })
       .join("");
   }
+
+  get project(): Project {
+    const projectConfig = this.getProjectMeta();
+    const lessons: Lesson[] = [];
+
+    for (let i = 0; i < projectConfig.numberOfLessons; i++) {
+      lessons.push(this.getLesson(i));
+    }
+
+    return {
+      ...projectConfig,
+      lessons,
+    };
+  }
 }
 
 function seedToIterator(tokens: Token[]) {
@@ -332,7 +358,7 @@ import { marked } from "marked";
 import { markedHighlight } from "marked-highlight";
 import Prism from "prismjs";
 import loadLanguages from "prismjs/components/index.js";
-import { Lesson, ProjectConfig, Seed, Test } from "../../types";
+import { Lesson, Project, ProjectConfig, Seed, Test } from "../../types";
 
 loadLanguages([
   "javascript",
@@ -365,7 +391,7 @@ marked.use(
   })
 );
 
-export function parseMarkdown(markdown) {
+export function parseMarkdown(markdown: string) {
   return marked.parse(markdown, { gfm: true });
 }
 

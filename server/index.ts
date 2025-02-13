@@ -11,14 +11,8 @@ import {
   getConfig,
 } from "./tooling/env";
 
-import { WebSocketServer } from "ws";
 import { runLesson } from "./tooling/lesson";
-import {
-  updateProjects,
-  updateFreeCodeCampConfig,
-  updateLocale,
-  updateState,
-} from "./tooling/client-socks";
+import { updateState } from "./tooling/client-socks";
 import { hotReload } from "./tooling/hot-reload";
 import { hideAll, showFile, showAll } from "./tooling/utils";
 import { join } from "path";
@@ -26,8 +20,10 @@ import { logover } from "./tooling/logger";
 import { resetProject } from "./tooling/reset";
 import { validateCurriculum } from "./tooling/validate";
 import { pluginEvents } from "./plugin/index";
-import { Dirent } from "fs";
 import { cors } from "hono/cors";
+import { WSSEvents, Project, Sock } from "../types";
+import { WSMessageReceive } from "hono/ws";
+import { GLOBAL_SOCKET } from "./websocket";
 
 const freeCodeCampConfig = await getConfig();
 
@@ -35,163 +31,58 @@ if (process.env.NODE_ENV === "development") {
   await validateCurriculum();
 }
 
-async function handleRunTests(ws, data) {
+async function handleRunTests(ws) {
   const { currentProject } = await getState();
+  if (currentProject === null) {
+    throw new Error("No project selected to run tests");
+  }
   await runTests(ws, currentProject);
-  ws.send(parse({ data: { event: data.event }, event: "RESPONSE" }));
-}
-
-async function handleResetProject(ws, data) {
-  await resetProject(ws);
-  ws.send(parse({ data: { event: data.event }, event: "RESPONSE" }));
-}
-function handleResetLesson(ws, data) {}
-
-async function handleGoToNextLesson(ws, data) {
-  const { currentProject, projects } = await getState();
-  const project = await getProjectConfig(currentProject);
-  const nextLesson = project.currentLesson + 1;
-
-  if (nextLesson > 0 && nextLesson <= project.numberOfLessons - 1) {
-    await updateCurrentLesson(project.dashedName, nextLesson);
-    await runLesson(ws, project.dashedName);
-  }
-  ws.send(parse({ data: { event: data.event }, event: "RESPONSE" }));
-}
-
-async function handleGoToPreviousLesson(ws, data) {
-  const { currentProject } = await getState();
-  const project = await getProjectConfig(currentProject);
-  const prevLesson = project.currentLesson - 1;
-
-  if (prevLesson >= 0 && prevLesson <= project.numberOfLessons - 1) {
-    await updateCurrentLesson(project.dashedName, prevLesson);
-    await runLesson(ws, project.dashedName);
-  }
-  ws.send(parse({ data: { event: data.event }, event: "RESPONSE" }));
 }
 
 /**
  * Gets the projects for the current locale
  */
 async function getProjects() {
-  const { locale } = await getState();
-  const files = await readdir(
-    join(ROOT, freeCodeCampConfig.curriculum.locales[locale]),
-    { withFileTypes: true }
-  );
-
-  const projects = [];
-
-  for (const file of files) {
-    if (!file.isFile) {
-      continue;
-    }
-    // File might not be a valid project, in which case, it is tried as one, but ignored
-    let projectMeta;
+  const projects: Project[] = [];
+  let id = 0;
+  while (true) {
     try {
-      const dashedName = file.name.replace(/.md$/, "");
-      projectMeta = await getProjectConfig(dashedName);
+      const project = await pluginEvents.getProject(id);
+      projects.push(project);
     } catch (e) {
-      logover.debug(`File ${file.name} skipped as invalid due to:`);
-      logover.debug(e);
-      continue;
+      break;
     }
-    projects.push(projectMeta);
+    id++;
   }
   return projects;
 }
 
-async function handleConnect(ws) {
-  const projects = await getProjects();
+async function handleConnect(ws: WebSocket) {
   const state = await getState();
 
-  updateProjects(ws, projects);
   updateState(ws, state);
-  updateFreeCodeCampConfig(ws, freeCodeCampConfig);
-  const { currentProject, locale } = await getState();
-  updateLocale(ws, locale);
-  if (!currentProject) {
+  const { currentProject } = await getState();
+  if (currentProject === null) {
     return;
   }
   const project = await getProjectConfig(currentProject);
-  runLesson(ws, project.dashedName);
-}
-
-async function handleSelectProject(ws, data) {
-  const projects = await getProjects();
-  const selectedProject = projects.find((p) => p.id === data?.data?.id);
-  // TODO: Should this set the currentProject to `null` (empty string)?
-  // for the case where the Camper has navigated to the landing page.
-  await setState({ currentProject: selectedProject?.dashedName ?? null });
-  if (!selectedProject && !data?.data?.id) {
-    return ws.send(parse({ data: { event: data.event }, event: "RESPONSE" }));
-  }
-
-  // Disabled whilst in development because it is annoying
-  if (process.env.NODE_ENV === "production") {
-    await hideAll();
-    await showFile(selectedProject.dashedName);
-  } else {
-    await showAll();
-  }
-  await runLesson(ws, selectedProject.dashedName);
-  return ws.send(parse({ data: { event: data.event }, event: "RESPONSE" }));
+  runLesson(ws, project.id);
 }
 
 async function handleRequestData(ws, data) {
   console.log(data);
-  if (data?.data?.request === "projects") {
-    const projects = await getProjects();
-    updateProjects(ws, projects);
-  }
   if (data?.data?.request === "state") {
     const state = await getState();
     updateState(ws, state);
   }
-  ws.send(parse({ data: { event: data.event }, event: "RESPONSE" }));
+  ws.send(parse({ data: { event: data.event }, event: WSSEvents.RESPONSE }));
 }
 
-function handleCancelTests(ws, data) {
+function handleCancelTests() {
   const workerPool = getWorkerPool();
   for (const worker of workerPool) {
     worker.terminate();
   }
-  ws.send(parse({ data: { event: data.event }, event: "RESPONSE" }));
-}
-
-async function handleRunClientCode(ws, data) {
-  const code = data?.data;
-  if (!code) {
-    return;
-  }
-  try {
-    let __result;
-    await eval(`(async () => {${code}})()`);
-    ws.send(
-      parse({
-        data: { event: data.event, __result },
-        event: "RESPONSE",
-      })
-    );
-  } catch (e) {
-    logover.error("Error running client code:\n", e);
-    ws.send(
-      parse({
-        data: { event: data.event, error: e.message },
-        event: "RESPONSE",
-      })
-    );
-  }
-}
-
-async function handleChangeLanguage(ws, data) {
-  await setState({ locale: data?.data?.locale });
-  updateLocale(ws, data?.data?.locale);
-  const projects = await getProjects();
-  updateProjects(ws, projects);
-  const state = await getState();
-  updateState(ws, state);
 }
 
 const PORT = freeCodeCampConfig.port || 8080;
@@ -200,15 +91,7 @@ const handle = {
   connect: (ws, data) => {
     handleConnect(ws);
   },
-  "run-tests": handleRunTests,
-  "reset-project": handleResetProject,
-  "go-to-next-lesson": handleGoToNextLesson,
-  "go-to-previous-lesson": handleGoToPreviousLesson,
   "request-data": handleRequestData,
-  "select-project": handleSelectProject,
-  "cancel-tests": handleCancelTests,
-  "change-language": handleChangeLanguage,
-  "__run-client-code": handleRunClientCode,
 };
 
 const distDir = join(import.meta.dir, "..", "client", "dist");
@@ -241,14 +124,23 @@ const { upgradeWebSocket, websocket } = createBunWebSocket();
 app.get(
   "/ws",
   upgradeWebSocket(() => ({
-    onOpen(_, ws) {},
-    onClose(_, ws) {},
+    onOpen(_, ws) {
+      GLOBAL_SOCKET.ws = ws;
+
+      ws.send(parse({ event: WSSEvents.CONNECT, data: "Hello from server" }));
+    },
+    onClose(_, ws) {
+      // Remove the connection when it's closed
+      GLOBAL_SOCKET.ws = null;
+    },
     onError(event, ws) {
       logover.error(event);
+      GLOBAL_SOCKET.ws = null;
     },
     onMessage(event, ws) {
       logover.debug(event.data);
       const parsedData = parseBuffer(event.data);
+
       handle[parsedData.event]?.(ws, parsedData);
     },
   }))
@@ -256,13 +148,50 @@ app.get(
 
 app.get("/api/projects", async (c) => {
   const projects = await getProjects();
-  c.json(projects);
+  return c.json(projects);
 });
 
-app.get("/api/projects/:projectDashedName", async (c) => {
-  const project = await getProjectConfig(c.req.param("projectDashedName"));
-  c.json(project);
+app.get("/api/projects/:id", async (c) => {
+  const id = Number(c.req.param("id"));
+  const project = await pluginEvents.getProject(id);
+  return c.json(project);
 });
+
+app.get("/api/config", async (c) => {
+  return c.json(freeCodeCampConfig);
+});
+
+app.get("/api/state", async (c) => {
+  const state = await getState();
+  return c.json(state);
+});
+
+app.post("/api/state", async (c) => {
+  const body = await c.req.json();
+  const state = await setState(body);
+  return c.json(state);
+});
+
+app.post("/api/tests/run", async (c) => {
+  const ws = GLOBAL_SOCKET.ws;
+
+  if (!ws) {
+    return c.json({ error: "WebSocket connection not found" }, 404);
+  }
+
+  handleRunTests(ws); // Pass the WebSocket and Connection ID to your handler
+  return c.json({ message: "Tests started" });
+});
+
+app.post("/api/tests/cancel", async (c) => {});
+
+// app.get("/api/project/:projectId/:lessonId", async (c) => {
+//   const projectId = c.req.param("projectId");
+//   const _lessonId = c.req.param("lessonId");
+
+//   const project = await pluginEvents.getProject(Number(projectId));
+//   return c.json(project);
+// });
 
 const server = Bun.serve({
   port: PORT,
@@ -289,11 +218,11 @@ logover.info(`Server listening at ${server.url}`);
 //     ws.send(parse({ event: type, data }));
 //   }
 
-function parse(obj) {
+function parse(obj: Sock) {
   return JSON.stringify(obj);
 }
 
-function parseBuffer(buf) {
+function parseBuffer(buf: MessageEvent<WSMessageReceive>["data"]) {
   return JSON.parse(buf.toString());
 }
 

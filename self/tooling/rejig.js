@@ -1,22 +1,22 @@
-import { readFile, writeFile, readdir } from 'fs/promises';
-import { join } from 'path';
+import { readFile, writeFile, readdir } from "fs/promises";
+import { join } from "path";
 
 const PATH = process.argv[2]?.trim();
 
-const CURRICULUM_PATH = 'curriculum/locales/english';
+const CURRICULUM_PATH = "curriculum/locales/en";
 
 /**
  * Ensures all lessons are incremented by 1
  */
 async function rejigFile(fileName) {
   const filePath = join(CURRICULUM_PATH, fileName);
-  const file = await readFile(filePath, 'utf-8');
+  const file = await readFile(filePath, "utf-8");
   let lessonNumber = -1;
   const newFile = file.replace(/\n## \d+/g, () => {
     lessonNumber++;
     return `\n## ${lessonNumber}`;
   });
-  await writeFile(filePath, newFile, 'utf-8');
+  await writeFile(filePath, newFile, "utf-8");
 }
 
 try {
@@ -32,9 +32,9 @@ try {
       rejiggedFiles.push(file);
     }
   }
-  console.info('Successfully rejigged: ', rejiggedFiles);
+  console.info("Successfully rejigged: ", rejiggedFiles);
 } catch (e) {
   console.error(e);
-  console.log('Usage: npm run rejig <CURRICULUM_FILE_NAME>');
-  console.log('Curriculum file name MUST include the `.md` extension.');
+  console.log("Usage: npm run rejig <CURRICULUM_FILE_NAME>");
+  console.log("Curriculum file name MUST include the `.md` extension.");
 }

@@ -1,51 +1,81 @@
-import { useEffect, useState } from 'react';
-import { F, LoaderT, ProjectI, TestType } from '../types';
+import { useContext, useEffect, useState } from "react";
+import { Project, TestState, WSSEvents } from "../../../types";
+import { WebSocketContext } from "../context/websocket";
+import { cancelTests, runTests } from "../utils/fetch";
 
 interface ControlsProps {
-  cancelTests: F<void, void>;
-  runTests: F<void, void>;
-  resetProject?: F<void, void>;
-  isResetEnabled?: ProjectI['isResetEnabled'];
-  tests: TestType[];
-  loader?: LoaderT;
+  // cancelTests: F<void, void>;
+  // runTests: F<void, void>;
+  // resetProject?: F<void, void>;
+  // isResetEnabled?: ProjectI['isResetEnabled'];
+  project: Project;
+  // testsState: TestState[];
+  // loader?: LoaderT;
 }
 
 // Changes the Reset button background to a filling progress bar when the seed is running
-function progressStyle(loader?: LoaderT) {
+function progressStyle(loader: any) {
   if (!loader) {
     return {};
   }
 
   const {
     isLoading,
-    progress: { total, count }
+    progress: { total, count },
   } = loader;
   if (isLoading) {
     return {
       background: `linear-gradient(to right, #0065A9 ${
         (count / total) * 100
-      }%, rgba(0,0,0,0) 0%)`
+      }%, rgba(0,0,0,0) 0%)`,
     };
   }
 }
 
 export const Controls = ({
-  cancelTests,
-  runTests,
-  resetProject,
-  isResetEnabled,
-  tests,
-  loader
-}: ControlsProps) => {
+  // cancelTests,
+  // runTests,
+  // resetProject,
+  // isResetEnabled,
+  project,
+}: // testsState,
+// loader
+ControlsProps) => {
   const [isTestsRunning, setIsTestsRunning] = useState(false);
+  const [testsState, setTestsState] = useState<TestState[]>([]);
+  const { socket } = useContext(WebSocketContext)!;
 
   useEffect(() => {
-    if (tests.some(t => t.isLoading)) {
+    if (socket) {
+      socket.addEventListener("message", handleTestsState);
+    }
+
+    return () => {
+      if (socket) {
+        socket.removeEventListener("message", handleTestsState);
+      }
+    };
+  }, []);
+
+  function handleTestsState(event: MessageEvent) {
+    const data = JSON.parse(event.data);
+    switch (data.event) {
+      case WSSEvents.UPDATE_TESTS_STATE:
+        const testsState = data.data.testsState as TestState[];
+        setTestsState(testsState);
+        break;
+      default:
+        break;
+    }
+  }
+
+  useEffect(() => {
+    if (testsState.some((t) => t.isLoading)) {
       setIsTestsRunning(true);
     } else {
       setIsTestsRunning(false);
     }
-  }, [tests]);
+  }, [testsState]);
 
   function handleTests() {
     if (isTestsRunning) {
@@ -55,25 +85,24 @@ export const Controls = ({
     }
   }
 
-  const resetDisabled = !isResetEnabled || loader?.isLoading;
+  const resetDisabled = !project.isResetEnabled;
+  // const resetDisabled = !project.isResetEnabled || loader?.isLoading;
 
   return (
-    <section className='project-controls'>
-      <button className='secondary-cta' onClick={handleTests}>
-        {isTestsRunning ? 'Cancel Tests' : 'Run Tests'}
+    <section className="project-controls">
+      <button className="secondary-cta" onClick={handleTests}>
+        {isTestsRunning ? "Cancel Tests" : "Run Tests"}
       </button>
-      {resetProject && (
-        <button
-          disabled={resetDisabled}
-          style={{
-            ...progressStyle(loader),
-            cursor: resetDisabled ? 'not-allowed' : 'pointer'
-          }}
-          onClick={() => resetProject()}
-        >
-          Reset Step
-        </button>
-      )}
+      <button
+        disabled={resetDisabled}
+        style={{
+          // ...progressStyle(loader),
+          cursor: resetDisabled ? "not-allowed" : "pointer",
+        }}
+        onClick={() => {}}
+      >
+        Reset Step
+      </button>
     </section>
   );
 };

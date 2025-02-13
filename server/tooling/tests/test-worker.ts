@@ -18,9 +18,9 @@ if (helpers) {
 
 const { beforeEach = "", project } = workerData;
 
-parentPort.on("message", async ({ testCode, testId }) => {
+parentPort?.on("message", async ({ testCode, testId }) => {
   let passed = false;
-  let error = null;
+  let error: null | Record<string, unknown> = null;
   try {
     const _eval_out = await eval(`(async () => {
       ${beforeEach}
@@ -30,10 +30,10 @@ parentPort.on("message", async ({ testCode, testId }) => {
   } catch (e) {
     error = {};
     Object.getOwnPropertyNames(e).forEach((key) => {
-      error[key] = e[key];
+      error![key] = e[key];
     });
     // Cannot pass `e` "as is", because classes cannot be passed between threads
     error.type = e instanceof AssertionError ? "AssertionError" : "Error";
   }
-  parentPort.postMessage({ passed, testId, error });
+  parentPort?.postMessage({ passed, testId, error });
 });

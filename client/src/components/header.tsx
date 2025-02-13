@@ -1,30 +1,41 @@
-import { Events, FreeCodeCampConfigI, ProjectI } from '../types';
-import FreeCodeCampLogo from '../assets/fcc_primary_large';
-import { LanguageList } from './language-list';
+import { useQuery } from "@tanstack/react-query";
+import FreeCodeCampLogo from "../assets/fcc_primary_large";
+import { LanguageList } from "./language-list";
+import { getConfig } from "../utils/fetch";
+import { useNavigate } from "@tanstack/react-router";
+import { LandingRoute } from "../templates/landing";
 
-interface HeaderProps {
-  updateProject: (project: ProjectI | null) => void;
-  freeCodeCampConfig: FreeCodeCampConfigI;
-  sock: (type: Events, data: {}) => void;
-}
-export const Header = ({
-  sock,
-  updateProject,
-  freeCodeCampConfig
-}: HeaderProps) => {
-  function returnToLanding() {
-    updateProject(null);
+export const Header = () => {
+  const navigate = useNavigate();
+  const configQuery = useQuery({
+    queryKey: ["config"],
+    queryFn: getConfig,
+  });
+
+  if (configQuery.isPending) {
+    return null;
   }
 
-  const locales = freeCodeCampConfig?.curriculum?.locales
-    ? Object.keys(freeCodeCampConfig?.curriculum?.locales)
+  if (configQuery.isError) {
+    return <div>Error: {configQuery.error.message}</div>;
+  }
+
+  const config = configQuery.data;
+
+  const locales = config?.curriculum?.locales
+    ? Object.keys(config.curriculum?.locales)
     : [];
   return (
     <header>
-      <button className='header-btn' onClick={returnToLanding}>
+      <button
+        className="header-btn"
+        onClick={() => {
+          navigate({ to: LandingRoute.to });
+        }}
+      >
         <FreeCodeCampLogo />
       </button>
-      {locales.length > 1 ? <LanguageList {...{ sock, locales }} /> : null}
+      {locales.length > 1 ? <LanguageList {...{ locales }} /> : null}
     </header>
   );
 };

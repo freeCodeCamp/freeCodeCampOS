@@ -1,27 +1,24 @@
-import { useState } from 'react';
-import { ConsoleError, TestType } from '../types';
-import { Tests } from './tests';
-import { Console } from './console';
-import { Hints } from './hints';
+import { useState } from "react";
+import { Tests } from "./tests";
+import { Console } from "./console";
+import { Hints } from "./hints";
 
 interface OutputProps {
   hints: string[];
-  tests: TestType[];
-  cons: ConsoleError[];
 }
 
-export const Output = ({ hints, tests, cons }: OutputProps) => {
-  const [selectedBtn, setSelectedBtn] = useState('tests');
+export const Output = ({ hints }: OutputProps) => {
+  const [selectedBtn, setSelectedBtn] = useState("tests");
 
   return (
-    <section className='project-output'>
+    <section className="project-output">
       <ul>
         <li>
           <button
-            className='output-btn'
-            disabled={selectedBtn === 'tests'}
+            className="output-btn"
+            disabled={selectedBtn === "tests"}
             onClick={() => {
-              setSelectedBtn('tests');
+              setSelectedBtn("tests");
             }}
           >
             Tests
@@ -29,10 +26,10 @@ export const Output = ({ hints, tests, cons }: OutputProps) => {
         </li>
         <li>
           <button
-            className='output-btn'
-            disabled={selectedBtn === 'console'}
+            className="output-btn"
+            disabled={selectedBtn === "console"}
             onClick={() => {
-              setSelectedBtn('console');
+              setSelectedBtn("console");
             }}
           >
             Console
@@ -41,10 +38,10 @@ export const Output = ({ hints, tests, cons }: OutputProps) => {
         {hints.length ? (
           <li>
             <button
-              className='output-btn'
-              disabled={selectedBtn === 'hints'}
+              className="output-btn"
+              disabled={selectedBtn === "hints"}
               onClick={() => {
-                setSelectedBtn('hints');
+                setSelectedBtn("hints");
               }}
             >
               Hints
@@ -53,14 +50,14 @@ export const Output = ({ hints, tests, cons }: OutputProps) => {
         ) : null}
       </ul>
 
-      <div className='project-output-content'>
+      <div className="project-output-content">
         {(() => {
           switch (selectedBtn) {
-            case 'tests':
-              return <Tests tests={tests} />;
-            case 'console':
-              return <Console cons={cons} />;
-            case 'hints':
+            case "tests":
+              return <Tests />;
+            case "console":
+              return <Console />;
+            case "hints":
               return <Hints hints={hints} />;
             default:
               return <div>No content</div>;

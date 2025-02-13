@@ -1,36 +1,66 @@
-import { Selection } from '../components/selection';
-import { Events, FreeCodeCampConfigI, ProjectI, State } from '../types';
-import './landing.css';
+import { useQuery } from "@tanstack/react-query";
+import { Selection } from "../components/selection";
+import "./landing.css";
+import { getConfig, getState, postState } from "../utils/fetch";
+import { Loader } from "../components/loader";
+import { rootRoute } from "../utils";
+import { createRoute } from "@tanstack/react-router";
 
-interface LandingProps {
-  sock: (type: Events, data: {}) => void;
-  projects: ProjectI[];
-  freeCodeCampConfig: FreeCodeCampConfigI;
-  locale: string;
-  state: State;
-}
+export const Landing = () => {
+  const configQuery = useQuery({
+    queryKey: ["config"],
+    queryFn: getConfig,
+  });
 
-export const Landing = ({
-  sock,
-  projects,
-  freeCodeCampConfig,
-  locale,
-  state
-}: LandingProps) => {
-  const title = freeCodeCampConfig.client?.landing?.[locale]?.title;
+  const stateQuery = useQuery({
+    queryKey: ["state"],
+    queryFn: getState,
+  });
+
+  const postStateQuery = useQuery({
+    queryKey: ["postState"],
+    enabled: stateQuery.isSuccess,
+    queryFn: async () => await postState({ currentProject: null }),
+  });
+
+  if (
+    configQuery.isPending ||
+    stateQuery.isPending ||
+    postStateQuery.isPending
+  ) {
+    return <Loader />;
+  }
+
+  if (configQuery.isError) {
+    return <div>Error: {configQuery.error.message}</div>;
+  }
+
+  if (stateQuery.isError) {
+    return <div>Error: {stateQuery.error.message}</div>;
+  }
+
+  if (postStateQuery.isError) {
+    return <div>Error: {postStateQuery.error.message}</div>;
+  }
+
+  const state = stateQuery.data;
+
+  const config = configQuery.data;
+  const landing = config.client.landing[state.locale];
   return (
     <>
-      {title && <h1>{title}</h1>}
-      <p className='description'>
-        {freeCodeCampConfig.client?.landing?.[locale]?.description}
-      </p>
-      <a
-        className='faq'
-        href={freeCodeCampConfig.client?.landing?.[locale]?.['faq-link']}
-      >
-        {freeCodeCampConfig.client?.landing?.[locale]?.['faq-text']}
+      {landing.title && <h1>{landing.title}</h1>}
+      <p className="description">{landing.description}</p>
+      <a className="faq" href={landing["faq-link"]}>
+        {landing["faq-text"]}
       </a>
-      <Selection {...{ sock, state, projects }} />
+      <Selection />
     </>
   );
 };
+
+export const LandingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  component: Landing,
+});

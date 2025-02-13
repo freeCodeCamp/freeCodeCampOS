@@ -1,10 +1,14 @@
 {
-  "currentProject": null,
+  "currentProject": 0,
   "locale": "en",
   "lastSeed": {
-    "projectDashedName": null,
+    "projectId": null,
     "lessonNumber": -1
   },
   "lastWatchChange": -1,
-  "projects": {}
+  "projects": {
+    "0": {
+      "currentLesson": 0
+    }
+  }
 }

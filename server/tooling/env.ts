@@ -2,7 +2,12 @@ import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { logover } from "./logger";
 import { pluginEvents } from "../plugin/index";
-import { FreeCodeCampConfig } from "../../types/index";
+import {
+  FreeCodeCampConfig,
+  ProjectConfig,
+  ProjectState,
+  State,
+} from "../../types/index";
 
 export const ROOT = process.env.INIT_CWD || process.cwd();
 
@@ -24,12 +29,12 @@ export async function getConfig(): Promise<FreeCodeCampConfig> {
 
 export const freeCodeCampConfig = await getConfig();
 
-export async function getState() {
+export async function getState(): Promise<State> {
   let defaultState = {
     currentProject: null,
     locale: "en",
     lastSeed: {
-      projectDashedName: null,
+      projectId: null,
       // All lessons start at 0, but the logic for whether to seed a lesson
       // or not is based on the current lesson matching the last seeded lesson
       // So, to ensure the first lesson is seeded, this is -1
@@ -55,7 +60,7 @@ export async function getState() {
   return defaultState;
 }
 
-export async function setState(obj) {
+export async function setState(obj: Partial<State>): Promise<State> {
   const state = await getState();
   const updatedState = {
     ...state,
@@ -66,32 +71,28 @@ export async function setState(obj) {
     join(ROOT, freeCodeCampConfig.config["state.json"]),
     JSON.stringify(updatedState, null, 2)
   );
+
+  return updatedState;
 }
 
-/**
- * @param {string} projectDashedName Project dashed name
- */
-export async function getProjectConfig(projectDashedName) {
-  const config = await pluginEvents.getProjectMeta(projectDashedName);
+export async function getProjectConfig(
+  projectId: number
+): Promise<ProjectConfig> {
+  const config = await pluginEvents.getProjectConfig(projectId);
 
-  if (!config) {
-    return defaultProjectMeta;
-  }
-  return { ...defaultProjectMeta, ...config };
+  return { ...defaultProjectConfig, ...config };
 }
 
-/**
- *
- * @param {string} projectDashedName Project dashed name
- * @param {number} lessonNumber New current lesson number to set
- */
-export async function updateCurrentLesson(projectDashedName, lessonNumber) {
+export async function updateCurrentLesson(
+  projectId: number,
+  lessonNumber: number
+) {
   const state = await getState();
 
   const updatedProjects = {
     ...state.projects,
-    [projectDashedName]: {
-      ...state.projects[projectDashedName],
+    [projectId]: {
+      ...state.projects[projectId],
       currentLesson: lessonNumber,
     },
   };
@@ -99,18 +100,16 @@ export async function updateCurrentLesson(projectDashedName, lessonNumber) {
   await setState({ projects: updatedProjects });
 }
 
-/**
- *
- * @param {string} projectDashedName Project dashed name
- * @param {Record<string, unknown>} obj Fields of the project to update
- */
-export async function updateProjectState(projectDashedName, obj) {
+export async function updateProjectState(
+  projectId: number,
+  obj: Partial<ProjectState>
+) {
   const state = await getState();
 
   const updatedProjects = {
     ...state.projects,
-    [projectDashedName]: {
-      ...state.projects[projectDashedName],
+    [projectId]: {
+      ...state.projects[projectId],
       ...obj,
     },
   };
@@ -118,7 +117,7 @@ export async function updateProjectState(projectDashedName, obj) {
   await setState({ projects: updatedProjects });
 }
 
-export const defaultProjectMeta = {
+export const defaultProjectConfig: Partial<ProjectConfig> = {
   isIntegrated: false,
   isPublic: true,
   runTestsOnWatch: false,

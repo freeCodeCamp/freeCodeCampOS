@@ -2,7 +2,7 @@ import { join } from "path";
 import { getConfig, getState } from "./env";
 import { ROOT } from "./env";
 
-export async function t(key, args = {}, forceLangToUse) {
+export async function t(key: string, args = {}, forceLangToUse?: string) {
   const { locale: loc } = await getState();
   // Get key from ./locales/{locale}/comments.json
   // Read file and parse JSON

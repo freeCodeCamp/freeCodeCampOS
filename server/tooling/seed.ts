@@ -11,34 +11,30 @@ import { writeFile } from "fs/promises";
 import { promisify } from "util";
 import { exec } from "child_process";
 import { logover } from "./logger";
-import { updateLoader, updateError } from "./client-socks";
+import { updateError } from "./client-socks";
 import { watcher } from "./hot-reload";
 import { pluginEvents } from "../plugin/index";
 const execute = promisify(exec);
 
 /**
  * Seeds the current lesson
- * @param {WebSocket} ws
- * @param {string} projectDashedName
  */
-export async function seedLesson(ws, projectDashedName) {
-  updateLoader(ws, {
-    isLoading: true,
-    progress: { total: 2, count: 1 },
-  });
-  const project = await getProjectConfig(projectDashedName);
-  const { currentLesson } = project;
+export async function seedLesson(ws: WebSocket, projectId: number) {
+  // updateLoader(ws, {
+  //   isLoading: true,
+  //   progress: { total: 2, count: 1 },
+  // });
+  const project = await pluginEvents.getProject(projectId);
+  const { projects } = await getState();
+  const currentLesson = projects[project.id].currentLesson;
 
   try {
-    const { seed } = await pluginEvents.getLesson(
-      projectDashedName,
-      currentLesson
-    );
+    const { seed } = await pluginEvents.getLesson(projectId, currentLesson);
 
     await runLessonSeed(seed, currentLesson);
     await setState({
       lastSeed: {
-        projectDashedName,
+        projectId,
         lessonNumber: currentLesson,
       },
     });
@@ -46,7 +42,7 @@ export async function seedLesson(ws, projectDashedName) {
     updateError(ws, e);
     logover.error(e);
   }
-  updateLoader(ws, { isLoading: false, progress: { total: 1, count: 1 } });
+  // updateLoader(ws, { isLoading: false, progress: { total: 1, count: 1 } });
 }
 
 /**

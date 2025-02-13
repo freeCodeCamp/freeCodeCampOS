@@ -1,5 +1,5 @@
 // Handles all the resetting of the projects
-import { resetBottomPanel, updateError, updateLoader } from "./client-socks";
+import { resetBottomPanel, updateError } from "./client-socks";
 import { getProjectConfig, getState } from "./env";
 import { logover } from "./logger";
 import { runCommand, runLessonSeed } from "./seed";
@@ -7,49 +7,48 @@ import { pluginEvents } from "../plugin/index";
 
 /**
  * Resets the current project by running, in order, every seed
- * @param {WebSocket} ws
  */
-export async function resetProject(ws) {
+export async function resetProject(ws: WebSocket) {
   resetBottomPanel(ws);
   // Get commands and handle file setting
-  const { currentProject } = await getState();
-  const project = await getProjectConfig(currentProject);
-  const { currentLesson } = project;
-  updateLoader(ws, {
-    isLoading: true,
-    progress: { total: currentLesson, count: 0 },
-  });
+  const { currentProject, projects } = await getState();
+  const project = await pluginEvents.getProject(currentProject!);
+  const currentLesson = projects[project.id].currentLesson;
+  // updateLoader(ws, {
+  //   isLoading: true,
+  //   progress: { total: currentLesson, count: 0 },
+  // });
 
   let lessonNumber = 0;
   try {
     await gitResetCurrentProjectDir();
     while (lessonNumber <= currentLesson) {
       const { seed } = await pluginEvents.getLesson(
-        currentProject,
+        currentProject!,
         lessonNumber
       );
       if (seed) {
         await runLessonSeed(seed, lessonNumber);
       }
       lessonNumber++;
-      updateLoader(ws, {
-        isLoading: true,
-        progress: { total: currentLesson, count: lessonNumber },
-      });
+      // updateLoader(ws, {
+      //   isLoading: true,
+      //   progress: { total: currentLesson, count: lessonNumber },
+      // });
     }
   } catch (err) {
     updateError(ws, err);
     logover.error(err);
   }
-  updateLoader(ws, {
-    isLoading: false,
-    progress: { total: 1, count: 1 },
-  });
+  // updateLoader(ws, {
+  //   isLoading: false,
+  //   progress: { total: 1, count: 1 },
+  // });
 }
 
 async function gitResetCurrentProjectDir() {
   const { currentProject } = await getState();
-  const project = await getProjectConfig(currentProject);
+  const project = await pluginEvents.getProject(currentProject!);
   try {
     logover.debug(`Cleaning '${project.dashedName}'`);
     const { stdout, stderr } = await runCommand(

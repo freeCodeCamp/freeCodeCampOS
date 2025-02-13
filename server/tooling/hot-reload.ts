@@ -27,7 +27,7 @@ export const watcher = watch(ROOT, {
 
 export function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
   logover.info(`Watching for file changes on ${ROOT}`);
-  let isWait = false;
+  let isWait: Timer | null = null;
   let testsRunning = false;
   let isClearConsole = false;
 
@@ -40,7 +40,7 @@ export function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
     if (name && !pathsToIgnore.find((p) => name.includes(p))) {
       if (isWait) return;
       const { currentProject } = await getState();
-      if (!currentProject) {
+      if (currentProject === null) {
         return;
       }
 
@@ -48,7 +48,7 @@ export function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
         currentProject
       );
       isWait = setTimeout(() => {
-        isWait = false;
+        isWait = null;
       }, testPollingRate);
 
       if (isClearConsole) {
@@ -96,15 +96,15 @@ export function unwatchAll() {
  *   - `/home/freeCodeCampOS/self/lesson-watcher/src/watched.js`
  * @param {string} pathRelativeToRoot
  */
-export function watchPathRelativeToRoot(pathRelativeToRoot) {
+export function watchPathRelativeToRoot(pathRelativeToRoot: string) {
   const paths = getAllPathsWithRoot(pathRelativeToRoot);
   for (const path of paths) {
     watcher.add(path);
   }
 }
 
-function getAllPathsWithRoot(pathRelativeToRoot) {
-  const paths = [];
+function getAllPathsWithRoot(pathRelativeToRoot: string) {
+  const paths: string[] = [];
   let currentPath = pathRelativeToRoot;
   while (currentPath !== ROOT) {
     paths.push(currentPath);

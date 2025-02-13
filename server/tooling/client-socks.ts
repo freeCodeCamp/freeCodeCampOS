@@ -1,67 +1,21 @@
+import { ConsoleError, TestState, WSSEvents } from "../../types";
 import { parseMarkdown } from "./parser";
 
-export function updateLoader(ws: WebSocket, loader) {
-  ws.send(parse({ event: "update-loader", data: { loader } }));
-}
+// export function updateLoader(ws: WebSocket, loader) {
+//   ws.send(parse({ event: WSSEven, data: { loader } }));
+// }
 
 /**
  * Update all tests in the tests state
  */
-export function updateTests(ws: WebSocket, tests) {
-  ws.send(parse({ event: "update-tests", data: { tests } }));
+export function updateTestsState(ws: WebSocket, testsState: TestState[]) {
+  ws.send(parse({ event: WSSEvents.UPDATE_TESTS_STATE, data: { testsState } }));
 }
 /**
  * Update single test in the tests state
  */
-export function updateTest(ws: WebSocket, test) {
-  ws.send(parse({ event: "update-test", data: { test } }));
-}
-/**
- * Update the lesson description
- */
-export function updateDescription(ws: WebSocket, description) {
-  ws.send(
-    parse({
-      event: "update-description",
-      data: { description },
-    })
-  );
-}
-/**
- * Update the heading of the lesson
- */
-export function updateProjectHeading(
-  ws: WebSocket,
-  projectHeading: { lessonNumber: number; title: string }
-) {
-  ws.send(
-    parse({
-      event: "update-project-heading",
-      data: projectHeading,
-    })
-  );
-}
-/**
- * Update the project state
- */
-export function updateProject(ws: WebSocket, project) {
-  ws.send(
-    parse({
-      event: "update-project",
-      data: project,
-    })
-  );
-}
-/**
- * Update the projects
- */
-export function updateProjects(ws: WebSocket, projects) {
-  ws.send(
-    parse({
-      event: "update-projects",
-      data: projects,
-    })
-  );
+export function updateTestState(ws: WebSocket, testState: TestState) {
+  ws.send(parse({ event: WSSEvents.UPDATE_TEST_STATE, data: { testState } }));
 }
 
 /**
@@ -70,44 +24,26 @@ export function updateProjects(ws: WebSocket, projects) {
 export function updateState(ws: WebSocket, state) {
   ws.send(
     parse({
-      event: "update-state",
+      event: WSSEvents.UPDATE_STATE,
       data: state,
     })
   );
 }
 /**
- * Update the projects state
- */
-export function updateFreeCodeCampConfig(ws: WebSocket, config) {
-  ws.send(
-    parse({
-      event: "update-freeCodeCamp-config",
-      data: config,
-    })
-  );
-}
-/**
- * Update hints
- */
-export function updateHints(ws: WebSocket, hints) {
-  ws.send(parse({ event: "update-hints", data: { hints } }));
-}
-/**
  *
- * @param {{error: string; testText: string; passed: boolean;isLoading: boolean;testId: number;}} cons
  */
-export function updateConsole(ws: WebSocket, cons) {
-  if (Object.keys(cons).length) {
-    if (cons.error) {
+export function updateConsole(ws: WebSocket, consoleError: ConsoleError) {
+  if (Object.keys(consoleError).length) {
+    if (consoleError.error) {
       const error = `\`\`\`json\n${JSON.stringify(
-        cons.error,
+        consoleError.error,
         null,
         2
       )}\n\`\`\``;
-      cons.error = parseMarkdown(error);
+      consoleError.error = parseMarkdown(error);
     }
   }
-  ws.send(parse({ event: "update-console", data: { cons } }));
+  ws.send(parse({ event: WSSEvents.UPDATE_CONSOLE, data: { consoleError } }));
 }
 
 /**
@@ -115,13 +51,6 @@ export function updateConsole(ws: WebSocket, cons) {
  */
 export function updateError(ws: WebSocket, error) {
   ws.send(parse({ event: "update-error", data: { error } }));
-}
-
-/**
- * Update the current locale
- */
-export function updateLocale(ws: WebSocket, locale) {
-  ws.send(parse({ event: "update-locale", data: locale }));
 }
 
 /**
@@ -139,7 +68,6 @@ export function parse(obj) {
  * Resets the bottom panel (Tests, Console, Hints) of the client to empty state
  */
 export function resetBottomPanel(ws: WebSocket) {
-  updateHints(ws, []);
-  updateTests(ws, []);
-  updateConsole(ws, {});
+  updateTestsState(ws, []);
+  updateConsole(ws, {} as ConsoleError);
 }

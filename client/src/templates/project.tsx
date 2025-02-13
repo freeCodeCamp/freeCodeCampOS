@@ -3,19 +3,67 @@ import { Heading } from "../components/heading";
 import { Controls } from "../components/controls";
 import { Output } from "../components/output";
 import "./project.css";
-import { State } from "../../../types";
 import { useQuery } from "@tanstack/react-query";
-import { getProject } from "../utils/fetch";
+import { getProject, getState, postState } from "../utils/fetch";
+import { Loader } from "../components/loader";
+import { rootRoute } from "../utils";
+import { createRoute } from "@tanstack/react-router";
 
-export interface ProjectProps {
-  state: State;
-}
-
-export const Project = ({ state }: ProjectProps) => {
-  const projectQuery = useQuery({
-    queryKey: ["project"],
-    queryFn: async () => getProject(state.currentProject),
+export const Project = () => {
+  const { projectId, lessonId } = LessonRoute.useParams();
+  const getStateQuery = useQuery({
+    queryKey: ["state"],
+    queryFn: getState,
   });
+
+  const postStateQuery = useQuery({
+    queryKey: ["postState"],
+    enabled: getStateQuery.isSuccess,
+    queryFn: async () => {
+      const state = getStateQuery.data!;
+      const projects = {
+        ...state.projects,
+        [projectId]: {
+          ...state.projects[Number(projectId)],
+          currentLesson: Number(lessonId),
+        },
+      };
+      return postState({ currentProject: Number(projectId), projects });
+    },
+  });
+
+  const projectQuery = useQuery({
+    queryKey: ["project", projectId],
+    enabled: postStateQuery.isSuccess,
+    queryFn: async () => getProject(Number(projectId)),
+  });
+
+  if (getStateQuery.isPending) {
+    return <Loader />;
+  }
+
+  if (getStateQuery.isError) {
+    return <div>Error: {getStateQuery.error.message}</div>;
+  }
+
+  if (postStateQuery.isPending) {
+    return <Loader />;
+  }
+
+  if (postStateQuery.isError) {
+    return <div>Error: {postStateQuery.error.message}</div>;
+  }
+
+  if (projectQuery.isPending) {
+    return <Loader />;
+  }
+
+  if (projectQuery.isError) {
+    return <div>Error: {projectQuery.error.message}</div>;
+  }
+
+  const project = projectQuery.data;
+  const lesson = project.lessons[Number(lessonId)];
   return (
     <>
       <div className="container">
@@ -23,35 +71,23 @@ export const Project = ({ state }: ProjectProps) => {
           {...(project.isIntegrated
             ? { title: project.title }
             : {
-                goToNextLesson,
-                goToPreviousLesson,
                 numberOfLessons: project.numberOfLessons,
                 title: project.title,
-                lessonNumber,
               })}
         />
 
-        <Description description={description} />
+        <Description description={lesson.description} />
 
-        <Controls
-          {...(project.isIntegrated
-            ? {
-                cancelTests,
-                runTests,
-                tests,
-              }
-            : {
-                cancelTests,
-                runTests,
-                resetProject,
-                isResetEnabled: project.isResetEnabled,
-                tests,
-                loader,
-              })}
-        />
+        <Controls project={project} />
 
-        <Output {...{ hints, tests, cons }} />
+        <Output {...{ hints: lesson.hints }} />
       </div>
     </>
   );
 };
+
+export const LessonRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/project/$projectId/$lessonId",
+  component: Project,
+});

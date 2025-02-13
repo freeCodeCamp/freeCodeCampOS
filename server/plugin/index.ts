@@ -1,14 +1,15 @@
 import { readFile } from "fs/promises";
 import { freeCodeCampConfig, getState, ROOT } from "../tooling/env";
-import { CoffeeDown, parseMarkdown } from "../tooling/parser";
+import { CoffeeDown } from "../tooling/parser";
 import { join } from "path";
 import { logover } from "../tooling/logger";
 import { Lesson, Project, ProjectConfig, Test, TestState } from "../../types";
+import { getProjectFileById } from "../tooling/utils";
 
 export const pluginEvents = {
-  onTestsStart: async (project: Project, testState: TestState) => {},
+  onTestsStart: async (project: Project, testsState: TestState[]) => {},
 
-  onTestsEnd: async (project: Project, testState: TestState) => {},
+  onTestsEnd: async (project: Project, testsState: TestState[]) => {},
 
   onProjectStart: async (project: Project) => {},
 
@@ -20,46 +21,39 @@ export const pluginEvents = {
 
   onLessonLoad: async (project: Project) => {},
 
-  getProjectConfig: async (
-    projectDashedName: string
-  ): Promise<ProjectConfig> => {
-    const { locale } = await getState();
-    const projectFilePath = join(
-      ROOT,
-      freeCodeCampConfig.curriculum.locales[locale],
-      projectDashedName + ".md"
-    );
-    const projectFile = await readFile(projectFilePath, "utf8");
+  getProjectConfig: async (id: number): Promise<ProjectConfig> => {
+    const projectFile = await getProjectFileById(id);
+
+    if (!projectFile) {
+      throw new Error(`Project with id ${id} not found`);
+    }
+
     const coffeeDown = new CoffeeDown(projectFile);
     const projectMeta = coffeeDown.getProjectMeta();
-    // Remove `<p>` tags if present
-    const title = parseMarkdown(projectMeta.title)
-      .replace(/<p>|<\/p>/g, "")
-      .trim();
-    const description = parseMarkdown(projectMeta.description).trim();
-    return { ...projectMeta, title, description };
+
+    return projectMeta;
   },
 
   getLesson: async (
-    projectDashedName: string,
+    projectId: number,
     lessonNumber: number
   ): Promise<Lesson> => {
-    const { locale } = await getState();
-    const projectFilePath = join(
-      ROOT,
-      freeCodeCampConfig.curriculum.locales[locale],
-      projectDashedName + ".md"
-    );
-    const projectFile = await readFile(projectFilePath, "utf8");
+    const projectFile = await getProjectFileById(projectId);
+
+    if (!projectFile) {
+      throw new Error(`Project with id ${projectId} not found`);
+    }
+
     const coffeeDown = new CoffeeDown(projectFile);
     const lesson = coffeeDown.getLesson(lessonNumber);
     let seed = lesson.seed;
     if (!seed.length) {
       // Check for external seed file
-      const seedFilePath = projectFilePath.replace(/.md$/, "-seed.md");
+      const seedFilePath = coffeeDown.getProjectMeta().dashedName + "-seed.md";
       try {
         const seedContent = await readFile(seedFilePath, "utf-8");
         const coffeeDown = new CoffeeDown(seedContent);
+        // TODO: might fail as lesson is not valid
         seed = coffeeDown.getLesson(lessonNumber).seed;
       } catch (e) {
         if (e?.code !== "ENOENT") {
@@ -70,23 +64,21 @@ export const pluginEvents = {
         }
       }
     }
-    const { afterAll, afterEach, beforeAll, beforeEach, meta } = lesson;
-    const description = parseMarkdown(lesson.description).trim();
-    const tests: Test[] = lesson.tests.map(([testText, test]) => [
-      parseMarkdown(testText).trim(),
-      test,
-    ]);
-    const hints = lesson.hints.map((h) => parseMarkdown(h).trim());
-    return {
-      meta,
-      description,
-      tests,
-      hints,
-      seed,
-      beforeAll,
-      afterAll,
-      beforeEach,
-      afterEach,
-    };
+
+    return lesson;
+  },
+
+  getProject: async (projectId: number): Promise<Project> => {
+    const projectFile = await getProjectFileById(projectId);
+
+    if (!projectFile) {
+      throw new Error(`Project with id ${projectId} not found`);
+    }
+
+    const coffeeDown = new CoffeeDown(projectFile);
+
+    const project = coffeeDown.project;
+
+    return project;
   },
 };

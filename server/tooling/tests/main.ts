@@ -9,12 +9,12 @@ import {
   updateCurrentLesson,
   freeCodeCampConfig,
   ROOT,
+  updateProjectState,
 } from "../env";
 import {
-  updateTest,
-  updateTests,
+  updateTestState,
+  updateTestsState,
   updateConsole,
-  updateHints,
   resetBottomPanel,
   handleProjectFinish,
 } from "../client-socks";
@@ -23,6 +23,7 @@ import { join } from "node:path";
 import { Worker } from "node:worker_threads";
 import { pluginEvents } from "../../plugin/index";
 import { t } from "../t";
+import { ConsoleError, Project, TestState } from "../../../types";
 
 try {
   const plugins = freeCodeCampConfig.tooling?.plugins;
@@ -36,27 +37,21 @@ try {
   logover.error(e);
 }
 
-/** @type {Worker[]} */
-export const WORKER_POOL = [];
+export const WORKER_POOL: Worker[] = [];
 
 /**
  * Run the given project's tests
- * @param {WebSocket} ws
- * @param {string} projectDashedName
  */
-export async function runTests(ws, projectDashedName) {
+export async function runTests(ws: WebSocket, projectId: number) {
   // TODO: Consider awaiting in parallel, since both invoke `fs`
-  const project = await getProjectConfig(projectDashedName);
-  const { locale } = await getState();
+  const project = await pluginEvents.getProject(projectId);
+  const { locale, projects } = await getState();
   // toggleLoaderAnimation(ws);
-  const lessonNumber = project.currentLesson;
+  const lessonNumber = projects[project.id].currentLesson;
 
-  let testsState = [];
+  let testsState: TestState[] = [];
   try {
-    const lesson = await pluginEvents.getLesson(
-      projectDashedName,
-      lessonNumber
-    );
+    const lesson = await pluginEvents.getLesson(projectId, lessonNumber);
     const { beforeAll, beforeEach, afterAll, afterEach, hints, tests } = lesson;
 
     if (beforeAll) {
@@ -82,8 +77,8 @@ export async function runTests(ws, projectDashedName) {
 
     await pluginEvents.onTestsStart(project, testsState);
 
-    updateTests(ws, testsState);
-    updateConsole(ws, "");
+    updateTestsState(ws, testsState);
+    updateConsole(ws, {} as ConsoleError);
 
     // Create one worker for each test if non-blocking.
     // TODO: See if holding pool of workers is better.
@@ -97,7 +92,6 @@ export async function runTests(ws, projectDashedName) {
         logover.debug(`Blocking Worker:`, data.toString());
       });
       worker.on("exit", async (exitCode) => {
-        worker.exited = true;
         removeWorkerFromPool(worker);
         await handleWorkerExit({
           ws,
@@ -114,7 +108,7 @@ export async function runTests(ws, projectDashedName) {
       for (let i = 0; i < tests.length; i++) {
         const [_text, testCode] = tests[i];
         testsState[i].isLoading = true;
-        updateTest(ws, testsState[i]);
+        updateTestState(ws, testsState[i]);
 
         worker.postMessage({ testCode, testId: i });
       }
@@ -123,7 +117,7 @@ export async function runTests(ws, projectDashedName) {
       for (let i = 0; i < tests.length; i++) {
         const [_text, testCode] = tests[i];
         testsState[i].isLoading = true;
-        updateTest(ws, testsState[i]);
+        updateTestState(ws, testsState[i]);
 
         const worker = createWorker(`worker-${i}`, { beforeEach, project });
         WORKER_POOL.push(worker);
@@ -134,7 +128,6 @@ export async function runTests(ws, projectDashedName) {
           logover.debug(`Worker-${i}:`, data.toString());
         });
         worker.on("exit", async (exitCode) => {
-          worker.exited = true;
           removeWorkerFromPool(worker);
           await handleWorkerExit({
             ws,
@@ -173,12 +166,11 @@ export async function runTests(ws, projectDashedName) {
         };
         updateConsole(ws, consoleError);
       }
-      updateTest(ws, testsState[testId]);
+      updateTestState(ws, testsState[testId]);
 
       await checkTestsCallback({
         ws,
         project,
-        hints,
         lessonNumber,
         testsState,
         afterAll,
@@ -193,7 +185,6 @@ export async function runTests(ws, projectDashedName) {
 async function checkTestsCallback({
   ws,
   project,
-  hints,
   lessonNumber,
   testsState,
   afterAll,
@@ -215,7 +206,6 @@ async function checkTestsCallback({
     }
   } else {
     await pluginEvents.onLessonFailed(project);
-    updateHints(ws, hints);
   }
   const allTestsFinished = testsState.every((test) => !test.isLoading);
   if (allTestsFinished) {
@@ -236,18 +226,19 @@ async function checkTestsCallback({
   }
 }
 
+interface HandleWorkerExitI {
+  ws: WebSocket;
+  exitCode: number;
+  testsState: TestState[];
+  i?: number;
+  afterEach?: string;
+  project: Project;
+  hints: string[];
+  lessonNumber: number;
+  afterAll?: string;
+}
 /**
  * NOTE: Either `handleCancelTests` or `handleWorkerExit` should update `testsState`
- * @param {object} param0
- * @param {number} param0.exitCode
- * @param {Array} param0.testsState
- * @param {number} param0.i
- * @param {string} param0.afterEach
- * @param {object} param0.error
- * @param {object} param0.project
- * @param {Array} param0.hints
- * @param {string} param0.afterAll
- * @param {number} param0.lessonNumber
  */
 async function handleWorkerExit({
   ws,
@@ -256,10 +247,9 @@ async function handleWorkerExit({
   i,
   afterEach,
   project,
-  hints,
   lessonNumber,
   afterAll,
-}) {
+}: HandleWorkerExitI) {
   // If exit code == 1, worker was likely terminated
   // Let client know test was cancelled
   if (exitCode === 1) {
@@ -283,7 +273,7 @@ async function handleWorkerExit({
         }
       });
     }
-    updateTests(ws, testsState);
+    updateTestsState(ws, testsState);
   }
   // Run afterEach even if tests are cancelled
   try {
@@ -296,35 +286,27 @@ async function handleWorkerExit({
   await checkTestsCallback({
     ws,
     project,
-    hints,
     lessonNumber,
     testsState,
     afterAll,
   });
 }
 
-function createWorker(name, workerData) {
-  return new Worker(
-    join(
-      ROOT,
-      "node_modules/@freecodecamp/freecodecamp-os",
-      ".freeCodeCamp/tooling/tests",
-      "test-worker.js"
-    ),
-    {
-      name,
-      workerData,
-      stdout: true,
-      stdin: true,
-    }
-  );
+function createWorker(name: string, workerData) {
+  const workerPath = join(import.meta.dir, "test-worker.ts");
+  return new Worker(workerPath, {
+    name,
+    workerData,
+    stdout: true,
+    stdin: true,
+  });
 }
 
 export function getWorkerPool() {
   return WORKER_POOL;
 }
 
-function removeWorkerFromPool(worker) {
+function removeWorkerFromPool(worker: Worker) {
   const index = WORKER_POOL.indexOf(worker);
   if (index > -1) {
     WORKER_POOL.splice(index, 1);

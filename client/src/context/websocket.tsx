@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { WSCEvents } from "../../../types";
 
-export type Send = (event: string, data: unknown) => void;
+export type Send = (event: WSCEvents, data: unknown) => void;
 
 export const WebSocketContext = React.createContext<{
   socket: WebSocket | null;
@@ -9,7 +10,7 @@ export const WebSocketContext = React.createContext<{
 
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [debouncers, setDebouncers] = useState<string[]>([]);
+  const [debouncers, setDebouncers] = useState<WSCEvents[]>([]);
 
   useEffect(() => {
     const ws = new WebSocket(
@@ -52,7 +53,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  function send(event: string, data: unknown) {
+  function send(event: WSCEvents, data: unknown) {
     if (socket) {
       if (debouncers.includes(event)) {
         return;

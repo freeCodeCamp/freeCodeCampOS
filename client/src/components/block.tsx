@@ -1,11 +1,11 @@
-import { SelectionProps } from './selection';
-import { ProjectI, Events, ProjectState } from '../types/index';
-import { Tag } from './tag';
-import { Checkmark } from './checkmark';
+import { Tag } from "./tag";
+import { Checkmark } from "./checkmark";
+import { Project, ProjectState } from "../../../types";
+import { LessonRoute } from "../templates/project";
+import { useNavigate } from "@tanstack/react-router";
 
 type BlockProps = {
-  sock: SelectionProps['sock'];
-  project: ProjectI;
+  project: Project;
   projectState: ProjectState;
 };
 
@@ -17,13 +17,16 @@ export const Block = ({
     isIntegrated,
     isPublic,
     numberOfLessons,
-    tags
+    tags,
   },
   projectState: { currentLesson, completedDate },
-  sock
 }: BlockProps) => {
+  const navigate = useNavigate();
   function selectProject() {
-    sock(Events.SELECT_PROJECT, { id });
+    navigate({
+      to: LessonRoute.to,
+      params: { projectId: id, lessonId: currentLesson },
+    });
   }
 
   let lessonsCompleted = 0;
@@ -36,21 +39,21 @@ export const Block = ({
         : currentLesson;
   }
   return (
-    <li className='block'>
+    <li className="block">
       <button
-        className='block-btn'
+        className="block-btn"
         onClick={selectProject}
         disabled={!isPublic}
         style={
           !isPublic
             ? {
-                cursor: 'not-allowed'
+                cursor: "not-allowed",
               }
             : {}
         }
       >
-        <div className={'tags-row'}>
-          {tags.map(text => {
+        <div className={"tags-row"}>
+          {tags.map((text) => {
             return <Tag text={text} />;
           })}
         </div>
@@ -58,21 +61,21 @@ export const Block = ({
         <h2>
           {title}
           {completedDate ? (
-            <span className='block-checkmark'>
+            <span className="block-checkmark">
               <Checkmark />
             </span>
           ) : null}
         </h2>
-        <div className='block-info'>
+        <div className="block-info">
           <p
             dangerouslySetInnerHTML={{
-              __html: description
+              __html: description,
             }}
           ></p>
-          <span aria-hidden='true'>
+          <span aria-hidden="true">
             {lessonsCompleted}/{numberOfLessons}
           </span>
-          <span className='sr-only'>
+          <span className="sr-only">
             {lessonsCompleted} of {numberOfLessons} lessons completed
           </span>
         </div>

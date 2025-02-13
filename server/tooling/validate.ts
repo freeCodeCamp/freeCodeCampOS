@@ -227,15 +227,15 @@ export async function validateCurriculum() {
   );
 
   for (const file of files) {
-    if (!file.isFile) {
+    if (!file.isFile()) {
       continue;
     }
 
     // File might not be a valid project, in which case, it is tried as one, but ignored
-    let projectMeta;
+    let projectConfig;
     try {
       const dashedName = file.name.replace(/.md$/, "");
-      projectMeta = await pluginEvents.getProjectMeta(dashedName);
+      projectConfig = await pluginEvents.getProjectConfig(dashedName);
     } catch (e) {
       logover.debug(`File ${file.name} skipped as invalid due to:`);
       logover.debug(e);
@@ -255,7 +255,7 @@ export async function validateCurriculum() {
       seedEveryLesson,
       blockingTests,
       breakOnFailure,
-    } = projectMeta;
+    } = projectConfig;
 
     if (!dashedName) {
       panic(

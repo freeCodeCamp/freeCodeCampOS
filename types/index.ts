@@ -1,24 +1,16 @@
 export type F<A, R> = (arg: A) => R;
 
-export enum Events {
-  CONNECT = "connect",
-  DISCONNECT = "disconnect",
-  TOGGLE_LOADER_ANIMATION = "toggle-loader-animation",
-  UPDATE_TESTS = "update-tests",
-  UPDATE_TEST = "update-test",
-  UPDATE_DESCRIPTION = "update-description",
-  UPDATE_PROJECT_HEADING = "update-project-heading",
-  UPDATE_PROJECTS = "update-projects",
-  UPDATE_STATE = "update-state",
-  RESET_TESTS = "reset-tests",
-  RUN_TESTS = "run-tests",
-  RESET_PROJECT = "reset-project",
-  REQUEST_DATA = "request-data",
-  GO_TO_NEXT_LESSON = "go-to-next-lesson",
-  GO_TO_PREVIOUS_LESSON = "go-to-previous-lesson",
-  SELECT_PROJECT = "select-project",
-  CANCEL_TESTS = "cancel-tests",
-  CHANGE_LANGUAGE = "change-language",
+export type Sock = { event: WSSEvents | WSCEvents; data: any };
+
+export enum WSCEvents {}
+
+export enum WSSEvents {
+  CONNECT = "CONNECT",
+  UPDATE_TESTS_STATE = "UPDATE_TESTS_STATE",
+  UPDATE_TEST_STATE = "UPDATE_TEST_STATE",
+  UPDATE_STATE = "UPDATE_STATE",
+  UPDATE_CONSOLE = "UPDATE_CONSOLE",
+  RESPONSE = "RESPONSE",
 }
 
 export type TestState = {
@@ -87,15 +79,15 @@ export interface ProjectConfig {
 }
 
 export interface State {
-  currentProject: number;
+  currentProject: number | null;
   locale: string;
   lastSeed: LastSeed;
   lastWatchChange: number;
-  projects: Record<ProjectConfig["dashedName"], ProjectState>;
+  projects: Record<ProjectConfig["id"], ProjectState>;
 }
 
 export interface LastSeed {
-  projectDashedName: string | null;
+  projectId: number | null;
   lessonNumber: number;
 }
 

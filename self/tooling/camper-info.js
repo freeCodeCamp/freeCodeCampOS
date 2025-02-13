@@ -10,22 +10,22 @@
 import {
   getProjectConfig,
   getConfig,
-  getState
-} from '@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/env.js';
-import __helpers from '@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/test-utils.js';
-import { Logger } from 'logover';
-import { readdir, readFile } from 'fs/promises';
-import { join } from 'path';
+  getState,
+} from "@freecodecamp/freecodecamp-os/server/tooling/env.js";
+import __helpers from "@freecodecamp/freecodecamp-os/server/tooling/test-utils.js";
+import { Logger } from "logover";
+import { readdir, readFile } from "fs/promises";
+import { join } from "path";
 
-const logover = new Logger({ level: 'debug', timestamp: null });
+const logover = new Logger({ level: "debug", timestamp: null });
 
 const FLAGS = process.argv;
 
 async function main() {
   try {
     const handleFlag = {
-      '--history': printCommandHistory,
-      '--directory': printDirectoryTree
+      "--history": printCommandHistory,
+      "--directory": printDirectoryTree,
     };
     const projectConfig = await getProjectConfig();
     const config = await getConfig();
@@ -36,27 +36,27 @@ async function main() {
     const { version } = config;
 
     const devContainerFile = await readFile(
-      '.devcontainer/devcontainer.json',
-      'utf-8'
+      ".devcontainer/devcontainer.json",
+      "utf-8"
     );
     const devConfig = JSON.parse(devContainerFile);
-    const coursesVersion = devConfig.extensions?.find(e =>
-      e.match('freecodecamp-courses')
+    const coursesVersion = devConfig.extensions?.find((e) =>
+      e.match("freecodecamp-courses")
     );
 
-    const { stdout } = await __helpers.getCommandOutput('git log -1');
+    const { stdout } = await __helpers.getCommandOutput("git log -1");
 
-    logover.info('Project: ', currentProject);
-    logover.info('Lesson Number: ', currentLesson);
-    logover.info('Curriculum Version: ', version);
-    logover.info('freeCodeCamp - Courses: ', coursesVersion);
-    logover.info('Commit: ', stdout);
+    logover.info("Project: ", currentProject);
+    logover.info("Lesson Number: ", currentLesson);
+    logover.info("Curriculum Version: ", version);
+    logover.info("freeCodeCamp - Courses: ", coursesVersion);
+    logover.info("Commit: ", stdout);
 
     for (const arg of FLAGS) {
       await handleFlag[arg]?.();
     }
     async function printDirectoryTree() {
-      const files = await readdir('.', { withFileTypes: true });
+      const files = await readdir(".", { withFileTypes: true });
       let depth = 0;
       for (const file of files) {
         if (file.isDirectory() && file.name === currentProject) {
@@ -66,8 +66,8 @@ async function main() {
     }
 
     async function printCommandHistory() {
-      const historyCwd = await readFile('.logs/.history_cwd.log', 'utf-8');
-      logover.info('Command History:\n', historyCwd);
+      const historyCwd = await readFile(".logs/.history_cwd.log", "utf-8");
+      logover.info("Command History:\n", historyCwd);
     }
   } catch (e) {
     logover.error(e);
@@ -76,9 +76,9 @@ async function main() {
 
 main();
 
-const IGNORE = ['node_modules', 'target'];
+const IGNORE = ["node_modules", "target"];
 async function recurseDirectory(path, depth) {
-  logover.info(`|${' '.repeat(depth * 2)}|-- ${path}`);
+  logover.info(`|${" ".repeat(depth * 2)}|-- ${path}`);
   depth++;
   const files = await readdir(path, { withFileTypes: true });
   for (const file of files) {
@@ -86,7 +86,7 @@ async function recurseDirectory(path, depth) {
       if (file.isDirectory()) {
         await recurseDirectory(join(path, file.name), depth);
       } else {
-        logover.info(`|${' '.repeat(depth * 2)}|-- ${file.name}`);
+        logover.info(`|${" ".repeat(depth * 2)}|-- ${file.name}`);
       }
     }
   }
