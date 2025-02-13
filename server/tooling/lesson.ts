@@ -15,7 +15,7 @@ import {
   watchPathRelativeToRoot,
   watcher,
 } from "./hot-reload";
-import { TestState } from "../../types";
+import { LessonMeta, State, TestState } from "../../types";
 
 /**
  * Runs the lesson from the `projectDashedName` config.
@@ -33,7 +33,9 @@ export async function runLesson(ws: WebSocket, projectId: number) {
 
     // TODO: Consider performance optimizations
     // - Do not run at all if whole project does not contain any `meta`.
-    await handleWatcher(meta, { lastWatchChange, currentLesson });
+    if (meta) {
+      await handleWatcher(meta, { lastWatchChange, currentLesson });
+    }
 
     if (currentLesson === 0) {
       await pluginEvents.onProjectStart(project);
@@ -76,7 +78,13 @@ export async function runLesson(ws: WebSocket, projectId: number) {
   }
 }
 
-async function handleWatcher(meta, { lastWatchChange, currentLesson }) {
+async function handleWatcher(
+  meta: LessonMeta,
+  {
+    lastWatchChange,
+    currentLesson,
+  }: { lastWatchChange: State["lastWatchChange"]; currentLesson: number }
+) {
   // Calling `watcher` methods takes a performance hit. So, check is behind a check that the lesson has changed.
   if (lastWatchChange !== currentLesson) {
     if (meta?.watch) {

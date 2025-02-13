@@ -5,10 +5,10 @@
     "projectId": null,
     "lessonNumber": -1
   },
-  "lastWatchChange": -1,
+  "lastWatchChange": 1,
   "projects": {
     "0": {
-      "currentLesson": 0
+      "currentLesson": 1
     }
   }
 }

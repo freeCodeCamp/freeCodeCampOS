@@ -185,13 +185,11 @@ app.post("/api/tests/run", async (c) => {
 
 app.post("/api/tests/cancel", async (c) => {});
 
-// app.get("/api/project/:projectId/:lessonId", async (c) => {
-//   const projectId = c.req.param("projectId");
-//   const _lessonId = c.req.param("lessonId");
-
-//   const project = await pluginEvents.getProject(Number(projectId));
-//   return c.json(project);
-// });
+app.notFound((c) => {
+  console.log(c.req.url);
+  console.log(c.req.path);
+  return c.redirect("/");
+});
 
 const server = Bun.serve({
   port: PORT,

@@ -88,9 +88,9 @@ export async function runTests(ws: WebSocket, projectId: number) {
 
       // When result is received back from worker, update the client state
       worker.on("message", workerMessage);
-      worker.stdout.on("data", (data) => {
-        logover.debug(`Blocking Worker:`, data.toString());
-      });
+      // worker.stdout.on("data", (data) => {
+      //   logover.debug(`Blocking Worker:`, data.toString());
+      // });
       worker.on("exit", async (exitCode) => {
         removeWorkerFromPool(worker);
         await handleWorkerExit({
@@ -124,9 +124,9 @@ export async function runTests(ws: WebSocket, projectId: number) {
 
         // When result is received back from worker, update the client state
         worker.on("message", workerMessage);
-        worker.stdout.on("data", (data) => {
-          logover.debug(`Worker-${i}:`, data.toString());
-        });
+        // worker.stdout.on("data", (data) => {
+        //   logover.debug(`Worker-${i}:`, data.toString());
+        // });
         worker.on("exit", async (exitCode) => {
           removeWorkerFromPool(worker);
           await handleWorkerExit({
@@ -146,7 +146,7 @@ export async function runTests(ws: WebSocket, projectId: number) {
       }
     }
 
-    async function workerMessage(message) {
+    async function workerMessage(message: any) {
       const { passed, testId, error } = message;
       testsState[testId].isLoading = false;
       testsState[testId].passed = passed;
@@ -182,13 +182,21 @@ export async function runTests(ws: WebSocket, projectId: number) {
   }
 }
 
+interface CheckTestsCallbackI {
+  ws: WebSocket;
+  project: Project;
+  lessonNumber: number;
+  testsState: TestState[];
+  afterAll?: string;
+}
+
 async function checkTestsCallback({
   ws,
   project,
   lessonNumber,
   testsState,
   afterAll,
-}) {
+}: CheckTestsCallbackI) {
   const passed = testsState.every((test) => test.passed);
   if (passed) {
     await pluginEvents.onLessonPassed(project);
@@ -196,13 +204,13 @@ async function checkTestsCallback({
     resetBottomPanel(ws);
     if (project.isIntegrated || lessonNumber === project.numberOfLessons - 1) {
       await pluginEvents.onProjectFinished(project);
-      await updateProjectState(project.dashedName, {
+      await updateProjectState(project.id, {
         completedDate: Date.now(),
       });
       handleProjectFinish(ws);
     } else {
-      await updateCurrentLesson(project.dashedName, lessonNumber + 1);
-      await runLesson(ws, project.dashedName);
+      await updateCurrentLesson(project.id, lessonNumber + 1);
+      await runLesson(ws, project.id);
     }
   } else {
     await pluginEvents.onLessonFailed(project);
@@ -292,13 +300,16 @@ async function handleWorkerExit({
   });
 }
 
-function createWorker(name: string, workerData) {
+function createWorker(
+  name: string,
+  workerData: { beforeEach?: string; project: Project }
+) {
   const workerPath = join(import.meta.dir, "test-worker.ts");
   return new Worker(workerPath, {
     name,
     workerData,
-    stdout: true,
-    stdin: true,
+    // stdout: true,
+    // stdin: true,
   });
 }
 

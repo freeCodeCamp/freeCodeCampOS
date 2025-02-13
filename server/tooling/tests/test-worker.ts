@@ -1,11 +1,18 @@
 import { parentPort, workerData } from "node:worker_threads";
 // These are used in the local scope of the `eval` in `runTests`
-import { assert, AssertionError, expect, config as chaiConfig } from "chai";
+// Dynamic imports must be used to prevent tree shaking.
+const {
+  assert,
+  AssertionError,
+  expect,
+  config: chaiConfig,
+} = await import("chai");
+const { logover } = await import("../logger");
+
 import __helpers_c from "../test-utils";
 
 import { freeCodeCampConfig, ROOT } from "../env";
 import { join } from "path";
-import { logover } from "../logger";
 
 let __helpers = __helpers_c;
 

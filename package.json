@@ -5,7 +5,8 @@
   "description": "Package used for freeCodeCamp projects with the freeCodeCamp Courses VSCode extension",
   "scripts": {
     "build:client": "tsc -b && vite build ./client",
-    "dev": "vite build --sourcemap=inline ./client && INIT_CWD=$PWD/self bun run --no-minify ./server/index.ts",
+    "build:server": "bun run ./build.ts",
+    "dev": "vite build --sourcemap=inline ./client && INIT_CWD=$PWD/self bun run ./server/index.ts",
     "start": "npm run build:client && bun ./server/index.ts",
     "test": "INIT_CWD=$PWD/self bun ./server/tests/parser.test.js",
     "prepublishOnly": "npm run build:client"
@@ -13,31 +14,31 @@
   "dependencies": {
     "@tanstack/react-query": "5.66.0",
     "@tanstack/react-router": "1.102.5",
-    "chai": "4.5.0",
-    "chokidar": "3.6.0",
+    "chai": "5.1.2",
+    "chokidar": "4.0.3",
     "hono": "4.7.0",
     "logover": "2.0.0",
-    "marked": "9.1.6",
+    "marked": "15.0.7",
     "marked-highlight": "2.2.1",
     "prismjs": "1.29.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "ws": "8.18.0"
   },
   "devDependencies": {
     "typescript": "5.7.3",
-    "@types/bun": "latest",
-    "@types/marked": "6.0.0",
+    "@types/bun": "1.2.2",
     "@types/prismjs": "1.26.5",
-    "@types/react": "^19.0.8",
-    "@types/react-dom": "^19.0.3",
-    "@vitejs/plugin-react": "^4.3.4",
-    "vite": "^6.1.0"
+    "@types/react": "19.0.8",
+    "@types/react-dom": "19.0.3",
+    "@vitejs/plugin-react": "4.3.4",
+    "vite": "6.1.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/freeCodeCamp/freeCodeCampOS"
   },
   "type": "module",
-  "module": "index.ts"
+  "module": "server/index.ts",
+  "sideEffects": true
 }

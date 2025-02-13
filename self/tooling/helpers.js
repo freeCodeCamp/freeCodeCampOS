@@ -1,6 +1,6 @@
-import __helpers from "@freecodecamp/freecodecamp-os/server/tooling/test-utils.js";
-import { logover } from "@freecodecamp/freecodecamp-os/server/tooling/logger.js";
-import { ROOT } from "@freecodecamp/freecodecamp-os/server/tooling/env.js";
+import __helpers from "@freecodecamp/freecodecamp-os/server/tooling/test-utils";
+import { logover } from "@freecodecamp/freecodecamp-os/server/tooling/logger";
+import { ROOT } from "@freecodecamp/freecodecamp-os/server/tooling/env";
 import { writeFileSync } from "fs";
 import { join } from "path";
 
