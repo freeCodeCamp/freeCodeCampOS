@@ -34,7 +34,7 @@ export const Project = () => {
 
   const projectQuery = useQuery({
     queryKey: ["project", projectId],
-    enabled: postStateQuery.isSuccess,
+    enabled: postStateQuery.isSuccess && getStateQuery.isSuccess,
     queryFn: async () => getProject(Number(projectId)),
   });
 
@@ -67,14 +67,7 @@ export const Project = () => {
   return (
     <>
       <div className="container">
-        <Heading
-          {...(project.isIntegrated
-            ? { title: project.title }
-            : {
-                numberOfLessons: project.numberOfLessons,
-                title: project.title,
-              })}
-        />
+        <Heading />
 
         <Description description={lesson.description} />
 

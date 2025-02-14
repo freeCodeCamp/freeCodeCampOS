@@ -53,8 +53,8 @@ export const Block = ({
         }
       >
         <div className={"tags-row"}>
-          {tags.map((text) => {
-            return <Tag text={text} />;
+          {tags.map((text, i) => {
+            return <Tag key={i} text={text} />;
           })}
         </div>
 

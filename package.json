@@ -6,7 +6,7 @@
   "scripts": {
     "build:client": "tsc -b && vite build ./client",
     "build:server": "bun run ./build.ts",
-    "dev": "vite build --sourcemap=inline ./client && INIT_CWD=$PWD/self bun run ./server/index.ts",
+    "dev": "vite dev --clearScreen=false ./client & INIT_CWD=$PWD/self bun --no-screen-clear run ./server/index.ts",
     "start": "npm run build:client && bun ./server/index.ts",
     "test": "INIT_CWD=$PWD/self bun ./server/tests/parser.test.js",
     "prepublishOnly": "npm run build:client"

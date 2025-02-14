@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { WSCEvents } from "../../../types";
+import { url } from "../utils/fetch";
 
 export type Send = (event: WSCEvents, data: unknown) => void;
 
@@ -12,12 +13,8 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [debouncers, setDebouncers] = useState<WSCEvents[]>([]);
 
-  useEffect(() => {
-    const ws = new WebSocket(
-      `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${
-        window.location.host
-      }/ws`
-    );
+  function connectToWebSocket() {
+    let ws = new WebSocket(url("/ws").href.replace("http", "ws"));
 
     ws.onopen = () => {
       console.log("Connected to WebSocket server");
@@ -25,11 +22,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     };
 
     ws.onmessage = (event) => {
-      try {
-        console.debug("Received message:", event.data);
-      } catch (error) {
-        console.error("Error parsing message:", error);
-      }
+      console.debug("Received message:", event.data);
     };
 
     ws.onclose = () => {
@@ -37,7 +30,9 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       setSocket(null);
       setTimeout(() => {
         console.log("Attempting to reconnect");
-        window.location.reload(); // simplest reconnection
+
+        ws = new WebSocket(url("/ws").href.replace("http", "ws"));
+        // window.location.reload(); // simplest reconnection
       }, 1000);
     };
 
@@ -51,7 +46,9 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         ws.close();
       }
     };
-  }, []);
+  }
+
+  useEffect(connectToWebSocket, []);
 
   function send(event: WSCEvents, data: unknown) {
     if (socket) {
