@@ -1,106 +1,58 @@
 import { useNavigate } from "@tanstack/react-router";
 import { LessonRoute } from "../templates/project";
-import { useQuery } from "@tanstack/react-query";
-import { getProject, getState } from "../utils/fetch";
-import { Loader } from "./loader";
 import { useEffect, useState } from "react";
-import { Project, State } from "../../../types";
 
-export const Heading = () => {
+interface HeadingProps {
+  projectId: number;
+  currentLesson: number;
+  numberOfLessons: number;
+  title: string;
+}
+
+export const Heading = ({
+  projectId,
+  currentLesson,
+  numberOfLessons,
+  title,
+}: HeadingProps) => {
   const navigate = useNavigate();
-  // const [anim, setAnim] = useState("");
-  const [state, setState] = useState<State | null>(null);
+  const [anim, setAnim] = useState("");
 
-  const [project, setProject] = useState<Project | null>(null);
-  const [currentLesson, setCurrentLesson] = useState(0);
-  const [canGoBack, setCanGoBack] = useState(false);
-  const [canGoForward, setCanGoForward] = useState(false);
-
-  const stateQuery = useQuery({
-    queryKey: ["state", window.location.pathname],
-    queryFn: () => {
-      console.debug("fetching state");
-      return getState();
-    },
-  });
-
-  const projectQuery = useQuery({
-    queryKey: [
-      "project",
-      window.location.pathname,
-      stateQuery?.data?.currentProject,
-    ],
-    enabled: stateQuery.isSuccess,
-    queryFn: async () => {
-      console.debug("fetching project", stateQuery.data);
-      const { currentProject } = stateQuery.data!;
-
-      return getProject(currentProject!);
-    },
-  });
-
-  // TODO:
-  // useEffect(() => {
-  //   setAnim("fade-in");
-  //   setTimeout(() => setAnim(""), 1000);
-  // }, [currentLesson]);
+  const canGoBack = currentLesson > 0;
+  const canGoForward = currentLesson < numberOfLessons - 1;
 
   useEffect(() => {
-    const s = stateQuery.data;
-    const p = projectQuery.data;
-    if (!s || !p) {
-      return;
-    }
-    setState(s);
-    setProject(p);
-    const cl = s.projects[p.id].currentLesson;
-    setCurrentLesson(cl);
-    const cgb = cl > 0;
-    const cgf = cl < p.numberOfLessons - 1;
-
-    setCanGoBack(cgb);
-    setCanGoForward(cgf);
-  }, [stateQuery.data, projectQuery.data]);
-
-  if (stateQuery.isPending || projectQuery.isPending) {
-    return <Loader />;
-  }
-
-  if (stateQuery.isError || projectQuery.isError) {
-    return (
-      <div>
-        Error: {stateQuery.error?.message || projectQuery.error?.message}
-      </div>
-    );
-  }
+    setAnim("fade-in");
+    setTimeout(() => setAnim(""), 1000);
+  }, [currentLesson]);
 
   function goToPreviousLesson() {
-    if (!project || !state) {
+    if (!canGoBack) {
       return;
     }
     navigate({
       to: LessonRoute.to,
       params: {
-        projectId: project.id,
+        projectId,
         lessonId: currentLesson - 1,
       },
     });
   }
 
   function goToNextLesson() {
-    if (!project || !state) {
+    if (!canGoForward) {
       return;
     }
     navigate({
       to: LessonRoute.to,
       params: {
-        projectId: project.id,
+        projectId,
         lessonId: currentLesson + 1,
       },
     });
   }
 
-  const h1 = project?.title + " - Lesson " + currentLesson;
+  const h1 = title + " - Lesson " + currentLesson;
   return (
     <nav className="heading">
       <button
@@ -113,7 +65,7 @@ export const Heading = () => {
       </button>
       <h1
         id="project-heading"
-        // className={anim}
+        className={anim}
         dangerouslySetInnerHTML={{
           __html: h1,
         }}

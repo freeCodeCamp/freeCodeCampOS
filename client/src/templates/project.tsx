@@ -17,25 +17,24 @@ export const Project = () => {
   });
 
   const postStateQuery = useQuery({
-    queryKey: ["postState"],
-    enabled: getStateQuery.isSuccess,
+    queryKey: ["postState", { projectId, lessonId }],
+    enabled: !!getStateQuery.data,
     queryFn: async () => {
       const state = getStateQuery.data!;
       const projects = {
         ...state.projects,
         [projectId]: {
-          ...state.projects[Number(projectId)],
-          currentLesson: Number(lessonId),
+          ...state.projects[projectId],
+          currentLesson: lessonId,
         },
       };
-      return postState({ currentProject: Number(projectId), projects });
+      return postState({ currentProject: projectId, projects });
     },
   });
 
   const projectQuery = useQuery({
     queryKey: ["project", projectId],
-    enabled: postStateQuery.isSuccess && getStateQuery.isSuccess,
-    queryFn: async () => getProject(Number(projectId)),
+    queryFn: async () => getProject(projectId),
   });
 
   if (getStateQuery.isPending) {
@@ -63,11 +62,18 @@ export const Project = () => {
   }
 
   const project = projectQuery.data;
-  const lesson = project.lessons[Number(lessonId)];
+  const lesson = project.lessons[lessonId];
   return (
     <>
       <div className="container">
-        <Heading />
+        <Heading
+          {...{
+            projectId,
+            currentLesson: lessonId,
+            title: project.title,
+            numberOfLessons: project.numberOfLessons,
+          }}
+        />
 
         <Description description={lesson.description} />
 
@@ -83,4 +89,12 @@ export const LessonRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/project/$projectId/$lessonId",
   component: Project,
+  params: {
+    parse: ({ projectId, lessonId }) => {
+      return {
+        projectId: Number(projectId),
+        lessonId: Number(lessonId),
+      };
+    },
+  },
 });
