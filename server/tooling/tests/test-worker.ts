@@ -7,7 +7,7 @@ const {
   expect,
   config: chaiConfig,
 } = await import("chai");
-const { logover } = await import("../logger");
+const { logger } = await import("../logger");
 
 import __helpers_c from "../test-utils";
 

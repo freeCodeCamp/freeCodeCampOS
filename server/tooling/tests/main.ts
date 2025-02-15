@@ -1,6 +1,6 @@
 import { assert, AssertionError, expect, config as chaiConfig } from "chai";
 import { watcher } from "../hot-reload";
-import { logover } from "../logger";
+import { logger } from "../logger";
 
 import {
   getProjectConfig,
@@ -29,12 +29,12 @@ try {
   const plugins = freeCodeCampConfig.tooling?.plugins;
   if (plugins) {
     const pluginPath = join(ROOT, plugins);
-    logover.debug("Importing plugins from:", pluginPath);
+    logger.debug("Importing plugins from:", pluginPath);
     await import(pluginPath);
   }
 } catch (e) {
-  logover.error("Error importing plugins:");
-  logover.error(e);
+  logger.error("Error importing plugins:");
+  logger.error(e);
 }
 
 export const WORKER_POOL: Worker[] = [];
@@ -56,12 +56,12 @@ export async function runTests(ws: WebSocket, projectId: number) {
 
     if (beforeAll) {
       try {
-        logover.debug("Starting: --before-all-- hook");
+        logger.debug("Starting: --before-all-- hook");
         await eval(`(async () => {${beforeAll}})()`);
-        logover.debug("Finished: --before-all-- hook");
+        logger.debug("Finished: --before-all-- hook");
       } catch (e) {
-        logover.error("--before-all-- hook failed to run:");
-        logover.error(e);
+        logger.error("--before-all-- hook failed to run:");
+        logger.error(e);
       }
     }
     // toggleLoaderAnimation(ws);
@@ -89,7 +89,7 @@ export async function runTests(ws: WebSocket, projectId: number) {
       // When result is received back from worker, update the client state
       worker.on("message", workerMessage);
       // worker.stdout.on("data", (data) => {
-      //   logover.debug(`Blocking Worker:`, data.toString());
+      //   logger.debug(`Blocking Worker:`, data.toString());
       // });
       worker.on("exit", async (exitCode) => {
         removeWorkerFromPool(worker);
@@ -125,7 +125,7 @@ export async function runTests(ws: WebSocket, projectId: number) {
         // When result is received back from worker, update the client state
         worker.on("message", workerMessage);
         // worker.stdout.on("data", (data) => {
-        //   logover.debug(`Worker-${i}:`, data.toString());
+        //   logger.debug(`Worker-${i}:`, data.toString());
         // });
         worker.on("exit", async (exitCode) => {
           removeWorkerFromPool(worker);
@@ -152,7 +152,7 @@ export async function runTests(ws: WebSocket, projectId: number) {
       testsState[testId].passed = passed;
       if (error) {
         if (error.type !== "AssertionError") {
-          logover.error(`Test #${testId}:`, error);
+          logger.error(`Test #${testId}:`, error);
         }
 
         if (error.message) {
@@ -177,8 +177,8 @@ export async function runTests(ws: WebSocket, projectId: number) {
       });
     }
   } catch (e) {
-    logover.error("Test Error: ");
-    logover.error(e);
+    logger.error("Test Error: ");
+    logger.error(e);
   }
 }
 
@@ -220,12 +220,12 @@ async function checkTestsCallback({
     // Run afterAll hook
     if (afterAll) {
       try {
-        logover.debug("Starting: --after-all-- hook");
+        logger.debug("Starting: --after-all-- hook");
         await eval(`(async () => {${afterAll}})()`);
-        logover.debug("Finished: --after-all-- hook");
+        logger.debug("Finished: --after-all-- hook");
       } catch (e) {
-        logover.error("--after-all-- hook failed to run:");
-        logover.error(e);
+        logger.error("--after-all-- hook failed to run:");
+        logger.error(e);
       }
     }
 
@@ -287,8 +287,8 @@ async function handleWorkerExit({
   try {
     const _afterEachOut = await eval(`(async () => { ${afterEach} })();`);
   } catch (e) {
-    logover.error("--after-each-- hook failed to run:");
-    logover.error(e);
+    logger.error("--after-each-- hook failed to run:");
+    logger.error(e);
   }
   // Run afterAll even if tests are cancelled
   await checkTestsCallback({

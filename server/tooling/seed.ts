@@ -10,7 +10,7 @@ import {
 import { writeFile } from "fs/promises";
 import { promisify } from "util";
 import { exec } from "child_process";
-import { logover } from "./logger";
+import { logger } from "./logger";
 import { updateError } from "./client-socks";
 import { watcher } from "./hot-reload";
 import { pluginEvents } from "../plugin/index";
@@ -40,7 +40,7 @@ export async function seedLesson(ws: WebSocket, projectId: number) {
     });
   } catch (e) {
     updateError(ws, e);
-    logover.error(e);
+    logger.error(e);
   }
   // updateLoader(ws, { isLoading: false, progress: { total: 1, count: 1 } });
 }
@@ -54,10 +54,10 @@ export async function runCommands(commands) {
   for (const command of commands) {
     const { stdout, stderr } = await execute(command);
     if (stdout) {
-      logover.debug(stdout);
+      logger.debug(stdout);
     }
     if (stderr) {
-      logover.error(stderr);
+      logger.error(stderr);
       return Promise.reject(stderr);
     }
   }
@@ -95,7 +95,7 @@ export async function runLessonSeed(seed, currentLesson) {
       if (typeof cmdOrFile === "string") {
         const { stdout, stderr } = await runCommand(cmdOrFile);
         if (stdout || stderr) {
-          logover.debug(stdout, stderr);
+          logger.debug(stdout, stderr);
         }
       } else {
         const { filePath, fileSeed } = cmdOrFile;
@@ -106,7 +106,7 @@ export async function runLessonSeed(seed, currentLesson) {
       }
     }
   } catch (e) {
-    logover.error("Failed to run seed for lesson: ", currentLesson);
+    logger.error("Failed to run seed for lesson: ", currentLesson);
     throw new Error(e);
   }
 }

@@ -1,5 +1,8 @@
-import { Logger } from 'logover';
+import pino from "pino";
 
-export const logover = new Logger({
-  level: process.env.LOG_LEVEL || 'info'
+export const logger = pino({
+  level: process.env.LOG_LEVEL || "info",
+  transport: {
+    target: "pino-pretty",
+  },
 });

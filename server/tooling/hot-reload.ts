@@ -4,7 +4,7 @@ import { getState, getProjectConfig, ROOT, freeCodeCampConfig } from "./env";
 import { runLesson } from "./lesson";
 import { runTests } from "./tests/main";
 import { watch } from "chokidar";
-import { logover } from "./logger";
+import { logger } from "./logger";
 import path from "path";
 import { readdir } from "fs/promises";
 
@@ -26,7 +26,7 @@ export const watcher = watch(ROOT, {
 });
 
 export function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
-  logover.info(`Watching for file changes on ${ROOT}`);
+  logger.info(`Watching for file changes on ${ROOT}`);
   let isWait: Timer | null = null;
   let testsRunning = false;
   let isClearConsole = false;
@@ -57,7 +57,7 @@ export function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
 
       await runLesson(ws, currentProject);
       if (runTestsOnWatch && !testsRunning) {
-        logover.debug(`Watcher: ${event} - ${name}`);
+        logger.debug(`Watcher: ${event} - ${name}`);
         testsRunning = true;
         await runTests(ws, currentProject);
         testsRunning = false;
@@ -140,8 +140,8 @@ async function watchPath(rootPath) {
       }
     }
   } catch (e) {
-    logover.error(`Error reading ${rootPath}`);
-    logover.error(e);
+    logger.error(`Error reading ${rootPath}`);
+    logger.error(e);
     return;
   }
 }

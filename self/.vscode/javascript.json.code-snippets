@@ -71,10 +71,10 @@
     "prefix": "__helpers.importSansCache()",
     "body": "__helpers.importSansCache($1)"
   },
-  "logover": {
+  "logger": {
     "scope": "javascript",
-    "prefix": "__helpers.logover()",
-    "body": "__helpers.logover($1)"
+    "prefix": "__helpers.logger()",
+    "body": "__helpers.logger($1)"
   },
   "makeDirectory": {
     "scope": "javascript",

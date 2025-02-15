@@ -1,6 +1,6 @@
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
-import { logover } from "./logger";
+import { logger } from "./logger";
 import { pluginEvents } from "../plugin/index";
 import {
   FreeCodeCampConfig,
@@ -55,7 +55,7 @@ export async function getState(): Promise<State> {
     );
     return { ...defaultState, ...state };
   } catch (err) {
-    logover.error(err);
+    logger.error(err);
   }
   return defaultState;
 }

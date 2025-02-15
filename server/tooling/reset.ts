@@ -1,7 +1,7 @@
 // Handles all the resetting of the projects
 import { resetBottomPanel, updateError } from "./client-socks";
 import { getProjectConfig, getState } from "./env";
-import { logover } from "./logger";
+import { logger } from "./logger";
 import { runCommand, runLessonSeed } from "./seed";
 import { pluginEvents } from "../plugin/index";
 
@@ -38,7 +38,7 @@ export async function resetProject(ws: WebSocket) {
     }
   } catch (err) {
     updateError(ws, err);
-    logover.error(err);
+    logger.error(err);
   }
   // updateLoader(ws, {
   //   isLoading: false,
@@ -50,11 +50,11 @@ async function gitResetCurrentProjectDir() {
   const { currentProject } = await getState();
   const project = await pluginEvents.getProject(currentProject!);
   try {
-    logover.debug(`Cleaning '${project.dashedName}'`);
+    logger.debug(`Cleaning '${project.dashedName}'`);
     const { stdout, stderr } = await runCommand(
       `git clean -f -q -- ${project.dashedName}`
     );
   } catch (e) {
-    logover.error(e);
+    logger.error(e);
   }
 }

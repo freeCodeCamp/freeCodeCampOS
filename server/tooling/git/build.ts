@@ -1,23 +1,23 @@
 // This file handles creating the Git curriculum branches
-import { join } from 'path';
-import { getState, setState } from '../env.js';
+import { join } from "path";
+import { getState, setState } from "../env.js";
 import {
   getCommands,
   getFilesWithSeed,
   getLessonFromFile,
-  getLessonSeed
-} from '../parser.js';
-import { runCommands, runSeed } from '../seed.js';
+  getLessonSeed,
+} from "../parser.js";
+import { runCommands, runSeed } from "../seed.js";
 import {
   checkoutMain,
   commit,
   deleteBranch,
   initCurrentProjectBranch,
-  pushProject
-} from './gitterizer.js';
-import { logover } from '../logger.js';
+  pushProject,
+} from "./gitterizer.js";
+import { logger } from "../logger.js";
 
-const PROJECT_LIST = ['project-1'];
+const PROJECT_LIST = ["project-1"];
 
 for (const project of PROJECT_LIST) {
   await setState({ currentProject: project });
@@ -25,28 +25,28 @@ for (const project of PROJECT_LIST) {
     await deleteBranch(project);
     await buildProject();
   } catch (e) {
-    logover.error('Failed to build project: ', project);
+    logger.error("Failed to build project: ", project);
     await deleteBranch(project);
     throw new Error(e);
   } finally {
     await checkoutMain();
-    logover.info('✅ Successfully built project: ', project);
+    logger.info("✅ Successfully built project: ", project);
   }
 }
-logover.info('✅ Successfully built all projects');
+logger.info("✅ Successfully built all projects");
 
 async function buildProject() {
   const { currentProject } = await getState();
   const FILE = join(
     ROOT,
-    freeCodeCampConfig.curriculum.locales['english'],
-    project.dashedName + '.md'
+    freeCodeCampConfig.curriculum.locales["english"],
+    project.dashedName + ".md"
   );
 
   try {
     await initCurrentProjectBranch();
   } catch (e) {
-    logover.error('🔴 Failed to create a branch for ', currentProject);
+    logger.error("🔴 Failed to create a branch for ", currentProject);
     throw new Error(e);
   }
 
@@ -68,7 +68,7 @@ async function buildProject() {
         // TODO: Not correct signature
         await runSeed(filesWithSeed);
       } catch (e) {
-        logover.error('🔴 Failed to run seed for lesson: ', lessonNumber);
+        logger.error("🔴 Failed to run seed for lesson: ", lessonNumber);
         throw new Error(e);
       }
     }

@@ -6,7 +6,7 @@ import {
   resetBottomPanel,
 } from "./client-socks";
 import { ROOT, getState, getProjectConfig, setState } from "./env";
-import { logover } from "./logger";
+import { logger } from "./logger";
 import { seedLesson } from "./seed";
 import { pluginEvents } from "../plugin/index";
 import {
@@ -74,7 +74,7 @@ export async function runLesson(ws: WebSocket, projectId: number) {
     }
   } catch (err) {
     updateError(ws, err);
-    logover.error(err);
+    logger.error(err);
   }
 }
 

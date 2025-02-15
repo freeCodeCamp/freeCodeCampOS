@@ -2,7 +2,7 @@ import { readFile } from "fs/promises";
 import { freeCodeCampConfig, getState, ROOT } from "../tooling/env";
 import { CoffeeDown } from "../tooling/parser";
 import { join } from "path";
-import { logover } from "../tooling/logger";
+import { logger } from "../tooling/logger";
 import { Lesson, Project, ProjectConfig, Test, TestState } from "../../types";
 import { getProjectFileById } from "../tooling/utils";
 
@@ -57,7 +57,7 @@ export const pluginEvents = {
         seed = coffeeDown.getLesson(lessonNumber).seed;
       } catch (e) {
         if (e?.code !== "ENOENT") {
-          logover.debug(e);
+          logger.debug(e);
           throw new Error(
             `Error reading external seed for lesson ${lessonNumber}`
           );

@@ -1,7 +1,7 @@
 import { join } from "path";
 import { readdir, access, constants, readFile } from "fs/promises";
 import { freeCodeCampConfig, getProjectConfig, ROOT } from "./env";
-import { logover } from "./logger";
+import { logger } from "./logger";
 import { pluginEvents } from "../plugin/index";
 
 const CURRICULUM_PATH = join(ROOT, freeCodeCampConfig.curriculum.locales.en);
@@ -237,8 +237,8 @@ export async function validateCurriculum() {
       const dashedName = file.name.replace(/.md$/, "");
       projectConfig = await pluginEvents.getProjectConfig(dashedName);
     } catch (e) {
-      logover.debug(`File ${file.name} skipped as invalid due to:`);
-      logover.debug(e);
+      logger.debug(`File ${file.name} skipped as invalid due to:`);
+      logger.debug(e);
       continue;
     }
     const {
@@ -503,7 +503,7 @@ export async function validateCurriculum() {
     }
   }
 
-  logover.info("All curriculum files are valid");
+  logger.info("All curriculum files are valid");
 }
 
 function undeBoolNull(val) {
@@ -515,14 +515,14 @@ function isSemver(val) {
 }
 
 function panic(message, value, expectation) {
-  logover.error(message);
+  logger.error(message);
   console.log("Expected:", expectation);
   console.log("Received:", value);
   throw new Error(message);
 }
 
 function warn(message, value, expectation) {
-  logover.warn(message);
+  logger.warn(message);
   console.log("Expected:", expectation);
   console.log("Received:", value);
 }

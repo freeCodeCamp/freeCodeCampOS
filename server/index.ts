@@ -16,7 +16,7 @@ import { updateState } from "./tooling/client-socks";
 import { hotReload } from "./tooling/hot-reload";
 import { hideAll, showFile, showAll } from "./tooling/utils";
 import { join } from "path";
-import { logover } from "./tooling/logger";
+import { logger } from "./tooling/logger";
 import { resetProject } from "./tooling/reset";
 import { validateCurriculum } from "./tooling/validate";
 import { pluginEvents } from "./plugin/index";
@@ -134,11 +134,11 @@ app.get(
       GLOBAL_SOCKET.ws = null;
     },
     onError(event, ws) {
-      logover.error(event);
+      logger.error(event);
       GLOBAL_SOCKET.ws = null;
     },
     onMessage(event, ws) {
-      logover.debug(event.data);
+      logger.debug(event.data);
       const parsedData = parseBuffer(event.data);
 
       handle[parsedData.event]?.(ws, parsedData);
@@ -186,22 +186,23 @@ app.post("/api/tests/run", async (c) => {
 app.post("/api/tests/cancel", async (c) => {});
 
 app.notFound((c) => {
-  console.log(c.req.url);
-  console.log(c.req.path);
+  console.debug("Not found:");
+  console.debug(c.req.url);
+  console.debug(c.req.path);
   return c.redirect("/");
 });
 
 const server = Bun.serve({
   port: PORT,
   error: (error) => {
-    logover.error(error);
+    logger.error(error);
     return new Response("Error: " + error.message, { status: 500 });
   },
   fetch: app.fetch,
   websocket,
 });
 
-logover.info(`Server listening at ${server.url}`);
+logger.info(`Server listening at ${server.url}`);
 
 //   (async () => {
 //     const projects = await getProjects();

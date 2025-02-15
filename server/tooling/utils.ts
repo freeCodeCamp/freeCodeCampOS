@@ -6,7 +6,7 @@ import { exec } from "child_process";
 import { readdirSync } from "fs";
 import { freeCodeCampConfig, getState, ROOT } from "./env";
 import { CoffeeDown } from "./parser";
-import { logover } from "./logger";
+import { logger } from "./logger";
 const execute = promisify(exec);
 
 const __filename = fileURLToPath(import.meta.url);
@@ -147,8 +147,8 @@ export async function getProjectFileById(id: number) {
           return content;
         }
       } catch (e) {
-        logover.debug(`Unable to parse ${file.name}`);
-        logover.debug(e);
+        logger.debug(`Unable to parse ${file.name}`);
+        logger.debug(e);
         continue;
       }
     }

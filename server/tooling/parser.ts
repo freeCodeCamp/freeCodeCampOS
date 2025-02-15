@@ -392,7 +392,7 @@ marked.use(
 );
 
 export function parseMarkdown(markdown: string) {
-  return marked.parse(markdown, { gfm: true });
+  return marked.parse(markdown, { gfm: true, async: false });
 }
 
 const TOKENS = [

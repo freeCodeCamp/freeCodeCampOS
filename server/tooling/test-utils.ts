@@ -3,7 +3,7 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { join } from "path";
 import { ROOT } from "./env";
-import { logover } from "./logger";
+import { logger } from "./logger";
 
 // ---------------
 // GENERIC HELPERS
@@ -33,7 +33,7 @@ async function controlWrapper(cb, { timeout = 10000, stepSize = 250 }) {
         const response = await cb();
         resolve(response);
       } catch (e) {
-        logover.debug(e);
+        logger.debug(e);
       }
     }, stepSize);
     setTimeout(() => {
