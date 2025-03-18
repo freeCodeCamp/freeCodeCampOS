@@ -210,6 +210,9 @@ export class CoffeeDown {
     return seedToIterator(this.tokens);
   }
 
+  /**
+   * @returns {Array<{ text: string; runner: string; code: string; }>}
+   */
   get tests() {
     if (this.caller !== 'getTests') {
       throw new Error(
@@ -217,17 +220,35 @@ export class CoffeeDown {
       );
     }
     const textTokens = [];
-    const testTokens = [];
+    const tests = [];
     for (const token of this.tokens) {
       if (token.type === 'paragraph') {
         textTokens.push(token);
       }
       if (token.type === 'code') {
-        testTokens.push(token);
+        let runner = 'node';
+        switch (token.lang) {
+          case 'js':
+          case 'javascript':
+            runner = 'Node';
+            break;
+          case 'py':
+          case 'python':
+            runner = 'Python';
+            break;
+          default:
+            break;
+        }
+
+        const code = token.text;
+        const test = {
+          runner,
+          code
+        };
+        tests.push(test);
       }
     }
     const texts = textTokens.map(t => t.text);
-    const tests = testTokens.map(t => t.text);
     return texts.map((text, i) => [text, tests[i]]);
   }
 
