@@ -134,6 +134,7 @@ export async function getProjectFileById(id: number) {
 
   const files = await readdir(curriculumDir, { withFileTypes: true });
 
+  // TODO: Skip seed files
   for (const file of files) {
     const f = Bun.file(join(curriculumDir, file.name));
     const fStat = await f.stat();

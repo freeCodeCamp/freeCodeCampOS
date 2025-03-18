@@ -16,11 +16,12 @@ import {
   watcher,
 } from "./hot-reload";
 import { LessonMeta, State, TestState } from "../../types";
+import { WSContext } from "hono/ws";
 
 /**
  * Runs the lesson from the `projectDashedName` config.
  */
-export async function runLesson(ws: WebSocket, projectId: number) {
+export async function runLesson(ws: WSContext, projectId: number) {
   const project = await pluginEvents.getProject(projectId);
   const { isIntegrated, seedEveryLesson } = project;
   const { lastSeed, lastWatchChange, projects } = await getState();

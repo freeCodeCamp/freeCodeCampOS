@@ -18,11 +18,13 @@ export const Output = ({ hints }: OutputProps) => {
 
   useEffect(() => {
     if (socket) {
+      console.log("Output socket setup...");
       socket.addEventListener("message", handleSocket);
     }
 
     return () => {
       if (socket) {
+        console.log("Output socket teardown...");
         socket.removeEventListener("message", handleSocket);
       }
     };
@@ -30,6 +32,7 @@ export const Output = ({ hints }: OutputProps) => {
 
   function handleSocket(event: MessageEvent) {
     const data = JSON.parse(event.data);
+    console.debug(data);
     switch (data.event) {
       case WSSEvents.UPDATE_CONSOLE:
         const consoleError = data.data.consoleError as ConsoleError;

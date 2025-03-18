@@ -1,27 +1,29 @@
+import { WSContext } from "hono/ws";
 import { ConsoleError, TestState, WSSEvents } from "../../types";
 import { parseMarkdown } from "./parser";
+import { logger } from "./logger";
 
-// export function updateLoader(ws: WebSocket, loader) {
+// export function updateLoader(ws: WSContext, loader) {
 //   ws.send(parse({ event: WSSEven, data: { loader } }));
 // }
 
 /**
  * Update all tests in the tests state
  */
-export function updateTestsState(ws: WebSocket, testsState: TestState[]) {
+export function updateTestsState(ws: WSContext, testsState: TestState[]) {
   ws.send(parse({ event: WSSEvents.UPDATE_TESTS_STATE, data: { testsState } }));
 }
 /**
  * Update single test in the tests state
  */
-export function updateTestState(ws: WebSocket, testState: TestState) {
+export function updateTestState(ws: WSContext, testState: TestState) {
   ws.send(parse({ event: WSSEvents.UPDATE_TEST_STATE, data: { testState } }));
 }
 
 /**
  * Update the state
  */
-export function updateState(ws: WebSocket, state) {
+export function updateState(ws: WSContext, state) {
   ws.send(
     parse({
       event: WSSEvents.UPDATE_STATE,
@@ -32,7 +34,7 @@ export function updateState(ws: WebSocket, state) {
 /**
  *
  */
-export function updateConsole(ws: WebSocket, consoleError: ConsoleError) {
+export function updateConsole(ws: WSContext, consoleError: ConsoleError) {
   if (Object.keys(consoleError).length) {
     if (consoleError.error) {
       const error = `\`\`\`json\n${JSON.stringify(
@@ -49,14 +51,14 @@ export function updateConsole(ws: WebSocket, consoleError: ConsoleError) {
 /**
  * Update error
  */
-export function updateError(ws: WebSocket, error) {
+export function updateError(ws: WSContext, error) {
   ws.send(parse({ event: "update-error", data: { error } }));
 }
 
 /**
  * Handles the case when a project is finished
  */
-export function handleProjectFinish(ws: WebSocket) {
+export function handleProjectFinish(ws: WSContext) {
   ws.send(parse({ event: "handle-project-finish" }));
 }
 
@@ -67,7 +69,8 @@ export function parse(obj) {
 /**
  * Resets the bottom panel (Tests, Console, Hints) of the client to empty state
  */
-export function resetBottomPanel(ws: WebSocket) {
+export function resetBottomPanel(ws: WSContext) {
+  logger.debug("Resetting output state...");
   updateTestsState(ws, []);
   updateConsole(ws, {} as ConsoleError);
 }

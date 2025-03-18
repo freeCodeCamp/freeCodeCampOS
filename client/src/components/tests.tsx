@@ -8,16 +8,8 @@ interface TestsProps {
 export const Tests = ({ testsState }: TestsProps) => {
   return (
     <ul style={{ listStyle: "none" }}>
-      {testsState.map(({ testText, passed, isLoading, testId }, i) => (
-        <Test
-          key={i}
-          {...{
-            testText,
-            passed,
-            isLoading,
-            testId,
-          }}
-        />
+      {testsState.map((testState, i) => (
+        <Test key={i} {...testState} />
       ))}
     </ul>
   );

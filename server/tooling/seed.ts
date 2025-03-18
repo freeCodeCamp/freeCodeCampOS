@@ -14,12 +14,13 @@ import { logger } from "./logger";
 import { updateError } from "./client-socks";
 import { watcher } from "./hot-reload";
 import { pluginEvents } from "../plugin/index";
+import { WSContext } from "hono/ws";
 const execute = promisify(exec);
 
 /**
  * Seeds the current lesson
  */
-export async function seedLesson(ws: WebSocket, projectId: number) {
+export async function seedLesson(ws: WSContext, projectId: number) {
   // updateLoader(ws, {
   //   isLoading: true,
   //   progress: { total: 2, count: 1 },

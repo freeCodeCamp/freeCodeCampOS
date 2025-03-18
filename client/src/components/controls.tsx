@@ -4,12 +4,7 @@ import { WebSocketContext } from "../context/websocket";
 import { cancelTests, runTests } from "../utils/fetch";
 
 interface ControlsProps {
-  // cancelTests: F<void, void>;
-  // runTests: F<void, void>;
-  // resetProject?: F<void, void>;
-  // isResetEnabled?: ProjectI['isResetEnabled'];
   project: Project;
-  // testsState: TestState[];
   // loader?: LoaderT;
 }
 
@@ -33,13 +28,8 @@ function progressStyle(loader: any) {
 }
 
 export const Controls = ({
-  // cancelTests,
-  // runTests,
-  // resetProject,
-  // isResetEnabled,
   project,
-}: // testsState,
-// loader
+}: // loader
 ControlsProps) => {
   const [isTestsRunning, setIsTestsRunning] = useState(false);
   const [testsState, setTestsState] = useState<TestState[]>([]);

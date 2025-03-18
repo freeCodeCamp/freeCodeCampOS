@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { createBunWebSocket, serveStatic } from "hono/bun";
 import { readdir, readFile } from "fs/promises";
-import { getWorkerPool, runTests } from "./tooling/tests/main";
+import { getWorkerPool, runTests, WORKER_POOL } from "./tooling/tests/main";
 import {
   getProjectConfig,
   getState,
@@ -12,7 +12,7 @@ import {
 } from "./tooling/env";
 
 import { runLesson } from "./tooling/lesson";
-import { updateState } from "./tooling/client-socks";
+import { updateState, updateTestsState } from "./tooling/client-socks";
 import { hotReload } from "./tooling/hot-reload";
 import { hideAll, showFile, showAll } from "./tooling/utils";
 import { join } from "path";
@@ -22,7 +22,7 @@ import { validateCurriculum } from "./tooling/validate";
 import { pluginEvents } from "./plugin/index";
 import { cors } from "hono/cors";
 import { WSSEvents, Project, Sock } from "../types";
-import { WSMessageReceive } from "hono/ws";
+import { WSContext, WSMessageReceive } from "hono/ws";
 import { GLOBAL_SOCKET } from "./websocket";
 
 const freeCodeCampConfig = await getConfig();
@@ -31,8 +31,9 @@ if (process.env.NODE_ENV === "development") {
   await validateCurriculum();
 }
 
-async function handleRunTests(ws) {
+async function handleRunTests(ws: WSContext) {
   const { currentProject } = await getState();
+  logger.debug("Running tests");
   if (currentProject === null) {
     throw new Error("No project selected to run tests");
   }
@@ -57,7 +58,7 @@ async function getProjects() {
   return projects;
 }
 
-async function handleConnect(ws: WebSocket) {
+async function handleConnect(ws: WSContext) {
   const state = await getState();
 
   updateState(ws, state);
@@ -179,11 +180,20 @@ app.post("/api/tests/run", async (c) => {
     return c.json({ error: "WebSocket connection not found" }, 404);
   }
 
-  handleRunTests(ws); // Pass the WebSocket and Connection ID to your handler
+  handleRunTests(ws);
   return c.json({ message: "Tests started" });
 });
 
-app.post("/api/tests/cancel", async (c) => {});
+app.post("/api/tests/cancel", async (c) => {
+  const ws = GLOBAL_SOCKET.ws;
+
+  if (!ws) {
+    return c.json({ error: "WebSocket connection not found" }, 404);
+  }
+
+  handleCancelTests();
+  return c.json({ message: "Tests cancelled" });
+});
 
 app.notFound((c) => {
   console.debug("Not found:");

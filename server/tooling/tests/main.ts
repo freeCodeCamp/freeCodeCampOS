@@ -24,6 +24,7 @@ import { Worker } from "node:worker_threads";
 import { pluginEvents } from "../../plugin/index";
 import { t } from "../t";
 import { ConsoleError, Project, TestState } from "../../../types";
+import { WSContext } from "hono/ws";
 
 try {
   const plugins = freeCodeCampConfig.tooling?.plugins;
@@ -42,7 +43,7 @@ export const WORKER_POOL: Worker[] = [];
 /**
  * Run the given project's tests
  */
-export async function runTests(ws: WebSocket, projectId: number) {
+export async function runTests(ws: WSContext, projectId: number) {
   // TODO: Consider awaiting in parallel, since both invoke `fs`
   const project = await pluginEvents.getProject(projectId);
   const { locale, projects } = await getState();
@@ -183,7 +184,7 @@ export async function runTests(ws: WebSocket, projectId: number) {
 }
 
 interface CheckTestsCallbackI {
-  ws: WebSocket;
+  ws: WSContext;
   project: Project;
   lessonNumber: number;
   testsState: TestState[];
@@ -235,7 +236,7 @@ async function checkTestsCallback({
 }
 
 interface HandleWorkerExitI {
-  ws: WebSocket;
+  ws: WSContext;
   exitCode: number;
   testsState: TestState[];
   i?: number;
