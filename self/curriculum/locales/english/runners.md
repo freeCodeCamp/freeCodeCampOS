@@ -38,7 +38,8 @@ If I pass, the before-all hook successfully run.
 ```python
 # Check if file exists and contains "hello world"
 with open('./test.txt', 'r') as f:
-    assert f.read() == 'hello world'
+    contents = f.read()
+    assert contents == 'hello world'
 ```
 
 If I pass, the before-each hook successfully run.
@@ -75,6 +76,21 @@ print(a)
 # remove ./test.txt
 import os
 os.remove('./test.txt')
+```
+
+## 2
+
+### --description--
+
+Well done.
+
+### --tests--
+
+When you are done, type `done` in the terminal.
+
+```js
+const lastCommand = await __helpers.getLastCommand();
+assert.include(lastCommand, 'done');
 ```
 
 ## --fcc-end--

@@ -74,14 +74,14 @@
     "dashedName": "runners",
     "isIntegrated": false,
     "isPublic": true,
-    "currentLesson": 1,
-    "runTestsOnWatch": true,
+    "currentLesson": 2,
+    "runTestsOnWatch": false,
     "seedEveryLesson": false,
     "isResetEnabled": false,
     "numberofLessons": null,
     "blockingTests": false,
     "breakOnFailure": false,
-    "numberOfLessons": 2,
-    "completedDate": 1742376300758
+    "numberOfLessons": 3,
+    "completedDate": 1742377225547
   }
 ]
