@@ -36,20 +36,24 @@ The following tests run Python code with hooks.
 If I pass, the before-all hook successfully run.
 
 ```python
-
+# Check if file exists and contains "hello world"
+with open('./test.txt', 'r') as f:
+    assert f.read() == 'hello world'
 ```
 
 If I pass, the before-each hook successfully run.
 
 ```python
-
+if a != 100:
+    raise Exception('a is not 100')
 ```
 
 ### --before-all--
 
 ```python
 # write "hello world" to ./test.txt
-with open('test.txt', 'w') as f:
+# if it does not exist, create it
+with open('./test.txt', 'w') as f:
     f.write('hello world')
 ```
 
@@ -62,7 +66,7 @@ a = 100
 ### --after-each--
 
 ```python
-
+print(a)
 ```
 
 ### --after-all--
@@ -70,7 +74,7 @@ a = 100
 ```python
 # remove ./test.txt
 import os
-os.remove('test.txt')
+os.remove('./test.txt')
 ```
 
 ## --fcc-end--

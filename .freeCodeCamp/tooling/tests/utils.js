@@ -25,11 +25,10 @@ export async function runPython(code) {
 
   return new Promise((resolve, reject) => {
     child.on('close', code => {
-      if (code === 0) {
-        resolve(stdout);
-      } else {
+      if (stderr) {
         reject(stderr);
       }
+      resolve(stdout);
     });
   });
 }

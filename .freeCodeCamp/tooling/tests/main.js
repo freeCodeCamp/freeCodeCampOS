@@ -17,6 +17,7 @@ import { join } from 'node:path';
 import { Worker } from 'node:worker_threads';
 import { pluginEvents } from '../../plugin/index.js';
 import { t } from '../t.js';
+import { runPython } from './utils.js';
 
 try {
   const plugins = freeCodeCampConfig.tooling?.plugins;
@@ -52,7 +53,7 @@ export async function runTests(ws, projectDashedName) {
     const { beforeAll, beforeEach, afterAll, afterEach, hints, tests } = lesson;
 
     const testers = [beforeAll, beforeEach, afterAll, afterEach, ...tests];
-    let firstRunner = testers.find(t => !!t?.runner);
+    let firstRunner = testers.filter(t => t !== null).at(0).runner;
 
     for (const tester of testers) {
       if (!tester) {
@@ -276,11 +277,11 @@ async function checkTestsCallback({
  * @param {number} param0.exitCode
  * @param {Array} param0.testsState
  * @param {number} param0.i
- * @param {string} param0.afterEach
+ * @param {{ runner: string; code: string;} | null} param0.afterEach
  * @param {object} param0.error
  * @param {object} param0.project
  * @param {Array} param0.hints
- * @param {string} param0.afterAll
+ * @param {{ runner: string; code: string;} | null} param0.afterAll
  * @param {number} param0.lessonNumber
  */
 async function handleWorkerExit({
@@ -322,18 +323,20 @@ async function handleWorkerExit({
   // Run afterEach even if tests are cancelled
   // TODO: Double-check this is not run twice
   try {
-    logover.debug('Starting: --after-each-- hook');
-    switch (afterEach.runner) {
-      case 'Node':
-        await eval(`(async () => {${afterEach.code}})()`);
-        break;
-      case 'Python':
-        await runPython(afterEach.code);
-        break;
-      default:
-        throw new Error(`Unsupported runner: ${afterEach.runner}`);
+    if (afterEach) {
+      logover.debug('Starting: --after-each-- hook');
+      switch (afterEach.runner) {
+        case 'Node':
+          await eval(`(async () => {${afterEach.code}})()`);
+          break;
+        case 'Python':
+          await runPython(afterEach.code);
+          break;
+        default:
+          throw new Error(`Unsupported runner: ${afterEach.runner}`);
+      }
+      logover.debug('Finished: --after-each-- hook');
     }
-    logover.debug('Finished: --after-each-- hook');
   } catch (e) {
     logover.error('--after-each-- hook failed to run:');
     logover.error(e);

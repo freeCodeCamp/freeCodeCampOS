@@ -8,7 +8,7 @@ parentPort.on('message', async ({ testCode, testId }) => {
   let error = null;
   try {
     const _out = await runPython(`
-${beforeEach}
+${beforeEach?.code ?? ''}
 
 ${testCode}
 `);

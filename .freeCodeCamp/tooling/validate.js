@@ -389,28 +389,29 @@ export async function validateCurriculum() {
         );
       } else {
         for (const test of tests) {
-          if (test.length !== 2) {
+          const { text, code, runner } = test;
+
+          if (typeof text !== 'string') {
+            panic(
+              `Invalid test text in lesson ${i} of ${dashedName}`,
+              text,
+              'Test text should be a string'
+            );
+          }
+          if (typeof code !== 'string') {
             panic(
               `Invalid test in lesson ${i} of ${dashedName}`,
-              test,
-              'Test should be an array of two strings'
+              code,
+              'Test should be a string'
             );
-          } else {
-            const [testText, testCode] = test;
-            if (typeof testText !== 'string') {
-              panic(
-                `Invalid test text in lesson ${i} of ${dashedName}`,
-                testText,
-                'Test text should be a string'
-              );
-            }
-            if (typeof testCode !== 'string') {
-              panic(
-                `Invalid test in lesson ${i} of ${dashedName}`,
-                testCode,
-                'Test should be a string'
-              );
-            }
+          }
+
+          if (runner && typeof runner !== 'string') {
+            panic(
+              `Invalid runner in lesson ${i} of ${dashedName}`,
+              runner,
+              'Runner should be a string'
+            );
           }
         }
       }
@@ -463,33 +464,73 @@ export async function validateCurriculum() {
           );
         }
       }
-      if (beforeAll && typeof beforeAll !== 'string') {
-        panic(
-          `Invalid beforeAll in lesson ${i} of ${dashedName}`,
-          beforeAll,
-          'beforeAll should be a string'
-        );
+      if (beforeAll) {
+        const { runner, code } = beforeAll;
+        if (typeof runner !== 'string') {
+          panic(
+            `Invalid beforeAll in lesson ${i} of ${dashedName}`,
+            runner,
+            'Runner should be a string'
+          );
+        }
+        if (typeof code !== 'string') {
+          panic(
+            `Invalid beforeAll in lesson ${i} of ${dashedName}`,
+            code,
+            'Code should be a string'
+          );
+        }
       }
-      if (afterAll && typeof afterAll !== 'string') {
-        panic(
-          `Invalid afterAll in lesson ${i} of ${dashedName}`,
-          afterAll,
-          'afterAll should be a string'
-        );
+      if (afterAll) {
+        const { runner, code } = afterAll;
+        if (typeof runner !== 'string') {
+          panic(
+            `Invalid afterAll in lesson ${i} of ${dashedName}`,
+            runner,
+            'Runner should be a string'
+          );
+        }
+        if (typeof code !== 'string') {
+          panic(
+            `Invalid afterAll in lesson ${i} of ${dashedName}`,
+            code,
+            'Code should be a string'
+          );
+        }
       }
-      if (beforeEach && typeof beforeEach !== 'string') {
-        panic(
-          `Invalid beforeEach in lesson ${i} of ${dashedName}`,
-          beforeEach,
-          'beforeEach should be a string'
-        );
+      if (beforeEach) {
+        const { runner, code } = beforeEach;
+        if (typeof runner !== 'string') {
+          panic(
+            `Invalid beforeEach in lesson ${i} of ${dashedName}`,
+            runner,
+            'Runner should be a string'
+          );
+        }
+        if (typeof code !== 'string') {
+          panic(
+            `Invalid beforeEach in lesson ${i} of ${dashedName}`,
+            code,
+            'Code should be a string'
+          );
+        }
       }
-      if (afterEach && typeof afterEach !== 'string') {
-        panic(
-          `Invalid afterEach in lesson ${i} of ${dashedName}`,
-          afterEach,
-          'afterEach should be a string'
-        );
+      if (afterEach) {
+        const { runner, code } = afterEach;
+        if (typeof runner !== 'string') {
+          panic(
+            `Invalid afterEach in lesson ${i} of ${dashedName}`,
+            runner,
+            'Runner should be a string'
+          );
+        }
+        if (typeof code !== 'string') {
+          panic(
+            `Invalid afterEach in lesson ${i} of ${dashedName}`,
+            code,
+            'Code should be a string'
+          );
+        }
       }
       if (meta?.watch && meta?.ignore) {
         panic(
