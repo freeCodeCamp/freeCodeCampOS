@@ -182,9 +182,7 @@ export async function runTests(ws, projectDashedName) {
       testsState[testId].isLoading = false;
       testsState[testId].passed = passed;
       if (error) {
-        if (error.type !== 'AssertionError') {
-          logover.error(`Test #${testId}:`, error);
-        }
+        logover.error(`Test #${testId}:`, error);
 
         if (error.message) {
           const assertionTranslation = await t(error.message, {});
