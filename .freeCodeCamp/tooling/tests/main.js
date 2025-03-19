@@ -51,10 +51,35 @@ export async function runTests(ws, projectDashedName) {
     );
     const { beforeAll, beforeEach, afterAll, afterEach, hints, tests } = lesson;
 
+    const testers = [beforeAll, beforeEach, afterAll, afterEach, ...tests];
+    let firstRunner = testers.find(t => !!t?.runner);
+
+    for (const tester of testers) {
+      if (!tester) {
+        continue;
+      }
+      const runner = tester.runner;
+
+      if (runner !== firstRunner) {
+        throw new Error(
+          `All tests and hooks must use the same runner. Found: ${runner}, expected: ${firstRunner}`
+        );
+      }
+    }
+
     if (beforeAll) {
       try {
         logover.debug('Starting: --before-all-- hook');
-        await eval(`(async () => {${beforeAll}})()`);
+        switch (beforeAll.runner) {
+          case 'Node':
+            await eval(`(async () => {${beforeAll.code}})()`);
+            break;
+          case 'Python':
+            await runPython(beforeAll.code);
+            break;
+          default:
+            throw new Error(`Unsupported runner: ${beforeAll.runner}`);
+        }
         logover.debug('Finished: --before-all-- hook');
       } catch (e) {
         logover.error('--before-all-- hook failed to run:');
@@ -63,10 +88,10 @@ export async function runTests(ws, projectDashedName) {
     }
     // toggleLoaderAnimation(ws);
 
-    testsState = tests.map((text, i) => {
+    testsState = tests.map((t, i) => {
       return {
         passed: false,
-        testText: text[0],
+        testText: t.text,
         testId: i,
         isLoading: !project.blockingTests
       };
@@ -80,7 +105,10 @@ export async function runTests(ws, projectDashedName) {
     // Create one worker for each test if non-blocking.
     // TODO: See if holding pool of workers is better.
     if (project.blockingTests) {
-      const worker = createWorker('blocking-worker', { beforeEach, project });
+      const worker = createWorker('blocking-worker', firstRunner, {
+        beforeEach,
+        project
+      });
       WORKER_POOL.push(worker);
 
       // When result is received back from worker, update the client state
@@ -104,20 +132,23 @@ export async function runTests(ws, projectDashedName) {
       });
 
       for (let i = 0; i < tests.length; i++) {
-        const [_text, testCode] = tests[i];
+        const { code } = tests[i];
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
 
-        worker.postMessage({ testCode, testId: i });
+        worker.postMessage({ testCode: code, testId: i });
       }
     } else {
       // Run tests in parallel, and in own worker threads
       for (let i = 0; i < tests.length; i++) {
-        const [_text, testCode] = tests[i];
+        const { code, runner } = tests[i];
         testsState[i].isLoading = true;
         updateTest(ws, testsState[i]);
 
-        const worker = createWorker(`worker-${i}`, { beforeEach, project });
+        const worker = createWorker(`worker-${i}`, runner, {
+          beforeEach,
+          project
+        });
         WORKER_POOL.push(worker);
 
         // When result is received back from worker, update the client state
@@ -141,7 +172,7 @@ export async function runTests(ws, projectDashedName) {
           });
         });
 
-        worker.postMessage({ testCode, testId: i });
+        worker.postMessage({ testCode: code, testId: i });
       }
     }
 
@@ -217,7 +248,16 @@ async function checkTestsCallback({
     if (afterAll) {
       try {
         logover.debug('Starting: --after-all-- hook');
-        await eval(`(async () => {${afterAll}})()`);
+        switch (afterAll.runner) {
+          case 'Node':
+            await eval(`(async () => {${afterAll.code}})()`);
+            break;
+          case 'Python':
+            await runPython(afterAll.code);
+            break;
+          default:
+            throw new Error(`Unsupported runner: ${afterAll.runner}`);
+        }
         logover.debug('Finished: --after-all-- hook');
       } catch (e) {
         logover.error('--after-all-- hook failed to run:');
@@ -280,8 +320,20 @@ async function handleWorkerExit({
     updateTests(ws, testsState);
   }
   // Run afterEach even if tests are cancelled
+  // TODO: Double-check this is not run twice
   try {
-    const _afterEachOut = await eval(`(async () => { ${afterEach} })();`);
+    logover.debug('Starting: --after-each-- hook');
+    switch (afterEach.runner) {
+      case 'Node':
+        await eval(`(async () => {${afterEach.code}})()`);
+        break;
+      case 'Python':
+        await runPython(afterEach.code);
+        break;
+      default:
+        throw new Error(`Unsupported runner: ${afterEach.runner}`);
+    }
+    logover.debug('Finished: --after-each-- hook');
   } catch (e) {
     logover.error('--after-each-- hook failed to run:');
     logover.error(e);
@@ -297,13 +349,20 @@ async function handleWorkerExit({
   });
 }
 
-function createWorker(name, workerData) {
+/**
+ *
+ * @param {string} name unique name for the worker
+ * @param {string} runner runner to use
+ * @param {*} workerData
+ * @returns {Worker}
+ */
+function createWorker(name, runner, workerData) {
   return new Worker(
     join(
       ROOT,
       'node_modules/@freecodecamp/freecodecamp-os',
       '.freeCodeCamp/tooling/tests',
-      'test-worker.js'
+      `${runner}.js`
     ),
     {
       name,
