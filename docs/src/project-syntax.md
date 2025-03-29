@@ -84,7 +84,7 @@ This is the description content.
 
 <TEST_TEXT>
 
-```js
+```<runner>
 <TEST_CODE>
 ```
 ````
@@ -101,6 +101,8 @@ assert.equal(true, true);
 ```
 ````
 `````
+
+Available runners: `javascript`, `js`, `python`, `py`
 
 ### `### --seed--`
 
@@ -332,15 +334,21 @@ assert.equal(true, true);
 
 ### --description--
 
-Description.
+This test uses a Python runner
 
 ### --tests--
 
-You should ...
+`a` should be 100.
 
-```js
-await new Promise(resolve => setTimeout(resolve, 2000));
-assert.equal(true, true);
+```python
+if a != 100:
+    raise Exception('a is not 100')
+```
+
+### --before-each--
+
+```python
+a = 100
 ```
 
 ## 5
