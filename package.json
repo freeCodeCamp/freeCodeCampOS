@@ -29,7 +29,7 @@
     "@babel/preset-react": "7.26.3",
     "@babel/preset-typescript": "7.27.0",
     "@types/marked": "5.0.2",
-    "@types/node": "20.17.29",
+    "@types/node": "20.17.30",
     "@types/prismjs": "1.26.5",
     "@types/react": "18.3.20",
     "@types/react-dom": "18.3.5",
