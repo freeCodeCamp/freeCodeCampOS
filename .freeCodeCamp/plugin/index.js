@@ -34,14 +34,14 @@ import { logover } from '../tooling/logger.js';
  * @typedef {Object} Lesson
  * @property {{watch?: string[]; ignore?: string[]} | undefined} meta
  * @property {string} description
- * @property {[[string, string]]} tests
+ * @property {Array<{ text: string; runner: string; code: string; }>} tests
  * @property {string[]} hints
  * @property {[{filePath: string; fileSeed: string} | string]} seed
  * @property {boolean?} isForce
- * @property {string?} beforeAll
- * @property {string?} afterAll
- * @property {string?} beforeEach
- * @property {string?} afterEach
+ * @property {{ runner: string; code: string; } | null} beforeAll
+ * @property {{ runner: string; code: string; } | null} afterAll
+ * @property {{ runner: string; code: string; } | null} beforeEach
+ * @property {{ runner: string; code: string; } | null} afterEach
  */
 
 export const pluginEvents = {
@@ -141,10 +141,9 @@ export const pluginEvents = {
     const { afterAll, afterEach, beforeAll, beforeEach, isForce, meta } =
       lesson;
     const description = parseMarkdown(lesson.description).trim();
-    const tests = lesson.tests.map(([testText, test]) => [
-      parseMarkdown(testText).trim(),
-      test
-    ]);
+    const tests = lesson.tests.map(t => {
+      return { ...t, text: parseMarkdown(t.text).trim() };
+    });
     const hints = lesson.hints.map(h => parseMarkdown(h).trim());
     return {
       meta,
