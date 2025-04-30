@@ -32,7 +32,7 @@
     "@types/node": "20.17.32",
     "@types/prismjs": "1.26.5",
     "@types/react": "18.3.20",
-    "@types/react-dom": "18.3.6",
+    "@types/react-dom": "18.3.7",
     "babel-loader": "9.2.1",
     "babel-plugin-prismjs": "2.1.0",
     "css-loader": "6.11.0",
