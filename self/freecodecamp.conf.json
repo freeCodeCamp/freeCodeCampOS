@@ -40,12 +40,13 @@
   },
   "hotReload": {
     "ignore": [
-      ".logs/.temp.log",
+      "/.logs/.script_in.log",
+      "/.logs/.script_out.log",
+      "/.logs/.temp.log",
       "config/",
-      "/node_modules/",
+      "node_modules/",
       ".git/",
-      "/target/",
-      "/test-ledger/",
+      "target/",
       ".vscode/",
       "freecodecamp.conf.json"
     ]
