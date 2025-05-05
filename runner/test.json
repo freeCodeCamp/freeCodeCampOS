@@ -1,0 +1,48 @@
+{
+  "lesson": {
+    "after_all": [],
+    "after_each": [],
+    "before_all": [
+      {
+        "id": 0,
+        "runner": "Node",
+        "code": "const a = 1;",
+        "force": false
+      },
+      {
+        "id": 1,
+        "runner": "Python",
+        "code": "a = 1",
+        "force": false
+      }
+    ],
+    "before_each": [],
+    "id": 0,
+    "tests": [
+      {
+        "code": "const b = 2;\nconsole.log(a + b);",
+        "id": 0,
+        "runner": "Node"
+      },
+      {
+        "code": "if (a !== 2) { throw new Error(`${a} is not equal to ${2}`); }",
+        "id": 1,
+        "runner": "Node"
+      },
+      {
+        "code": "b = 2\nprint(a + b)",
+        "id": 2,
+        "runner": "Python"
+      },
+      {
+        "code": "if a != 2:\n    raise Exception(f'{a} is not equal to {2}')",
+        "id": 3,
+        "runner": "Python"
+      }
+    ]
+  },
+  "project": {
+    "blocking_tests": true,
+    "break_on_failure": false
+  }
+}

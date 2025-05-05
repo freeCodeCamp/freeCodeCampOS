@@ -68,5 +68,20 @@
     "blockingTests": false,
     "breakOnFailure": false,
     "numberOfLessons": 3
+  },
+  {
+    "id": 5,
+    "dashedName": "runners",
+    "isIntegrated": false,
+    "isPublic": true,
+    "currentLesson": 2,
+    "runTestsOnWatch": false,
+    "seedEveryLesson": false,
+    "isResetEnabled": false,
+    "numberofLessons": null,
+    "blockingTests": false,
+    "breakOnFailure": false,
+    "numberOfLessons": 3,
+    "completedDate": 1742377225547
   }
 ]

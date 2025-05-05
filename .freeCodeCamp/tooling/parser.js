@@ -183,6 +183,7 @@ export class CoffeeDown {
    * Get first code block text from tokens
    *
    * Meant to be used with `getBeforeAll`, `getAfterAll`, `getBeforeEach`, and `getAfterEach`
+   * @returns {{ runner: string; code: string; } | null}
    */
   get code() {
     const callers = [
@@ -198,7 +199,33 @@ export class CoffeeDown {
         }`
       );
     }
-    return this.tokens.find(t => t.type === 'code')?.text;
+
+    for (const token of this.tokens) {
+      if (token.type === 'code') {
+        let runner = 'node';
+        switch (token.lang) {
+          case 'js':
+          case 'javascript':
+            runner = 'Node';
+            break;
+          case 'py':
+          case 'python':
+            runner = 'Python';
+            break;
+          default:
+            break;
+        }
+
+        const code = token.text;
+        const test = {
+          runner,
+          code
+        };
+        return test;
+      }
+    }
+
+    return null;
   }
 
   get seed() {
@@ -210,6 +237,9 @@ export class CoffeeDown {
     return seedToIterator(this.tokens);
   }
 
+  /**
+   * @returns {Array<{ text: string; runner: string; code: string; }>}
+   */
   get tests() {
     if (this.caller !== 'getTests') {
       throw new Error(
@@ -217,18 +247,36 @@ export class CoffeeDown {
       );
     }
     const textTokens = [];
-    const testTokens = [];
+    const tests = [];
     for (const token of this.tokens) {
       if (token.type === 'paragraph') {
         textTokens.push(token);
       }
       if (token.type === 'code') {
-        testTokens.push(token);
+        let runner = 'node';
+        switch (token.lang) {
+          case 'js':
+          case 'javascript':
+            runner = 'Node';
+            break;
+          case 'py':
+          case 'python':
+            runner = 'Python';
+            break;
+          default:
+            break;
+        }
+
+        const code = token.text;
+        const test = {
+          runner,
+          code
+        };
+        tests.push(test);
       }
     }
     const texts = textTokens.map(t => t.text);
-    const tests = testTokens.map(t => t.text);
-    return texts.map((text, i) => [text, tests[i]]);
+    return texts.map((text, i) => ({ text, ...tests[i] }));
   }
 
   get hints() {
@@ -332,7 +380,7 @@ marked.use(
 );
 
 export function parseMarkdown(markdown) {
-  return marked.parse(markdown, { gfm: true });
+  return marked.parse(markdown, { gfm: true, async: false });
 }
 
 const TOKENS = [
