@@ -20,7 +20,7 @@
     "marked": "9.1.6",
     "marked-highlight": "2.2.2",
     "prismjs": "1.30.0",
-    "ws": "8.18.2"
+    "ws": "8.18.3"
   },
   "devDependencies": {
     "@babel/core": "7.27.7",
