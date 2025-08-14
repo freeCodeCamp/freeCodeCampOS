@@ -23,9 +23,9 @@
     "ws": "8.18.3"
   },
   "devDependencies": {
-    "@babel/core": "7.28.0",
+    "@babel/core": "7.28.3",
     "@babel/plugin-syntax-import-assertions": "7.27.1",
-    "@babel/preset-env": "7.28.0",
+    "@babel/preset-env": "7.28.3",
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
     "@types/marked": "5.0.2",
