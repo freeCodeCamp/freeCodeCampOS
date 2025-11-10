@@ -51,6 +51,20 @@ await new Promise(resolve => setTimeout(resolve, 1000));
 assert.equal(__helpers.testDynamicHelper(), 'Helper success!');
 ```
 
+Testing if a worker error causes the server to crash.
+
+```js
+// 3
+try {
+  fetch('http://localhost:3123');
+} catch (e) {
+  console.log('------test------');
+  console.log(e);
+  console.log('------test------');
+  assert.equal(e.message, 'Failed to fetch');
+}
+```
+
 ### --before-each--
 
 ```js
