@@ -12,6 +12,8 @@ export const PATH_TERMINAL_OUT = join(ROOT, '.logs/.terminal_out.log');
 export const PATH_BASH_HISTORY = join(ROOT, '.logs/.bash_history.log');
 export const PATH_CWD = join(ROOT, '.logs/.cwd.log');
 export const PATH_TEMP = join(ROOT, '.logs/.temp.log');
+export const PATH_SCRIPT_OUT = join(ROOT, '.logs/.script_out.log');
+export const PATH_SCRIPT_IN = join(ROOT, '.logs/.script_in.log');
 
 /**
  * @typedef ControlWrapperOptions
@@ -111,8 +113,44 @@ async function getLastCWD(howManyBack = 0) {
 }
 
 /**
+ * Get the `.logs/.script_in.log` file contents, or `throw` if not found
+ * @returns {Promise<string>} The `.script_in.log` file contents
+ */
+async function getScriptIn() {
+  const scriptLogs = await readFile(PATH_SCRIPT_IN, {
+    encoding: 'utf-8',
+    flag: 'a+'
+  });
+  return scriptLogs;
+}
+
+async function getScriptInEquivalent() {
+  const scriptIn = await getScriptIn();
+  // TODO: Decide if removing the `^C` is necessary
+  let scriptInEquivalent = scriptIn.replace('\u0003', '');
+  while (scriptInEquivalent.indexOf('\u007f') !== -1) {
+    scriptInEquivalent = scriptInEquivalent.replace(/.?\u007f/s, '');
+  }
+
+  return scriptInEquivalent;
+}
+
+/**
+ * Get the `.logs/.script_out.log` file contents, or `throw` if not found
+ * @returns {Promise<string>} The `.script_out.log` file contents
+ */
+async function getScriptOut() {
+  const scriptLogs = await readFile(PATH_SCRIPT_OUT, {
+    encoding: 'utf8',
+    flag: 'a+'
+  });
+  return scriptLogs;
+}
+
+/**
  * Get the `.logs/.temp.log` file contents, or `throw` if not found
  * @returns {Promise<string>} The `.temp.log` file contents
+ * @deprecated Use `getScriptOut` instead
  */
 async function getTemp() {
   const tempLogs = await readFile(PATH_TEMP, {
@@ -125,6 +163,7 @@ async function getTemp() {
 /**
  * Get the `.logs/.terminal_out.log` file contents, or `throw` if not found
  * @returns {Promise<string>} The `.terminal_out.log` file contents
+ * @deprecated Use `getScriptOut` instead
  */
 async function getTerminalOutput() {
   const terminalLogs = await readFile(PATH_TERMINAL_OUT, {
@@ -151,6 +190,9 @@ const __helpers = {
   getCWD,
   getLastCommand,
   getLastCWD,
+  getScriptIn,
+  getScriptInEquivalent,
+  getScriptOut,
   getTemp,
   getTerminalOutput,
   importSansCache

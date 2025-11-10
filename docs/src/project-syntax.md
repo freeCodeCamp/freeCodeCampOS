@@ -32,20 +32,15 @@ This is a description.
 ## <LESSON_NUMBER>
 ```
 
+The first `json` code block is used for `meta`.
+
 ```admonish note title=""
 Zero-based numbering, because of course
 ```
 
-````admonish example collapsible=true
-```markdown
-## 0
-```
-````
-
-### `meta`
-
+`````admonish example collapsible=true
 ````markdown
-## <N>
+## 0
 
 ```json
 {
@@ -54,8 +49,9 @@ Zero-based numbering, because of course
 }
 ```
 ````
+`````
 
-The `meta.watch` field is used to specify specific files to watch during a lesson. The `meta.ignore` field is used to specify specific files to ignore during a lesson. The watcher is affected once on lesson load.
+The `watch` field is used to specify specific files to watch during a lesson. The `ignore` field is used to specify specific files to ignore during a lesson. The watcher is affected once on lesson load.
 
 ```admonish note title=""
 The `watch` and `ignore` fields are optional. It does not make sense to provide both at the same time.

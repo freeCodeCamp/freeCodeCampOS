@@ -1,8 +1,20 @@
-# Test Utilities
+# Test Utilities <!-- omit in toc -->
 
 The test utilities are exported/global objects available in the test runner. These are referred to as _"helpers"_, and the included helpers are exported from [https://github.com/freeCodeCamp/freeCodeCampOS/blob/main/.freeCodeCamp/tooling/test-utils.js](https://github.com/freeCodeCamp/freeCodeCampOS/blob/main/.freeCodeCamp/tooling/test-utils.js).
 
 Many of the exported functions are _convinience wrappers_ around Nodejs' `fs` and `child_process` modules. Specifically, they make use of the global `ROOT` variable to run the functions relative to the root of the workspace.
+
+- [`controlWrapper`](#controlwrapper)
+- [`getBashHistory`](#getbashhistory)
+- [`getCommandOutput`](#getcommandoutput)
+- [`getCWD`](#getcwd)
+- [`getLastCommand`](#getlastcommand)
+- [`getLastCWD`](#getlastcwd)
+- [`getScriptIn`](#getscriptin)
+- [`getScriptOut`](#getscriptout)
+- [`getTemp`](#gettemp)
+- [`getTerminalOutput`](#getterminaloutput)
+- [`importSansCache`](#importsanscache)
 
 ## `controlWrapper`
 
@@ -110,7 +122,53 @@ function getLastCWD(n = 0): Promise<string>;
 const lastCWD = await __helpers.getLastCWD();
 ```
 
+## `getScriptIn`
+
+Get the `.logs/.script_in.log` file contents.
+
+```admonish danger title="Safety"
+Throws if file does not exist, or if read permission is denied.
+```
+
+```typescript
+function getScriptIn(): Promise<string>;
+```
+
+```javascript
+const scriptIn = await __helpers.getScriptIn();
+```
+
+```admonish note
+The output does not include _untyped_ characters. That is, if tab completion is used, the output will not include the final command, but only up to the point of completion.
+```
+
+## `getScriptOut`
+
+Get the `.logs/.script_out.log` file contents.
+
+```admonish danger title="Safety"
+Throws if file does not exist, or if read permission is denied.
+```
+
+```typescript
+function getScriptOut(): Promise<string>;
+```
+
+```javascript
+const scriptOut = await __helpers.getScriptOut();
+```
+
+```admonish note
+Use the output of the `.script_out.log` file at your own risk. This file is raw input from the terminal including ANSI escape codes.
+```
+
+TODO: use `--log-in` to "watch" `--log-out`. When `--log-in` changes, read from `--log-out`.
+
 ## `getTemp`
+
+```admonish warning title="<code>3.6.0</code>"
+Deprecated in favour of [`getScriptOut`](#getscriptout).
+```
 
 Get the `.logs/.temp.log` file contents.
 
@@ -133,6 +191,11 @@ Output varies depending on emulator, terminal size, order text is typed, etc. Fo
 ```
 
 ## `getTerminalOutput`
+
+```admonish warning title="<code>3.6.0</code>"
+Deprecated in favour of [`getScriptOut`](#getscriptout)
+
+```
 
 Get the `.logs/.terminal_out.log` file contents.
 
