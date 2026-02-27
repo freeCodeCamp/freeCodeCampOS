@@ -55,7 +55,7 @@ cargo fmt --all && cargo clippy --all
 
 ```bash
 # Terminal 1: Run the development server
-cargo run --bin freecodecamp-server
+cargo run --bin server
 
 # Terminal 2: Run the client in dev mode
 cd client && bun run dev
@@ -86,7 +86,7 @@ freeCodeCampOS/
 ├── Cargo.toml           # Rust workspace definition
 ├── package.json         # Root scripts
 └── target/release/      # Compiled binaries
-    ├── freecodecamp-server    # Main server binary
+    ├── server    # Main server binary
     └── create-freecodecamp-os-app  # CLI tool
 ```
 

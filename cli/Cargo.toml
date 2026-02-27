@@ -9,9 +9,9 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-freecodecamp-config = { path = "../config" }
-freecodecamp-parser = { path = "../parser" }
-freecodecamp-runner = { path = "../runner" }
+config = { path = "../config" }
+parser = { path = "../parser" }
+runner = { path = "../runner" }
 clap = { version = "4.5.60", features = ["derive"] }
 indicatif = "0.18.4"
 inquire = "0.9.4"

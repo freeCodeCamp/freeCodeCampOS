@@ -1,6 +1,6 @@
 use crate::Runner;
 use anyhow::Result;
-use freecodecamp_config::{Hooks, Project, Test};
+use config::{Hooks, Project, Test};
 use std::fs;
 use std::io::Write;
 use std::process::Command;

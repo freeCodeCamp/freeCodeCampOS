@@ -75,7 +75,7 @@ Successfully migrated freeCodeCampOS from Node.js/Webpack architecture to a mode
   - Curriculum scaffolding
   - Configuration management
   - User input validation
-- **Dependencies**: freecodecamp-config, freecodecamp-parser
+- **Dependencies**: config, parser
 
 ### 2. Client Application ✅
 
@@ -218,7 +218,7 @@ Created/Modified:
 ## Build Output
 
 ### Binaries
-- `target/release/freecodecamp-server` (1.2MB) - HTTP server with embedded client support
+- `target/release/server` (1.2MB) - HTTP server with embedded client support
 - `target/release/create-freecodecamp-os-app` (1.2MB) - CLI tool for curriculum creation
 
 ### Client Build
@@ -292,7 +292,7 @@ Users upgrading from v3.x should:
 cargo test --all
 
 # Test specific crate
-cargo test -p freecodecamp-parser
+cargo test -p parser
 
 # Run with output
 cargo test -- --nocapture

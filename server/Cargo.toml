@@ -1,5 +1,5 @@
 [package]
-name = "freecodecamp-server"
+name = "server"
 version.workspace = true
 edition.workspace = true
 description = "HTTP server for freeCodeCampOS"
@@ -8,9 +8,9 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-freecodecamp-config = { path = "../config" }
-freecodecamp-parser = { path = "../parser" }
-freecodecamp-runner = { path = "../runner" }
+config = { path = "../config" }
+parser = { path = "../parser" }
+runner = { path = "../runner" }
 axum = { version = "0.8", features = ["ws", "macros"] }
 tokio = { version = "1.49.0", features = ["full"] }
 tower = "0.5.3"

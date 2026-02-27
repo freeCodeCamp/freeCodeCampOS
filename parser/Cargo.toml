@@ -1,5 +1,5 @@
 [package]
-name = "freecodecamp-parser"
+name = "parser"
 version.workspace = true
 edition.workspace = true
 description = "Markdown parser for freeCodeCampOS curriculum"
@@ -8,7 +8,7 @@ repository.workspace = true
 homepage.workspace = true
 
 [dependencies]
-freecodecamp-config = { path = "../config" }
+config = { path = "../config" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 comrak = { version = "0.50.0", features = ["shortcodes"] }

@@ -55,21 +55,13 @@ pub struct HotReloadConfig {
 #[serde(deny_unknown_fields)]
 pub struct ProjectMeta {
     pub id: u32,
-    #[serde(rename = "isIntegrated")]
     pub is_integrated: bool,
-    #[serde(rename = "is_public")]
     pub is_public: bool,
-    #[serde(rename = "runTestsOnWatch")]
     pub run_tests_on_watch: bool,
-    #[serde(rename = "seedEveryLesson")]
     pub seed_every_lesson: bool,
-    #[serde(rename = "isResetEnabled")]
     pub is_reset_enabled: bool,
-    #[serde(rename = "numberofLessons")]
     pub number_of_lessons: Option<u32>,
-    #[serde(rename = "blockingTests")]
     pub blocking_tests: Option<bool>,
-    #[serde(rename = "breakOnFailure")]
     pub break_on_failure: Option<bool>,
 }
 

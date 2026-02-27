@@ -1,5 +1,5 @@
 [package]
-name = "freecodecamp-config"
+name = "config"
 version.workspace = true
 edition.workspace = true
 description = "Shared configuration types for freeCodeCampOS"

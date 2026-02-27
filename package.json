@@ -4,12 +4,11 @@
   "version": "4.0.0",
   "description": "Open Source platform for creating and maintaining interactive coding curricula",
   "scripts": {
-    "client:dev": "vite --config vite.config.ts",
-    "client:build": "vite build --config vite.config.ts",
-    "client:preview": "vite preview --config vite.config.ts",
+    "dev:client": "vite",
+    "build:client": "vite build",
     "build:rust": "cargo build --release",
-    "build": "bun install && bun run client:build && bun run build:rust",
-    "dev": "bun run client:dev & cargo run --bin freecodecamp-server"
+    "build": "bun install && bun run build:client && bun run build:rust",
+    "dev": "bun run dev:client & cargo run --bin server"
   },
   "repository": {
     "type": "git",

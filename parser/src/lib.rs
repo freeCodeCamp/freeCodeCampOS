@@ -1,7 +1,7 @@
 //! Curriculum markdown parser for freeCodeCampOS
 
 use anyhow::{anyhow, Result};
-use freecodecamp_config::{Lesson, Project, ProjectMeta, Test};
+use config::{Lesson, Project, ProjectMeta, Test};
 use regex::Regex;
 
 pub struct CurriculumParser;

@@ -1,4 +1,4 @@
-use freecodecamp_config::AppConfig;
+use config::AppConfig;
 use tokio::sync::broadcast;
 
 #[derive(Clone, Debug)]

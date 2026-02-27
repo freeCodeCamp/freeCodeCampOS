@@ -4,19 +4,20 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use freecodecamp_config::AppConfig;
-use std::net::SocketAddr;
+use tower_http::services::ServeDir;
+use config::AppConfig;
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 use notify::{RecursiveMode, Watcher};
 
 use rust_embed::RustEmbed;
-use axum::response::{IntoResponse, Response};
+use axum::response::{IntoResponse};
 use axum::http::{header, StatusCode, Uri};
 
 mod handlers;
 mod state;
 mod ws;
+mod projects;
 
 pub use state::AppState;
 
@@ -61,6 +62,8 @@ async fn main() -> anyhow::Result<()> {
         }
     });
 
+    tracing::info!(?config);
+
     let app_state = Arc::new(AppState::new(config.clone()));
 
     // Setup watcher
@@ -85,27 +88,75 @@ async fn main() -> anyhow::Result<()> {
     }
 
     // Build router
-    let app = Router::new()
-        .route("/api/curriculum/:project", get(handlers::get_curriculum))
-        .route("/api/tests/:project/:lesson", post(handlers::run_tests))
-        .route("/api/reset/:project/:lesson", post(handlers::reset_lesson))
+    let mut app = Router::new()
+        .route("/api/curriculum/{project}", get(handlers::get_curriculum))
+        .route("/api/tests/{project}/{lesson}", post(handlers::run_tests))
+        .route("/api/reset/{project}/{lesson}", post(handlers::reset_lesson))
         .route("/health", get(handlers::health_check))
-        .route("/ws", get(ws::ws_handler))
-        .fallback(static_handler)
+        .route("/ws", get(ws::ws_handler));
+
+    // Add static paths from config
+    for (route, path) in &config.client.static_paths {
+        tracing::info!("Serving static path: {} -> {}", route, path);
+        app = app.nest_service(route, ServeDir::new(path));
+    }
+
+    let app = app.fallback(static_handler)
         .with_state(app_state)
         .layer(CorsLayer::permissive());
 
-    // Start server
-    let addr = SocketAddr::from(([127, 0, 0, 1], config.port));
-    let listener = tokio::net::TcpListener::bind(&addr).await?;
-    
-    tracing::info!("Server listening on {}", addr);
     
     // We need to keep watcher alive
     let _watcher = watcher;
     
-    axum::serve(listener, app).await?;
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", config.port))
+        .await
+        .unwrap();
+    tracing::info!(
+        "Server listening on 0.0.0.0:{} (accessible from any interface)",
+        listener.local_addr().unwrap().port()
+    );
+    tracing::info!("Application: http://127.0.0.1:{}", config.port);
+
+    // Setup graceful shutdown
+    let server = axum::serve(listener, app);
     
+    // Create shutdown signal handler
+    let shutdown_signal = async {
+        let ctrl_c = async {
+            tokio::signal::ctrl_c()
+                .await
+                .expect("failed to install Ctrl+C handler");
+        };
+
+        #[cfg(unix)]
+        let terminate = async {
+            tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+                .expect("failed to install SIGTERM handler")
+                .recv()
+                .await;
+        };
+
+        #[cfg(not(unix))]
+        let terminate = std::future::pending::<()>();
+
+        tokio::select! {
+            _ = ctrl_c => {
+                tracing::info!("Received SIGINT (Ctrl+C), starting graceful shutdown...");
+            },
+            _ = terminate => {
+                tracing::info!("Received SIGTERM, starting graceful shutdown...");
+            },
+        }
+    };
+
+    // Run server with graceful shutdown
+    if let Err(err) = server.with_graceful_shutdown(shutdown_signal).await {
+        tracing::error!("Server error: {}", err);
+    }
+
+    tracing::info!("Server shutdown complete.");
+
     Ok(())
 }
 

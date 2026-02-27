@@ -1,6 +1,6 @@
 use crate::Runner;
 use anyhow::Result;
-use freecodecamp_config::{Hooks, Project, Test, TestState};
+use config::{Hooks, Project, Test, TestState};
 use std::process::Command;
 
 pub struct BashRunner;

@@ -59,7 +59,7 @@ async function askForToken() {
 const socket = new WebSocket(
   `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${
     window.location.host
-  }`
+  }/ws`
 );
 
 window.onload = function () {

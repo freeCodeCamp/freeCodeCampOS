@@ -10,17 +10,17 @@
       "english": {
         "title": "freeCodeCamp-OS",
         "description": "Placeholder description",
-        "faq-link": "https://freecodecamp.org",
-        "faq-text": "Link to FAQ related to course"
+        "faq_link": "https://freecodecamp.org",
+        "faq_text": "Link to FAQ related to course"
       },
       "afrikaans": {
         "title": "freeCodeCamp-OS",
         "description": "Beskrywing",
-        "faq-link": "https://freecodecamp.org",
-        "faq-text": "Skakel na gereelde vra"
+        "faq_link": "https://freecodecamp.org",
+        "faq_text": "Skakel na gereelde vra"
       }
     },
-    "static": {
+    "static_paths": {
       "/images": "./curriculum/images",
       "/script/injectable.js": "./client/injectable.js"
     }
@@ -38,7 +38,7 @@
       "afrikaans": "./curriculum/assertions/afrikaans.json"
     }
   },
-  "hotReload": {
+  "hot_reload": {
     "ignore": [
       ".logs/.temp.log",
       "config/",

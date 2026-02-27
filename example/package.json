@@ -5,10 +5,7 @@
   "version": "3.4.0",
   "description": "Test repo for @freecodecamp/freecodecamp-os",
   "scripts": {
-    "start": "node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js"
-  },
-  "dependencies": {
-    "@freecodecamp/freecodecamp-os": "../"
+    "start": "cargo run --manifest-path ../Cargo.toml --bin server"
   },
   "repository": {
     "type": "git",

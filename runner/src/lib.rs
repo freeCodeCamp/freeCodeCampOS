@@ -1,7 +1,7 @@
 //! Test runner library for freeCodeCampOS
 
 use anyhow::Result;
-use freecodecamp_config::{Hooks, Project, Test};
+use config::{Hooks, Project, Test};
 
 pub mod runners;
 pub use runners::{node::NodeRunner, bash::BashRunner};

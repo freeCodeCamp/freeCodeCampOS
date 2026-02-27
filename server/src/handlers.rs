@@ -4,7 +4,7 @@ use axum::{
     Json,
 };
 use std::sync::Arc;
-use freecodecamp_parser::CurriculumParser;
+use parser::CurriculumParser;
 use std::fs;
 use std::path::PathBuf;
 
@@ -45,8 +45,8 @@ pub async fn get_curriculum(
     })))
 }
 
-use freecodecamp_runner::execute_tests;
-use freecodecamp_config::Hooks;
+use runner::execute_tests;
+use config::Hooks;
 
 pub async fn run_tests(
     Path((project_id, lesson_id)): Path<(String, u32)>,
@@ -125,7 +125,7 @@ pub async fn reset_lesson(
         // For now, we assume seed is bash commands if it's there.
         // We can use BashRunner to execute it.
         // We need to wrap it in a Test struct for the runner.
-        let seed_test = freecodecamp_config::Test {
+        let seed_test = config::Test {
             id: 0,
             code: seed.clone(),
             runner: "bash".to_string(),
