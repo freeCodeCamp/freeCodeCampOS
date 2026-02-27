@@ -20,7 +20,7 @@ import { E44o5 } from './components/error';
 let socket = new WebSocket(
   `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${
     window.location.host
-  }`
+  }/ws`
 );
 
 const App = () => {

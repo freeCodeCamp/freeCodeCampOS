@@ -120,11 +120,8 @@ export default defineConfig(async () => ({
       "top-level-await": true,
     },
   },
-  // build: {
-  //   rolldownOptions: {
-  //     output: {
-  //       dir: "client"
-  //     }
-  //   }
-  // }
+  build: {
+    outDir: "client/dist",
+    emptyOutDir: true,
+  },
 }));
