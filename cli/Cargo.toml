@@ -1,16 +1,22 @@
 [package]
 name = "create-freecodecamp-os-app"
-version = "3.0.2"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 description = "CLI to create the boilerplate for a new freeCodeCamp-OS app"
-license = "BSD-3-Clause"
+license.workspace = true
 documentation = "https://opensource.freecodecamp.org/freeCodeCampOS/cli.html"
-homepage = "https://opensource.freecodecamp.org/freeCodeCampOS/"
-repository = "https://github.com/freeCodeCamp/freeCodeCampOS"
+homepage.workspace = true
+repository.workspace = true
 
 [dependencies]
-clap = { version = "4.5.4", features = ["derive"] }
-indicatif = "0.17.7"
-inquire = "0.7.0"
-serde = { version = "1.0.200", features = ["derive"] }
-serde_json = "1.0.116"
+freecodecamp-config = { path = "../config" }
+freecodecamp-parser = { path = "../parser" }
+freecodecamp-runner = { path = "../runner" }
+clap = { version = "4.5.60", features = ["derive"] }
+indicatif = "0.18.4"
+inquire = "0.9.4"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+tokio = { version = "1.49.0", features = ["full"] }
+tracing = "0.1"
+anyhow = "1.0"

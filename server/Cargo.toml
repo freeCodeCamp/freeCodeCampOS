@@ -1,0 +1,29 @@
+[package]
+name = "freecodecamp-server"
+version.workspace = true
+edition.workspace = true
+description = "HTTP server for freeCodeCampOS"
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+freecodecamp-config = { path = "../config" }
+freecodecamp-parser = { path = "../parser" }
+freecodecamp-runner = { path = "../runner" }
+axum = { version = "0.8", features = ["ws", "macros"] }
+tokio = { version = "1.49.0", features = ["full"] }
+tower = "0.5.3"
+tower-http = { version = "0.6.8", features = ["cors", "trace", "fs"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+anyhow = "1.0"
+thiserror = "2.0.18"
+bytes = "1.11.1"
+futures = "0.3"
+uuid = { version = "1.21.0", features = ["v4", "serde"] }
+notify = "8.2.0"
+rust-embed = { version = "8.0", features = ["axum"] }
+mime_guess = "2.0"
