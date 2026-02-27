@@ -115,11 +115,6 @@ export default defineConfig(async () => ({
     // Exclude problematic modules that use top-level await
     exclude: ["bson"],
   },
-  esbuild: {
-    supported: {
-      "top-level-await": true,
-    },
-  },
   build: {
     outDir: "client/dist",
     emptyOutDir: true,

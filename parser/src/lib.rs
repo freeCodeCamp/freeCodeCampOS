@@ -83,6 +83,7 @@ impl CurriculumParser {
         let mut current_section = String::new();
         let mut current_code = String::new();
         let mut current_lang = String::new();
+        let mut current_test_text = String::new();
         let mut in_code_block = false;
 
         for line in lines {
@@ -130,10 +131,12 @@ impl CurriculumParser {
                         let runner = extract_runner(&current_lang);
                         tests.push(Test {
                             id: tests.len() as u32,
+                            test_text: current_test_text.trim().to_string(),
                             code: current_code.trim().to_string(),
                             runner,
                             state: Default::default(),
                         });
+                        current_test_text.clear();
                     } else if current_section == "seed" && !current_code.is_empty() {
                         seed_content.push_str(&current_code);
                     } else if current_section == "before-each" && !current_code.is_empty() {
@@ -156,6 +159,9 @@ impl CurriculumParser {
             } else if in_code_block {
                 current_code.push_str(line);
                 current_code.push('\n');
+            } else if current_section == "tests" && !line.is_empty() {
+                current_test_text.push_str(line);
+                current_test_text.push('\n');
             } else if current_section == "description" && !line.is_empty() {
                 description.push_str(line);
                 description.push('\n');

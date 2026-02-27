@@ -2,6 +2,7 @@ import { SelectionProps } from './selection';
 import { ProjectI, Events } from '../types/index';
 import { Tag } from './tag';
 import { Checkmark } from './checkmark';
+import { parseMarkdown } from '../utils';
 
 type BlockProps = {
   sock: SelectionProps['sock'];
@@ -63,7 +64,7 @@ export const Block = ({
         <div className='block-info'>
           <p
             dangerouslySetInnerHTML={{
-              __html: description
+              __html: parseMarkdown(description)
             }}
           ></p>
           <span aria-hidden='true'>

@@ -88,6 +88,7 @@ const App = () => {
     'update-console': updateConsole,
     'update-description': updateDescription,
     'update-project-heading': updateProjectHeading,
+    'update-lesson': updateLesson,
     'update-project': setProject,
     'update-projects': setProjects,
     'update-freeCodeCamp-config': setFreeCodeCampConfig,
@@ -130,6 +131,23 @@ const App = () => {
 
   function updateProjectHeading({ lessonNumber }: { lessonNumber: number }) {
     setLessonNumber(lessonNumber);
+  }
+
+  function updateLesson({
+    lessonNumber,
+    description,
+    tests,
+    hints
+  }: {
+    lessonNumber: number;
+    description: string;
+    tests: TestType[];
+    hints: string[];
+  }) {
+    setLessonNumber(lessonNumber);
+    setDescription(description);
+    setTests(tests);
+    setHints(hints || []);
   }
 
   function updateDescription({ description }: { description: string }) {

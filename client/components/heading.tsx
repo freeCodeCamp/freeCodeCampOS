@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { F } from '../types';
+import { parseMarkdown } from '../utils';
 
 interface HeadingProps {
   title: string;
@@ -45,7 +46,7 @@ export const Heading = ({
         id='project-heading'
         className={anim}
         dangerouslySetInnerHTML={{
-          __html: h1
+          __html: parseMarkdown(h1)
         }}
       ></h1>
       {goToNextLesson && (

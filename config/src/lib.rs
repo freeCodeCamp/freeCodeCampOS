@@ -10,7 +10,33 @@ pub struct AppConfig {
     pub port: u16,
     pub client: ClientConfig,
     pub curriculum: CurriculumConfig,
+    pub config: Config,
     pub hot_reload: Option<HotReloadConfig>,
+}
+
+/// Paths to course configuration and state files
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct Config {
+    #[serde(rename = "projects.json")]
+    pub projects: String,
+    #[serde(rename = "state.json")]
+    pub state: String,
+}
+
+/// Course state saved to `state.json`
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct CourseState {
+    pub current_project: Option<u32>,
+    pub locale: String,
+    pub last_seed: Option<LastSeed>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LastSeed {
+    pub project_dashed_name: String,
+    pub lesson_number: i16,
 }
 
 /// Client configuration
@@ -83,6 +109,7 @@ pub struct Lesson {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Test {
     pub id: u32,
+    pub test_text: String,
     pub code: String,
     pub runner: String,
     #[serde(default)]

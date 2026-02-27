@@ -1,3 +1,5 @@
+import { parseMarkdown } from "../utils";
+
 export const Hints = ({ hints }: { hints: string[] }) => {
   return (
     <ul style={{ listStyle: 'none' }}>
@@ -11,7 +13,7 @@ export const Hints = ({ hints }: { hints: string[] }) => {
 const HintElement = ({ hint, i }: { hint: string; i: number }) => {
   const details = `<summary>Hint ${i + 1}</summary>
   
-  ${hint}`;
+  ${parseMarkdown(hint)}`;
   return (
     <div>
       <details

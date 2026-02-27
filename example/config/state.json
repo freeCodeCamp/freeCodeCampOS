@@ -1,8 +1,5 @@
 {
-  "currentProject": null,
+  "currentProject": 4,
   "locale": "english",
-  "lastSeed": {
-    "projectDashedName": null,
-    "lessonNumber": -1
-  }
+  "lastSeed": null
 }

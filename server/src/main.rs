@@ -66,12 +66,27 @@ async fn main() -> anyhow::Result<()> {
 
     let app_state = Arc::new(AppState::new(config.clone()));
 
+    // Load state
+    if let Err(e) = app_state.load_projects().await {
+        tracing::warn!("Failed to load projects: {}, discovering...", e);
+        let discovered = projects::discover_projects(&config);
+        {
+            let mut p = app_state.projects.write().await;
+            *p = discovered;
+        }
+        let _ = app_state.save_projects().await;
+    }
+    if let Err(e) = app_state.load_course_state().await {
+        tracing::warn!("Failed to load course state: {}, using defaults", e);
+    }
+
     // Setup watcher
     let state_for_watcher = app_state.clone();
     let mut watcher = notify::recommended_watcher(move |res: notify::Result<notify::Event>| {
         match res {
             Ok(event) => {
                 if event.kind.is_modify() {
+                    tracing::info!("file modification detected: {:?}", event.paths);
                     // Notify clients
                     let _ = state_for_watcher.tx.send("reload".to_string());
                 }
@@ -81,9 +96,12 @@ async fn main() -> anyhow::Result<()> {
     })?;
 
     // Start watching locales directories
-    for path in config.curriculum.locales.values() {
-        if let Ok(path) = std::fs::canonicalize(path) {
-            watcher.watch(&path, RecursiveMode::Recursive)?;
+    for (locale, path) in &config.curriculum.locales {
+        if let Ok(canonical_path) = std::fs::canonicalize(path) {
+            tracing::info!("watching curriculum directory for locale '{}': {:?}", locale, canonical_path);
+            watcher.watch(&canonical_path, RecursiveMode::Recursive)?;
+        } else {
+            tracing::error!("failed to canonicalize curriculum path for locale '{}': {:?}", locale, path);
         }
     }
 
@@ -97,7 +115,7 @@ async fn main() -> anyhow::Result<()> {
 
     // Add static paths from config
     for (route, path) in &config.client.static_paths {
-        tracing::info!("Serving static path: {} -> {}", route, path);
+        tracing::info!("configuring static route: {} -> {}", route, path);
         app = app.nest_service(route, ServeDir::new(path));
     }
 
