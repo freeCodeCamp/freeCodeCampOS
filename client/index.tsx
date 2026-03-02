@@ -179,8 +179,10 @@ const App = () => {
     });
   }
 
-  function updateError({ error }: { error: Error }) {
-    setError(error);
+  function updateError({ error }: { error: any }) {
+    const errorObj = typeof error === 'string' ? new Error(error) : error;
+    setError(errorObj);
+    setAlertCamper('An error occurred while running tests');
   }
 
   function updateLoader({ loader }: { loader: LoaderT }) {

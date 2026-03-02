@@ -14,7 +14,7 @@ export const E44o5 = ({
           <details>
             <summary>More Info</summary>
 
-            <p>{JSON.stringify(error, null, 2)}</p>
+            <p>{error.message || JSON.stringify(error, null, 2)}</p>
           </details>
         )}
         <h2>To Keep Learning:</h2>

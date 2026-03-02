@@ -279,7 +279,7 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
                                             "passed": ct.passed,
                                             "is_loading": ct.is_loading,
                                             "feedback": ct.feedback.clone(),
-                                            "error": ct.feedback.unwrap_or_else(|| "Test failed".to_string())
+                                            "error": ct.feedback.clone().unwrap_or_else(|| "Test failed".to_string())
                                         }
                                     })).await;
                                 }

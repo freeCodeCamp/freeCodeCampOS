@@ -7,17 +7,27 @@ parentPort.on('message', async ({ code, id }) => {
   let passed = false;
   let error = null;
   try {
-    const _eval_out = await eval(`(async () => {
+    await eval(`(async () => {
       ${before_each || ''}
       ${code}
 })();`);
     passed = true;
   } catch (e) {
-    error = {};
+    error = {
+      message: e?.message || String(e),
+      stack: e?.stack,
+      type: e?.name || (e instanceof AssertionError ? 'AssertionError' : 'Error')
+    };
+    // Ensure it's correctly identified as AssertionError if it is one
+    if (e instanceof AssertionError) {
+      error.type = 'AssertionError';
+    }
+    // Copy other properties
     Object.getOwnPropertyNames(e).forEach(key => {
-      error[key] = e[key];
+      if (!error[key]) {
+        error[key] = e[key];
+      }
     });
-    error.type = e instanceof AssertionError ? 'AssertionError' : 'Error';
   }
   parentPort.postMessage({ passed, id, error });
 });
