@@ -67,17 +67,11 @@ async fn main() -> anyhow::Result<()> {
     let app_state = Arc::new(AppState::new(config.clone()));
 
     // Load state
-    if let Err(e) = app_state.load_projects().await {
-        tracing::warn!("Failed to load projects: {}, discovering...", e);
-        let discovered = projects::discover_projects(&config);
-        {
-            let mut p = app_state.projects.write().await;
-            *p = discovered;
-        }
-        let _ = app_state.save_projects().await;
-    }
     if let Err(e) = app_state.load_course_state().await {
         tracing::warn!("Failed to load course state: {}, using defaults", e);
+    }
+    if let Err(e) = app_state.load_projects().await {
+        tracing::error!("Failed to load projects: {}", e);
     }
 
     // Setup watcher

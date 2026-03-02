@@ -29,16 +29,19 @@ impl AppState {
     }
 
     pub async fn load_projects(&self) -> anyhow::Result<()> {
-        let projects_path = std::path::PathBuf::from(&self.config.config.projects);
-        if projects_path.exists() {
-            tracing::info!("loading projects from {:?}", projects_path);
-            let content = std::fs::read_to_string(projects_path)?;
-            let projects: Vec<ProjectSummary> = serde_json::from_str(&content)?;
-            let mut p = self.projects.write().await;
-            *p = projects;
-        } else {
-            tracing::warn!("projects file not found at {:?}", projects_path);
-        }
+        tracing::info!("discovering projects from curriculum");
+        let discovered = crate::projects::discover_projects(&self.config);
+        
+        let mut p = self.projects.write().await;
+        let mut cs = self.course_state.write().await;
+        
+        *p = discovered.into_iter().map(|mut summary| {
+            if let Some(&lesson) = cs.current_lessons.get(&summary.id) {
+                summary.current_lesson = lesson;
+            }
+            summary
+        }).collect();
+        
         Ok(())
     }
 
@@ -64,7 +67,14 @@ impl AppState {
             let mut p = self.projects.write().await;
             f(&mut p)
         };
-        self.save_projects().await?;
+        // Sync with course state for persistence
+        let projects = self.projects.read().await;
+        let mut cs = self.course_state.write().await;
+        for p in projects.iter() {
+            cs.current_lessons.insert(p.id, p.current_lesson);
+        }
+        drop(cs);
+        self.save_course_state().await?;
         Ok(res)
     }
 
@@ -98,17 +108,6 @@ impl AppState {
 
         let content = std::fs::read_to_string(&project_path).ok()?;
         parser::CurriculumParser::parse_project(&content).ok()
-    }
-
-    pub async fn save_projects(&self) -> anyhow::Result<()> {
-        let projects_path = std::path::PathBuf::from(&self.config.config.projects);
-        tracing::debug!("saving projects to {:?}", projects_path);
-        let content = {
-            let projects = self.projects.read().await;
-            serde_json::to_string_pretty(&*projects)?
-        };
-        std::fs::write(projects_path, content)?;
-        Ok(())
     }
 
     pub async fn save_course_state(&self) -> anyhow::Result<()> {

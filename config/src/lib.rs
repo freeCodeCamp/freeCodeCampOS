@@ -30,6 +30,8 @@ pub struct CourseState {
     pub current_project: Option<u32>,
     pub locale: String,
     pub last_seed: Option<LastSeed>,
+    #[serde(default)]
+    pub current_lessons: HashMap<u32, u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -99,10 +101,7 @@ pub struct Lesson {
     pub description: String,
     pub tests: Vec<Test>,
     pub seed: Option<String>,
-    pub before_each: Option<String>,
-    pub after_each: Option<String>,
-    pub before_all: Option<String>,
-    pub after_all: Option<String>,
+    pub hooks: Hooks,
 }
 
 /// A test that runs for a lesson
@@ -153,10 +152,10 @@ pub struct Project {
 /// Hook definitions for tests
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Hooks {
-    pub before_all: Option<String>,
-    pub after_all: Option<String>,
-    pub before_each: Option<String>,
-    pub after_each: Option<String>,
+    pub before_all: HashMap<String, String>,
+    pub after_all: HashMap<String, String>,
+    pub before_each: HashMap<String, String>,
+    pub after_each: HashMap<String, String>,
 }
 
 /// Test manifest for execution

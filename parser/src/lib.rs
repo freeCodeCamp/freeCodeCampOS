@@ -75,10 +75,7 @@ impl CurriculumParser {
         let mut description = String::new();
         let mut tests = Vec::new();
         let mut seed_content = String::new();
-        let mut before_each = String::new();
-        let mut after_each = String::new();
-        let mut before_all = String::new();
-        let mut after_all = String::new();
+        let mut hooks = config::Hooks::default();
 
         let mut current_section = String::new();
         let mut current_code = String::new();
@@ -127,8 +124,8 @@ impl CurriculumParser {
             if line.starts_with("```") {
                 if in_code_block {
                     // End of code block
+                    let runner = extract_runner(&current_lang);
                     if current_section == "tests" && !current_code.is_empty() {
-                        let runner = extract_runner(&current_lang);
                         tests.push(Test {
                             id: tests.len() as u32,
                             test_text: current_test_text.trim().to_string(),
@@ -140,13 +137,13 @@ impl CurriculumParser {
                     } else if current_section == "seed" && !current_code.is_empty() {
                         seed_content.push_str(&current_code);
                     } else if current_section == "before-each" && !current_code.is_empty() {
-                        before_each.push_str(&current_code);
+                        hooks.before_each.entry(runner).or_default().push_str(&current_code);
                     } else if current_section == "after-each" && !current_code.is_empty() {
-                        after_each.push_str(&current_code);
+                        hooks.after_each.entry(runner).or_default().push_str(&current_code);
                     } else if current_section == "before-all" && !current_code.is_empty() {
-                        before_all.push_str(&current_code);
+                        hooks.before_all.entry(runner).or_default().push_str(&current_code);
                     } else if current_section == "after-all" && !current_code.is_empty() {
-                        after_all.push_str(&current_code);
+                        hooks.after_all.entry(runner).or_default().push_str(&current_code);
                     }
                     in_code_block = false;
                     current_code.clear();
@@ -159,10 +156,10 @@ impl CurriculumParser {
             } else if in_code_block {
                 current_code.push_str(line);
                 current_code.push('\n');
-            } else if current_section == "tests" && !line.is_empty() {
+            } else if current_section == "tests" {
                 current_test_text.push_str(line);
                 current_test_text.push('\n');
-            } else if current_section == "description" && !line.is_empty() {
+            } else if current_section == "description" {
                 description.push_str(line);
                 description.push('\n');
             }
@@ -178,40 +175,33 @@ impl CurriculumParser {
             } else {
                 Some(seed_content)
             },
-            before_each: if before_each.is_empty() {
-                None
-            } else {
-                Some(before_each)
-            },
-            after_each: if after_each.is_empty() {
-                None
-            } else {
-                Some(after_each)
-            },
-            before_all: if before_all.is_empty() {
-                None
-            } else {
-                Some(before_all)
-            },
-            after_all: if after_all.is_empty() {
-                None
-            } else {
-                Some(after_all)
-            },
+            hooks,
         })
     }
 }
 
 fn extract_description(content: &str) -> Result<String> {
-    let lines: Vec<&str> = content.lines().collect();
-    let desc = lines
-        .iter()
-        .skip_while(|line| line.starts_with("#") || line.is_empty())
-        .take_while(|line| !line.starts_with("```"))
-        .map(|s| *s)
-        .collect::<Vec<_>>()
-        .join("\n");
-    Ok(desc.trim().to_string())
+    let mut in_code_block = false;
+    let mut description_lines = Vec::new();
+
+    for line in content.lines() {
+        if line.starts_with("```") {
+            in_code_block = !in_code_block;
+            continue;
+        }
+
+        if in_code_block {
+            continue;
+        }
+
+        if line.starts_with("# ") {
+            continue;
+        }
+
+        description_lines.push(line);
+    }
+
+    Ok(description_lines.join("\n").trim().to_string())
 }
 
 fn extract_meta(content: &str) -> Result<ProjectMeta> {
@@ -263,11 +253,11 @@ mod tests {
 {
   "id": 0,
   "isIntegrated": false,
-  "is_public": true,
+  "isPublic": true,
   "runTestsOnWatch": true,
   "seedEveryLesson": false,
   "isResetEnabled": true,
-  "numberofLessons": null,
+  "numberOfLessons": null,
   "blockingTests": null,
   "breakOnFailure": null
 }
@@ -292,5 +282,50 @@ assert(true);
         let parsed = result.unwrap();
         assert_eq!(parsed.title, "Learn Rust");
         assert_eq!(parsed.lessons.len(), 1);
+    }
+
+    #[test]
+    fn test_description_paragraphs() {
+        let markdown = r#"# Project Title
+
+```json
+{
+  "id": 0,
+  "isIntegrated": false,
+  "isPublic": true,
+  "runTestsOnWatch": true,
+  "seedEveryLesson": false,
+  "isResetEnabled": true
+}
+```
+
+Project description paragraph one.
+
+Project description paragraph two.
+
+## 1
+
+### --description--
+
+Lesson paragraph one.
+
+Lesson paragraph two.
+
+### --tests--
+
+```js
+assert(true);
+```
+"#;
+        let project = CurriculumParser::parse_project(markdown).unwrap();
+        
+        assert!(project.description.contains("Project description paragraph one."), "Should contain project description paragraph one");
+        assert!(project.description.contains("Project description paragraph two."), "Should contain project description paragraph two");
+        assert!(project.description.contains("\n\n"), "Should preserve project description paragraph separation");
+        
+        let lesson = &project.lessons[0];
+        assert!(lesson.description.contains("Lesson paragraph one."), "Should contain lesson paragraph one");
+        assert!(lesson.description.contains("Lesson paragraph two."), "Should contain lesson paragraph two");
+        assert!(lesson.description.contains("\n\n"), "Should preserve lesson description paragraph separation");
     }
 }

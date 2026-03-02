@@ -5,7 +5,6 @@ use config::AppConfig;
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
 pub struct ProjectSummary {
     pub id: u32,
     pub title: String,
