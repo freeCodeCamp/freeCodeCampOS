@@ -54,6 +54,12 @@ impl Runner for BashRunner {
                 test.state = TestState::Passed;
             } else {
                 test.state = TestState::Failed;
+                let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
+                test.feedback = if stderr.is_empty() {
+                    Some("Test failed".to_string())
+                } else {
+                    Some(stderr)
+                };
             }
 
             results.push(test);

@@ -1,6 +1,5 @@
 import { parentPort, workerData } from 'node:worker_threads';
-import assert from 'node:assert';
-import { AssertionError } from 'node:assert';
+import { assert, AssertionError, expect, config as chaiConfig } from 'chai';
 
 const { before_each = '', project } = workerData;
 

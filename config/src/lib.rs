@@ -136,14 +136,16 @@ pub struct Test {
     pub runner: String,
     #[serde(default)]
     pub state: TestState,
+    pub feedback: Option<String>,
 }
 
 /// Current state of a test
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum TestState {
     #[default]
     Neutral,
+    Loading,
     Passed,
     Failed,
 }

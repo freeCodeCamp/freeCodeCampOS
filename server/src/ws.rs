@@ -147,6 +147,8 @@ async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
                                 tracing::warn!("received unhandled event: {}", client_msg.event);
                             }
                         }
+                        // Send RESPONSE to clear debouncer on client
+                        send_message(&tx_out_clone, "RESPONSE", serde_json::json!({ "event": client_msg.event })).await;
                     } else {
                         tracing::error!("failed to parse client message: {}", text);
                     }
@@ -169,6 +171,7 @@ pub struct ClientTest {
     pub test_text: String,
     pub passed: bool,
     pub is_loading: bool,
+    pub feedback: Option<String>,
 }
 
 impl From<config::Test> for ClientTest {
@@ -177,7 +180,8 @@ impl From<config::Test> for ClientTest {
             test_id: test.id,
             test_text: test.test_text,
             passed: matches!(test.state, config::TestState::Passed),
-            is_loading: false,
+            is_loading: matches!(test.state, config::TestState::Loading),
+            feedback: test.feedback,
         }
     }
 }
@@ -233,27 +237,70 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
         tracing::debug!("running tests for project {} lesson {}", project_id, current_lesson);
         if let Some(project) = state.get_project(project_id).await {
             if let Some(lesson) = project.lessons.iter().find(|l| l.id == current_lesson) {
-                let hooks = lesson.hooks.clone();
+                // Clear previous tests and console
+                send_message(tx, "reset_tests", serde_json::json!({})).await;
+                send_message(tx, "update_console", serde_json::json!({})).await;
 
-                let work_dir = ".";
-                match execute_tests(&project, lesson.tests.clone(), &hooks, work_dir) {
-                    Ok(results) => {
-                        tracing::info!("test execution finished for lesson {}", current_lesson);
-                        let client_tests: Vec<ClientTest> = results.into_iter().map(ClientTest::from).collect();
-                        send_message(tx, "update_tests", serde_json::json!({ "tests": client_tests })).await;
-                        
-                        if client_tests.iter().all(|t| t.passed) {
-                            tracing::info!("all tests passed for lesson {}, moving to next lesson", current_lesson);
-                            handle_change_lesson(state, tx, 1).await;
-                        } else {
-                            tracing::debug!("some tests failed for lesson {}", current_lesson);
+                // Send loading state first
+                let loading_tests: Vec<ClientTest> = lesson.tests.iter().map(|t| {
+                    let mut lt = ClientTest::from(t.clone());
+                    lt.is_loading = true;
+                    lt
+                }).collect();
+                send_message(tx, "update_tests", serde_json::json!({ "tests": loading_tests })).await;
+
+                let hooks = lesson.hooks.clone();
+                let project_clone = project.clone();
+                let tests_clone = lesson.tests.clone();
+                let work_dir = ".".to_string();
+                let tx_clone = tx.clone();
+                let state_clone = state.clone();
+                let lesson_id = lesson.id;
+
+                tokio::spawn(async move {
+                    let results = tokio::task::spawn_blocking(move || {
+                        execute_tests(&project_clone, tests_clone, &hooks, &work_dir)
+                    }).await;
+
+                    match results {
+                        Ok(Ok(results)) => {
+                            tracing::info!("test execution finished for lesson {}", lesson_id);
+                            let client_tests: Vec<ClientTest> = results.iter().cloned().map(ClientTest::from).collect();
+                            send_message(&tx_clone, "update_tests", serde_json::json!({ "tests": client_tests })).await;
+                            
+                            // Send console updates for failed tests
+                            for test in results.iter() {
+                                if !matches!(test.state, config::TestState::Passed) {
+                                    let ct = ClientTest::from(test.clone());
+                                    send_message(&tx_clone, "update_console", serde_json::json!({
+                                        "cons": {
+                                            "test_id": ct.test_id,
+                                            "test_text": ct.test_text,
+                                            "passed": ct.passed,
+                                            "is_loading": ct.is_loading,
+                                            "feedback": ct.feedback.clone(),
+                                            "error": ct.feedback.unwrap_or_else(|| "Test failed".to_string())
+                                        }
+                                    })).await;
+                                }
+                            }
+
+                            if results.iter().all(|t| matches!(t.state, config::TestState::Passed)) {
+                                tracing::info!("all tests passed for lesson {}, moving to next lesson", lesson_id);
+                                handle_change_lesson(&state_clone, &tx_clone, 1).await;
+                            } else {
+                                tracing::debug!("some tests failed for lesson {}", lesson_id);
+                            }
+                        }
+                        Ok(Err(e)) => {
+                            tracing::error!("test execution failed: {}", e);
+                            send_message(&tx_clone, "update_error", serde_json::json!({ "error": e.to_string() })).await;
+                        }
+                        Err(e) => {
+                            tracing::error!("task join error: {}", e);
                         }
                     }
-                    Err(e) => {
-                        tracing::error!("test execution failed: {}", e);
-                        send_message(tx, "update_error", serde_json::json!({ "error": e.to_string() })).await;
-                    }
-                }
+                });
             } else {
                 tracing::error!("lesson {} not found in project {}", current_lesson, project_id);
             }
@@ -281,6 +328,7 @@ async fn handle_reset_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>)
                         code: seed.clone(),
                         runner: "bash".to_string(),
                         state: Default::default(),
+                        feedback: None,
                     };
                     
                     let hooks = Hooks::default();

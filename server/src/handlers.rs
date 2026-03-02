@@ -192,6 +192,7 @@ pub async fn reset_lesson(
             code: seed.clone(),
             runner: "bash".to_string(),
             state: Default::default(),
+            feedback: None,
         };
         
         let hooks = Hooks::default();

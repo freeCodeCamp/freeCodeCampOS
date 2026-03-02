@@ -135,6 +135,7 @@ impl CurriculumParser {
                             code: current_code.trim().to_string(),
                             runner,
                             state: Default::default(),
+                            feedback: None,
                         });
                         current_test_text.clear();
                     } else if current_section == "seed" && !current_code.is_empty() {

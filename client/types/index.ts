@@ -25,6 +25,7 @@ export type TestType = {
   passed: boolean;
   is_loading: boolean;
   test_id: number;
+  feedback?: string;
 };
 
 export type LoaderT = {
