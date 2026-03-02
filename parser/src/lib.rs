@@ -60,6 +60,9 @@ impl CurriculumParser {
             }
         }
 
+        let mut meta = meta;
+        meta.number_of_lessons = Some(lessons.len() as u32);
+
         Ok(Project {
             title,
             description,
@@ -222,6 +225,7 @@ fn extract_meta(content: &str) -> Result<ProjectMeta> {
             number_of_lessons: None,
             blocking_tests: None,
             break_on_failure: None,
+            tags: vec![]
         })
     }
 }
@@ -252,14 +256,11 @@ mod tests {
 ```json
 {
   "id": 0,
-  "isIntegrated": false,
-  "isPublic": true,
-  "runTestsOnWatch": true,
-  "seedEveryLesson": false,
-  "isResetEnabled": true,
-  "numberOfLessons": null,
-  "blockingTests": null,
-  "breakOnFailure": null
+  "is_integrated": false,
+  "is_public": true,
+  "run_tests_on_watch": true,
+  "seed_every_lesson": false,
+  "is_reset_enabled": true,
 }
 ```
 
@@ -291,11 +292,11 @@ assert(true);
 ```json
 {
   "id": 0,
-  "isIntegrated": false,
-  "isPublic": true,
-  "runTestsOnWatch": true,
-  "seedEveryLesson": false,
-  "isResetEnabled": true
+  "is_integrated": false,
+  "is_public": true,
+  "run_tests_on_watch": true,
+  "seed_every_lesson": false,
+  "is_reset_enabled": true
 }
 ```
 

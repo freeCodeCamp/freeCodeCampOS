@@ -2,6 +2,12 @@
 
 ```json
 {
+  "id": 0,
+  "is_integrated": true,
+  "is_public": true,
+  "run_tests_on_watch": true,
+  "seed_every_lesson": false,
+  "is_reset_enabled": true,
   "tags": ["Integrated Project", "Coming soon!"]
 }
 ```

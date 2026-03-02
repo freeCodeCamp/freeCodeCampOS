@@ -4,14 +4,14 @@ export const Console = ({ cons }: { cons: ConsoleError[] }) => {
   return (
     <ul style={{ listStyle: 'none' }}>
       {cons.map(con => (
-        <ConsoleElement key={con.testId} {...con} />
+        <ConsoleElement key={con.test_id} {...con} />
       ))}
     </ul>
   );
 };
 
-const ConsoleElement = ({ testText, testId, error }: ConsoleError) => {
-  const details = `<summary>${testId + 1} ${testText}</summary>
+const ConsoleElement = ({ test_text, test_id, error }: ConsoleError) => {
+  const details = `<summary>${test_id + 1} ${test_text}</summary>
 
   ${error}`;
   return (

@@ -4,16 +4,16 @@ import { parseMarkdown } from '../utils';
 
 interface HeadingProps {
   title: string;
-  lessonNumber?: number;
-  numberOfLessons?: number;
+  lesson_number?: number;
+  number_of_lessons?: number;
   goToNextLesson?: F<void, void>;
   goToPreviousLesson?: F<void, void>;
 }
 
 export const Heading = ({
   title,
-  lessonNumber,
-  numberOfLessons,
+  lesson_number,
+  number_of_lessons,
   goToNextLesson,
   goToPreviousLesson
 }: HeadingProps) => {
@@ -22,14 +22,14 @@ export const Heading = ({
   useEffect(() => {
     setAnim('fade-in');
     setTimeout(() => setAnim(''), 1000);
-  }, [lessonNumber]);
+  }, [lesson_number]);
 
-  const lessonNumberExists = typeof lessonNumber !== 'undefined';
-  const canGoBack = lessonNumberExists && lessonNumber > 0;
+  const lessonNumberExists = typeof lesson_number !== 'undefined';
+  const canGoBack = lessonNumberExists && lesson_number > 0;
   const canGoForward =
-    lessonNumberExists && numberOfLessons && lessonNumber < numberOfLessons - 1;
+    lessonNumberExists && number_of_lessons && lesson_number < number_of_lessons - 1;
 
-  const h1 = title + (lessonNumberExists ? ' - Lesson ' + lessonNumber : '');
+  const h1 = title + (lessonNumberExists ? ' - Lesson ' + lesson_number : '');
   return (
     <nav className='heading'>
       {goToPreviousLesson && (

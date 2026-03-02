@@ -54,7 +54,7 @@ async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
         tracing::debug!("sending initial project and config data to client");
         let projects = state.projects.read().await;
         let projects_msg = ServerMessage {
-            event: "update-projects".to_string(),
+            event: "update_projects".to_string(),
             data: &*projects,
         };
         if let Ok(json) = serde_json::to_string(&projects_msg) {
@@ -62,7 +62,7 @@ async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
         }
 
         let config_msg = ServerMessage {
-            event: "update-freeCodeCamp-config".to_string(),
+            event: "update_freecodecamp_config".to_string(),
             data: &state.config,
         };
         if let Ok(json) = serde_json::to_string(&config_msg) {
@@ -99,12 +99,12 @@ async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
                             "connect" => {
                                 tracing::debug!("client connected event received");
                             },
-                            "request-data" => {
+                            "request_data" => {
                                 if client_msg.data.get("request") == Some(&serde_json::json!("projects")) {
                                     tracing::debug!("client requested projects data");
                                     let projects = state_clone.projects.read().await;
                                     let msg = ServerMessage {
-                                        event: "update-projects".to_string(),
+                                        event: "update_projects".to_string(),
                                         data: &*projects,
                                     };
                                     if let Ok(json) = serde_json::to_string(&msg) {
@@ -112,30 +112,30 @@ async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
                                     }
                                 }
                             },
-                            "select-project" => {
+                            "select_project" => {
                                 let id = client_msg.data.get("id").and_then(|v| v.as_u64()).map(|v| v as u32);
                                 tracing::info!("client selected project: {:?}", id);
                                 if let Some(id) = id {
                                     handle_select_project(&state_clone, &tx_out_clone, id).await;
                                 }
                             },
-                            "run-tests" => {
+                            "run_tests" => {
                                 tracing::info!("client requested test execution");
                                 handle_run_tests(&state_clone, &tx_out_clone).await;
                             },
-                            "reset-project" => {
+                            "reset_project" => {
                                 tracing::info!("client requested project reset");
                                 handle_reset_project(&state_clone, &tx_out_clone).await;
                             },
-                            "go-to-next-lesson" => {
+                            "go_to_next_lesson" => {
                                 tracing::info!("client navigating to next lesson");
                                 handle_change_lesson(&state_clone, &tx_out_clone, 1).await;
                             },
-                            "go-to-previous-lesson" => {
+                            "go_to_previous_lesson" => {
                                 tracing::info!("client navigating to previous lesson");
                                 handle_change_lesson(&state_clone, &tx_out_clone, -1).await;
                             },
-                            "change-language" => {
+                            "change_language" => {
                                 if let Some(locale) = client_msg.data.get("locale").and_then(|v| v.as_str()) {
                                     tracing::info!("client changed language to: {}", locale);
                                     let _ = state_clone.update_course_state(|s| {
@@ -164,7 +164,6 @@ async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
 }
 
 #[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ClientTest {
     pub test_id: u32,
     pub test_text: String,
@@ -200,7 +199,7 @@ async fn handle_select_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>
 
         if let Some(p_summary) = p_summary {
             tracing::debug!("sending project update for {}", p_summary.title);
-            send_message(tx, "update-project", p_summary).await;
+            send_message(tx, "update_project", p_summary).await;
         }
 
         let lesson = project.lessons.iter().find(|l| l.id == current_lesson)
@@ -209,8 +208,8 @@ async fn handle_select_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>
         if let Some(lesson) = lesson {
             tracing::info!("loading lesson: {} - {}", lesson.id, lesson.title);
             let client_tests: Vec<ClientTest> = lesson.tests.clone().into_iter().map(ClientTest::from).collect();
-            send_message(tx, "update-lesson", serde_json::json!({
-                "lessonNumber": lesson.id,
+            send_message(tx, "update_lesson", serde_json::json!({
+                "lesson_number": lesson.id,
                 "description": lesson.description,
                 "tests": client_tests,
                 "hints": []
@@ -235,10 +234,10 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
         if let Some(project) = state.get_project(project_id).await {
             if let Some(lesson) = project.lessons.iter().find(|l| l.id == current_lesson) {
                 let hooks = Hooks {
-                    before_all: lesson.before_all.clone(),
-                    after_all: lesson.after_all.clone(),
-                    before_each: lesson.before_each.clone(),
-                    after_each: lesson.after_each.clone(),
+                    before_all: lesson.hooks.before_all.clone(),
+                    after_all: lesson.hooks.after_all.clone(),
+                    before_each: lesson.hooks.before_each.clone(),
+                    after_each: lesson.hooks.after_each.clone(),
                 };
 
                 let work_dir = ".";
@@ -246,7 +245,7 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
                     Ok(results) => {
                         tracing::info!("test execution finished for lesson {}", current_lesson);
                         let client_tests: Vec<ClientTest> = results.into_iter().map(ClientTest::from).collect();
-                        send_message(tx, "update-tests", serde_json::json!({ "tests": client_tests })).await;
+                        send_message(tx, "update_tests", serde_json::json!({ "tests": client_tests })).await;
                         
                         if client_tests.iter().all(|t| t.passed) {
                             tracing::info!("all tests passed for lesson {}", current_lesson);
@@ -256,7 +255,7 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
                     }
                     Err(e) => {
                         tracing::error!("test execution failed: {}", e);
-                        send_message(tx, "update-error", serde_json::json!({ "error": e.to_string() })).await;
+                        send_message(tx, "update_error", serde_json::json!({ "error": e.to_string() })).await;
                     }
                 }
             } else {
@@ -293,7 +292,7 @@ async fn handle_reset_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>)
                     
                     if let Err(e) = execute_tests(&project, vec![seed_test], &hooks, work_dir) {
                         tracing::error!("failed to run seed for lesson reset: {}", e);
-                        send_message(tx, "update-error", serde_json::json!({ "error": e.to_string() })).await;
+                        send_message(tx, "update_error", serde_json::json!({ "error": e.to_string() })).await;
                     } else {
                         tracing::info!("seed executed successfully for lesson {}", current_lesson);
                     }
@@ -325,9 +324,9 @@ async fn handle_change_lesson(state: &Arc<AppState>, tx: &mpsc::Sender<Message>,
                 if let Some(project) = state.get_project(project_id).await {
                     if let Some(lesson) = project.lessons.iter().find(|l| l.id == new_lesson) {
                         let client_tests: Vec<ClientTest> = lesson.tests.clone().into_iter().map(ClientTest::from).collect();
-                        send_message(tx, "update-project", p_summary_clone).await;
-                        send_message(tx, "update-lesson", serde_json::json!({
-                            "lessonNumber": lesson.id,
+                        send_message(tx, "update_project", p_summary_clone).await;
+                        send_message(tx, "update_lesson", serde_json::json!({
+                            "lesson_number": lesson.id,
                             "description": lesson.description,
                             "tests": client_tests,
                             "hints": []

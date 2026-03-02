@@ -5,7 +5,7 @@ interface ControlsProps {
   cancelTests: F<void, void>;
   runTests: F<void, void>;
   resetProject?: F<void, void>;
-  isResetEnabled?: ProjectI['isResetEnabled'];
+  is_reset_enabled?: ProjectI['is_reset_enabled'];
   tests: TestType[];
   loader?: LoaderT;
 }
@@ -17,10 +17,10 @@ function progressStyle(loader?: LoaderT) {
   }
 
   const {
-    isLoading,
+    is_loading,
     progress: { total, count }
   } = loader;
-  if (isLoading) {
+  if (is_loading) {
     return {
       background: `linear-gradient(to right, #0065A9 ${
         (count / total) * 100
@@ -33,14 +33,14 @@ export const Controls = ({
   cancelTests,
   runTests,
   resetProject,
-  isResetEnabled,
+  is_reset_enabled,
   tests,
   loader
 }: ControlsProps) => {
   const [isTestsRunning, setIsTestsRunning] = useState(false);
 
   useEffect(() => {
-    if (tests.some(t => t.isLoading)) {
+    if (tests.some(t => t.is_loading)) {
       setIsTestsRunning(true);
     } else {
       setIsTestsRunning(false);
@@ -55,7 +55,7 @@ export const Controls = ({
     }
   }
 
-  const resetDisabled = !isResetEnabled || loader?.isLoading;
+  const resetDisabled = !is_reset_enabled || loader?.is_loading;
 
   return (
     <section className='project-controls'>

@@ -12,11 +12,11 @@ export const Block = ({
   id,
   title,
   description,
-  isIntegrated,
-  isPublic,
-  numberOfLessons,
-  currentLesson,
-  completedDate,
+  is_integrated,
+  is_public,
+  number_of_lessons,
+  current_lesson,
+  completed_date,
   tags,
   sock
 }: BlockProps) => {
@@ -25,22 +25,22 @@ export const Block = ({
   }
 
   let lessonsCompleted = 0;
-  if (completedDate) {
-    lessonsCompleted = numberOfLessons;
+  if (completed_date) {
+    lessonsCompleted = number_of_lessons;
   } else {
     lessonsCompleted =
-      !isIntegrated && currentLesson === numberOfLessons - 1
-        ? currentLesson + 1
-        : currentLesson;
+      !is_integrated && current_lesson === number_of_lessons - 1
+        ? current_lesson + 1
+        : current_lesson;
   }
   return (
     <li className='block'>
       <button
         className='block-btn'
         onClick={selectProject}
-        disabled={!isPublic}
+        disabled={!is_public}
         style={
-          !isPublic
+          !is_public
             ? {
                 cursor: 'not-allowed'
               }
@@ -55,7 +55,7 @@ export const Block = ({
 
         <h2>
           {title}
-          {completedDate ? (
+          {completed_date ? (
             <span className='block-checkmark'>
               <Checkmark />
             </span>
@@ -68,10 +68,10 @@ export const Block = ({
             }}
           ></p>
           <span aria-hidden='true'>
-            {lessonsCompleted}/{numberOfLessons}
+            {lessonsCompleted}/{number_of_lessons}
           </span>
           <span className='sr-only'>
-            {lessonsCompleted} of {numberOfLessons} lessons completed
+            {lessonsCompleted} of {number_of_lessons} lessons completed
           </span>
         </div>
       </button>

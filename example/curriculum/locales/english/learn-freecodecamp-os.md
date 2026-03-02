@@ -1,19 +1,17 @@
 # Learn freeCodeCampOS
 
-In this course, you will learn how to use the @freecodecamp/freecodecamp-os package to develop courses.
-
 ```json
 {
   "id": 4,
-  "title": "Learn freeCodeCampOS",
-  "dashed_name": "learn-freecodecamp-os",
-  "description": "In this course, you will learn how to use the @freecodecamp/freecodecamp-os package to develop courses.",
   "is_integrated": false,
   "is_public": true,
-  "is_reset_enabled": true,
-  "tags": []
+  "run_tests_on_watch": true,
+  "seed_every_lesson": false,
+  "is_reset_enabled": true
 }
 ```
+
+In this course, you will learn how to use the @freecodecamp/freecodecamp-os package to develop courses.
 
 ## 0
 

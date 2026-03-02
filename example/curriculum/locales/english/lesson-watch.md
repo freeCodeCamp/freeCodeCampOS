@@ -1,5 +1,16 @@
 # Lesson Watch
 
+```json
+{
+  "id": 2,
+  "is_integrated": false,
+  "is_public": true,
+  "run_tests_on_watch": true,
+  "seed_every_lesson": false,
+  "is_reset_enabled": true
+}
+```
+
 Watch and ignore specific files for each lesson.
 
 ## 0

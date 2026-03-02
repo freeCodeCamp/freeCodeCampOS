@@ -29,14 +29,14 @@ const App = () => {
     useState<FreeCodeCampConfigI>({});
   const [project, setProject] = useState<ProjectI | null>(null);
 
-  const [lessonNumber, setLessonNumber] = useState(1);
+  const [lesson_number, setLessonNumber] = useState(1);
   const [description, setDescription] = useState('');
   const [locale, setLocale] = useState('english');
   const [tests, setTests] = useState<TestType[]>([]);
   const [hints, setHints] = useState<string[]>([]);
   const [cons, setCons] = useState<ConsoleError[]>([]);
   const [loader, setLoader] = useState({
-    isLoading: false,
+    is_loading: false,
     progress: { count: 0, total: 1 }
   });
   const [alertCamper, setAlertCamper] = useState<null | string>(null);
@@ -80,21 +80,21 @@ const App = () => {
   useEffect(connectToWebSocket, []);
 
   const handle = {
-    'handle-project-finish': handleProjectFinish,
-    'update-loader': updateLoader,
-    'update-test': updateTest,
-    'update-tests': updateTests,
-    'update-hints': updateHints,
-    'update-console': updateConsole,
-    'update-description': updateDescription,
-    'update-project-heading': updateProjectHeading,
-    'update-lesson': updateLesson,
-    'update-project': setProject,
-    'update-projects': setProjects,
-    'update-freeCodeCamp-config': setFreeCodeCampConfig,
-    'update-error': updateError,
-    'reset-tests': resetTests,
-    'update-locale': setLocale,
+    handle_project_finish: handleProjectFinish,
+    update_loader: updateLoader,
+    update_test: updateTest,
+    update_tests: updateTests,
+    update_hints: updateHints,
+    update_console: updateConsole,
+    update_description: updateDescription,
+    update_project_heading: updateProjectHeading,
+    update_lesson: updateLesson,
+    update_project: setProject,
+    update_projects: setProjects,
+    update_freecodecamp_config: setFreeCodeCampConfig,
+    update_error: updateError,
+    reset_tests: resetTests,
+    update_locale: setLocale,
     RESPONSE: debounce
   };
 
@@ -129,22 +129,22 @@ const App = () => {
     setProject(project);
   }
 
-  function updateProjectHeading({ lessonNumber }: { lessonNumber: number }) {
-    setLessonNumber(lessonNumber);
+  function updateProjectHeading({ lesson_number }: { lesson_number: number }) {
+    setLessonNumber(lesson_number);
   }
 
   function updateLesson({
-    lessonNumber,
+    lesson_number,
     description,
     tests,
     hints
   }: {
-    lessonNumber: number;
+    lesson_number: number;
     description: string;
     tests: TestType[];
     hints: string[];
   }) {
-    setLessonNumber(lessonNumber);
+    setLessonNumber(lesson_number);
     setDescription(description);
     setTests(tests);
     setHints(hints || []);
@@ -158,7 +158,7 @@ const App = () => {
     setTests(tests);
   }
   function updateTest({ test }: { test: TestType }) {
-    setTests(ts => ts.map(t => (t.testId === test.testId ? test : t)));
+    setTests(ts => ts.map(t => (t.test_id === test.test_id ? test : t)));
   }
   function updateHints({ hints }: { hints: string[] }) {
     setHints(hints);
@@ -171,9 +171,9 @@ const App = () => {
     // Insert cons in array at index `id`
     setCons(prev => {
       const sorted = [
-        ...prev.slice(0, cons.testId),
+        ...prev.slice(0, cons.test_id),
         cons,
-        ...prev.slice(cons.testId)
+        ...prev.slice(cons.test_id)
       ].filter(Boolean);
       return sorted;
     });
@@ -242,7 +242,7 @@ const App = () => {
               goToPreviousLesson,
               hints,
               loader,
-              lessonNumber,
+              lesson_number,
               project,
               resetProject,
               runTests,

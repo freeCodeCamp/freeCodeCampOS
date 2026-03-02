@@ -66,14 +66,13 @@ Example of new project markdown file:
 ```json
 {
   "id": 0,
-  "isIntegrated": false,
+  "is_integrated": false,
   "is_public": true,
-  "runTestsOnWatch": true,
-  "seedEveryLesson": false,
-  "isResetEnabled": true,
-  "numberofLessons": null,
-  "blockingTests": null,
-  "breakOnFailure": null
+  "run_tests_on_watch": true,
+  "seed_every_lesson": false,
+  "is_reset_enabled": true,
+  "blocking_tests": null,
+  "break_on_failure": null
 }
 ```
 

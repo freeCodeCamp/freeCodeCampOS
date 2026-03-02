@@ -15,7 +15,7 @@ export interface ProjectProps {
   description: string;
   hints: string[];
   loader: LoaderT;
-  lessonNumber: number;
+  lesson_number: number;
   project: ProjectI;
   tests: TestType[];
 }
@@ -28,7 +28,7 @@ export const Project = ({
   goToPreviousLesson,
   loader,
   project,
-  lessonNumber,
+  lesson_number,
   description,
   tests,
   hints,
@@ -38,21 +38,21 @@ export const Project = ({
     <>
       <div className='container'>
         <Heading
-          {...(project.isIntegrated
+          {...(project.is_integrated
             ? { title: project.title }
             : {
                 goToNextLesson,
                 goToPreviousLesson,
-                numberOfLessons: project.numberOfLessons,
+                number_of_lessons: project.number_of_lessons,
                 title: project.title,
-                lessonNumber
+                lesson_number
               })}
         />
 
         <Description description={description} />
 
         <Controls
-          {...(project.isIntegrated
+          {...(project.is_integrated
             ? {
                 cancelTests,
                 runTests,
@@ -62,7 +62,7 @@ export const Project = ({
                 cancelTests,
                 runTests,
                 resetProject,
-                isResetEnabled: project.isResetEnabled,
+                is_reset_enabled: project.is_reset_enabled,
                 tests,
                 loader
               })}

@@ -83,14 +83,37 @@ pub struct HotReloadConfig {
 #[serde(deny_unknown_fields)]
 pub struct ProjectMeta {
     pub id: u32,
+    #[serde(default)]
     pub is_integrated: bool,
+    #[serde(default)]
     pub is_public: bool,
+    #[serde(default)]
     pub run_tests_on_watch: bool,
+    #[serde(default)]
     pub seed_every_lesson: bool,
+    #[serde(default)]
     pub is_reset_enabled: bool,
     pub number_of_lessons: Option<u32>,
     pub blocking_tests: Option<bool>,
     pub break_on_failure: Option<bool>,
+    #[serde(default)]
+    pub tags: Vec<String>,
+}
+
+/// A summary of a project for listing
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProjectSummary {
+    pub id: u32,
+    pub title: String,
+    pub dashed_name: String,
+    pub description: String,
+    pub is_integrated: bool,
+    pub is_public: bool,
+    pub current_lesson: u32,
+    pub number_of_lessons: u32,
+    pub is_reset_enabled: bool,
+    pub tags: Vec<String>,
+    pub completed_date: Option<u64>,
 }
 
 /// A lesson within a project

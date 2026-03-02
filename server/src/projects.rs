@@ -1,22 +1,7 @@
 use std::path::PathBuf;
 use std::fs;
 use parser::CurriculumParser;
-use config::AppConfig;
-use serde::{Serialize, Deserialize};
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct ProjectSummary {
-    pub id: u32,
-    pub title: String,
-    pub dashed_name: String,
-    pub description: String,
-    pub is_integrated: bool,
-    pub is_public: bool,
-    pub current_lesson: u32,
-    pub number_of_lessons: u32,
-    pub is_reset_enabled: bool,
-    pub tags: Vec<String>,
-}
+use config::{AppConfig, ProjectSummary};
 
 pub fn discover_projects(config: &AppConfig) -> Vec<ProjectSummary> {
     tracing::info!("discovering projects");
@@ -50,7 +35,8 @@ pub fn discover_projects(config: &AppConfig) -> Vec<ProjectSummary> {
                                     current_lesson: 0,
                                     number_of_lessons: project.lessons.len() as u32,
                                     is_reset_enabled: project.meta.is_reset_enabled,
-                                    tags: Vec::new(),
+                                    tags: project.meta.tags,
+                                    completed_date: None,
                                 });
                             },
                             Err(e) => tracing::error!("failed to parse project file at {:?}: {}", path, e),
