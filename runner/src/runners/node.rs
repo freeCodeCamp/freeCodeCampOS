@@ -2,9 +2,8 @@ use crate::Runner;
 use anyhow::Result;
 use config::{Hooks, Project, Test};
 use std::fs;
-use std::io::Write;
 use std::process::Command;
-use tempfile::{tempdir, NamedTempFile};
+use tempfile::tempdir;
 
 pub struct NodeRunner;
 
@@ -24,9 +23,8 @@ impl Runner for NodeRunner {
         let test_dir_path = test_dir.path().to_path_buf();
 
         // Write project file
-        let mut project_file = NamedTempFile::new_in(&test_dir_path)?;
-        project_file.write_all(serde_json::to_string(project)?.as_bytes())?;
-        let project_path = project_file.path().to_path_buf();
+        let project_path = test_dir_path.join("project.json");
+        fs::write(&project_path, serde_json::to_string(project)?)?;
 
         // Extract Node-specific hooks
         let node_hooks = serde_json::json!({
@@ -37,27 +35,23 @@ impl Runner for NodeRunner {
         });
 
         // Write hooks file
-        let mut hooks_file = NamedTempFile::new_in(&test_dir_path)?;
-        hooks_file.write_all(serde_json::to_string(&node_hooks)?.as_bytes())?;
-        let hooks_path = hooks_file.path().to_path_buf();
+        let hooks_path = test_dir_path.join("hooks.json");
+        fs::write(&hooks_path, serde_json::to_string(&node_hooks)?)?;
 
         // Write test files
         let mut test_paths = Vec::new();
-        for test in tests.iter() {
-            let mut test_file = NamedTempFile::new_in(&test_dir_path)?;
-            test_file.write_all(serde_json::to_string(test)?.as_bytes())?;
-            let path = test_file.path().to_path_buf();
+        for (i, test) in tests.iter().enumerate() {
+            let path = test_dir_path.join(format!("test-{}.json", i));
+            fs::write(&path, serde_json::to_string(test)?)?;
             test_paths.push(path);
         }
 
         // Write helper scripts
-        let mut entry_file = NamedTempFile::new_in(&test_dir_path)?;
-        entry_file.write_all(NODE_ENTRY.as_bytes())?;
-        let entry_path = entry_file.path().to_path_buf();
+        let entry_path = test_dir_path.join("index.js");
+        fs::write(&entry_path, NODE_ENTRY)?;
 
-        let mut worker_file = NamedTempFile::new_in(&test_dir_path)?;
-        worker_file.write_all(NODE_WORKER.as_bytes())?;
-        let worker_path = worker_file.path().to_path_buf();
+        let worker_path = test_dir_path.join("worker.js");
+        fs::write(&worker_path, NODE_WORKER)?;
 
         // Write manifest
         let manifest = serde_json::json!({
@@ -65,9 +59,8 @@ impl Runner for NodeRunner {
             "hooks_path": hooks_path.to_str().unwrap(),
             "test_paths": test_paths.iter().map(|p| p.to_str().unwrap()).collect::<Vec<_>>(),
         });
-        let mut manifest_file = NamedTempFile::new_in(&test_dir_path)?;
-        manifest_file.write_all(serde_json::to_string(&manifest)?.as_bytes())?;
-        let manifest_path = manifest_file.path().to_path_buf();
+        let manifest_path = test_dir_path.join("manifest.json");
+        fs::write(&manifest_path, serde_json::to_string(&manifest)?)?;
 
         // Execute Node runner
         let output = Command::new("node")

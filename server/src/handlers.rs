@@ -115,6 +115,25 @@ pub async fn run_tests(
         })?;
 
     tracing::info!("test execution completed with {} results", results.len());
+
+    // Check if all tests passed and advance to next lesson if they did
+    let all_passed = results.iter().all(|t| matches!(t.state, config::TestState::Passed));
+    if all_passed {
+        let _ = state.update_projects(|projects| {
+            if let Some(p) = projects.iter_mut().find(|p| p.dashed_name == project_id) {
+                if p.current_lesson == lesson_id {
+                    let next_lesson = lesson_id + 1;
+                    if next_lesson < p.number_of_lessons {
+                        tracing::info!("advancing lesson for project {} from {} to {}", project_id, lesson_id, next_lesson);
+                        p.current_lesson = next_lesson;
+                    }
+                }
+            }
+        }).await;
+        // Broadcast reload to notify WebSocket clients
+        let _ = state.tx.send("reload".to_string());
+    }
+
     Ok(Json(serde_json::json!({
         "project": project_id,
         "lesson": lesson_id,

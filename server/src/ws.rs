@@ -243,7 +243,8 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
                         send_message(tx, "update_tests", serde_json::json!({ "tests": client_tests })).await;
                         
                         if client_tests.iter().all(|t| t.passed) {
-                            tracing::info!("all tests passed for lesson {}", current_lesson);
+                            tracing::info!("all tests passed for lesson {}, moving to next lesson", current_lesson);
+                            handle_change_lesson(state, tx, 1).await;
                         } else {
                             tracing::debug!("some tests failed for lesson {}", current_lesson);
                         }
