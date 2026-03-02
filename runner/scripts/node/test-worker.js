@@ -9,7 +9,7 @@ parentPort.on('message', async ({ code, id }) => {
   let error = null;
   try {
     const _eval_out = await eval(`(async () => {
-      ${before_each}
+      ${before_each || ''}
       ${code}
 })();`);
     passed = true;

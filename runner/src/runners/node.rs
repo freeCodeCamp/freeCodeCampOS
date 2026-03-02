@@ -28,9 +28,17 @@ impl Runner for NodeRunner {
         project_file.write_all(serde_json::to_string(project)?.as_bytes())?;
         let project_path = project_file.path().to_path_buf();
 
+        // Extract Node-specific hooks
+        let node_hooks = serde_json::json!({
+            "before_all": hooks.before_all.get("node"),
+            "after_all": hooks.after_all.get("node"),
+            "before_each": hooks.before_each.get("node"),
+            "after_each": hooks.after_each.get("node"),
+        });
+
         // Write hooks file
         let mut hooks_file = NamedTempFile::new_in(&test_dir_path)?;
-        hooks_file.write_all(serde_json::to_string(hooks)?.as_bytes())?;
+        hooks_file.write_all(serde_json::to_string(&node_hooks)?.as_bytes())?;
         let hooks_path = hooks_file.path().to_path_buf();
 
         // Write test files
