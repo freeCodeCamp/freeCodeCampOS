@@ -3,7 +3,7 @@ use anyhow::Result;
 use config::{Hooks, Project, Test};
 use std::fs;
 use std::process::Command;
-use tempfile::tempdir;
+use tempfile::Builder;
 
 pub struct NodeRunner;
 
@@ -19,7 +19,7 @@ impl Runner for NodeRunner {
         work_dir: &str,
     ) -> Result<Vec<Test>> {
         // Create temporary directory for test files
-        let test_dir = tempdir()?;
+        let test_dir = Builder::new().prefix(".fcc-tests-").tempdir_in(work_dir)?;
         let test_dir_path = test_dir.path().to_path_buf();
 
         // Write project file
