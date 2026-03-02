@@ -1,7 +1,6 @@
 [workspace]
 members = ["config", "parser", "runner", "server", "cli"]
 resolver = "3"
-edition = "2024"
 
 [workspace.package]
 version = "4.0.0"

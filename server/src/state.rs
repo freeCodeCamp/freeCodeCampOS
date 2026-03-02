@@ -1,6 +1,5 @@
-use config::{AppConfig, CourseState};
+use config::{AppConfig, CourseState, ProjectSummary};
 use tokio::sync::{broadcast, RwLock};
-use crate::projects::ProjectSummary;
 
 #[derive(Debug)]
 pub struct AppState {
@@ -33,7 +32,7 @@ impl AppState {
         let discovered = crate::projects::discover_projects(&self.config);
         
         let mut p = self.projects.write().await;
-        let mut cs = self.course_state.write().await;
+        let cs = self.course_state.write().await;
         
         *p = discovered.into_iter().map(|mut summary| {
             if let Some(&lesson) = cs.current_lessons.get(&summary.id) {

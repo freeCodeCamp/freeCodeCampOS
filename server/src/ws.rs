@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use crate::AppState;
 use runner::execute_tests;
-use config::Hooks;
+use config::{Hooks, ProjectSummary};
 
 #[derive(Debug, Deserialize)]
 pub struct ClientMessage {
@@ -233,12 +233,7 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
         tracing::debug!("running tests for project {} lesson {}", project_id, current_lesson);
         if let Some(project) = state.get_project(project_id).await {
             if let Some(lesson) = project.lessons.iter().find(|l| l.id == current_lesson) {
-                let hooks = Hooks {
-                    before_all: lesson.hooks.before_all.clone(),
-                    after_all: lesson.hooks.after_all.clone(),
-                    before_each: lesson.hooks.before_each.clone(),
-                    after_each: lesson.hooks.after_each.clone(),
-                };
+                let hooks = lesson.hooks.clone();
 
                 let work_dir = ".";
                 match execute_tests(&project, lesson.tests.clone(), &hooks, work_dir) {
@@ -307,7 +302,7 @@ async fn handle_reset_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>)
 async fn handle_change_lesson(state: &Arc<AppState>, tx: &mpsc::Sender<Message>, delta: i32) {
     let project_id = state.course_state.read().await.current_project;
     if let Some(project_id) = project_id {
-        let update_res = state.update_projects(|projects| {
+        let update_res = state.update_projects(|projects: &mut Vec<ProjectSummary>| {
             if let Some(p_summary) = projects.iter_mut().find(|p| p.id == project_id) {
                 let new_lesson = (p_summary.current_lesson as i32 + delta).max(0) as u32;
                 if new_lesson < p_summary.number_of_lessons {

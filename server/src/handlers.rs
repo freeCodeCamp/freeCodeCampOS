@@ -102,12 +102,7 @@ pub async fn run_tests(
         })?;
 
     // 3. Prepare hooks
-    let hooks = Hooks {
-        before_all: lesson.before_all.clone(),
-        after_all: lesson.after_all.clone(),
-        before_each: lesson.before_each.clone(),
-        after_each: lesson.after_each.clone(),
-    };
+    let hooks = lesson.hooks.clone();
 
     // 4. Execute tests
     // Use current directory as work_dir for now
