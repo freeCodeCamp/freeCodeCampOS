@@ -79,7 +79,7 @@ const file = await readFile(
   'utf-8'
 );
 await new Promise(resolve => setTimeout(resolve, 5000));
-assert.notInclude(file.slice(0, 100), 'Welcome to freeCodeCampOS!');
+assert.notInclude(file.slice(0, 500), 'Welcome to freeCodeCampOS!');
 ```
 
 I always fail 🙃
