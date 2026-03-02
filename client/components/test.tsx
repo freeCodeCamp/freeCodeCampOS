@@ -7,12 +7,13 @@ export const Test = ({
   passed,
   is_loading,
   test_id,
-  feedback
-}: TestType) => {
+  feedback,
+  index
+}: TestType & { index: number }) => {
   return (
     <li className='test'>
       <span className={passed ? 'passed' : 'failed'}>
-        {test_id + 1}) {is_loading ? <Loader size={'20'} /> : passed ? '✓' : '✗'}{' '}
+        {index + 1}) {is_loading ? <Loader size={'20'} /> : passed ? '✓' : '✗'}{' '}
       </span>
       <div
         style={{ display: 'inline' }}

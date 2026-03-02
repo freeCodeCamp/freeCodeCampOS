@@ -2,7 +2,8 @@
 
 ```json
 {
-  "id": 4,
+  "id": "e5f6a1b2-c3d4-4e5f-1a2b-3c4d5e6f7a8b",
+  "order": 4,
   "is_integrated": false,
   "is_public": true,
   "run_tests_on_watch": true,

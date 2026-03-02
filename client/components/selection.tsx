@@ -8,9 +8,11 @@ export interface SelectionProps {
 export const Selection = ({ sock, projects }: SelectionProps) => {
   return (
     <ul className='blocks'>
-      {projects.map((p, i) => {
-        return <Block key={i} {...{ ...p, sock }} />;
-      })}
+      {projects
+        .sort((a, b) => a.order - b.order)
+        .map((p, i) => {
+          return <Block key={i} {...{ ...p, sock }} />;
+        })}
     </ul>
   );
 };

@@ -8,6 +8,7 @@ use futures::{sink::SinkExt, stream::StreamExt};
 use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
+use uuid::Uuid;
 use crate::AppState;
 use runner::execute_tests;
 use config::{Hooks, ProjectSummary};
@@ -113,7 +114,7 @@ async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
                                 }
                             },
                             "select_project" => {
-                                let id = client_msg.data.get("id").and_then(|v| v.as_u64()).map(|v| v as u32);
+                                let id = client_msg.data.get("id").and_then(|v| v.as_str()).and_then(|v| Uuid::parse_str(v).ok());
                                 tracing::info!("client selected project: {:?}", id);
                                 if let Some(id) = id {
                                     handle_select_project(&state_clone, &tx_out_clone, id).await;
@@ -167,7 +168,7 @@ async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
 
 #[derive(Debug, Serialize)]
 pub struct ClientTest {
-    pub test_id: u32,
+    pub test_id: String,
     pub test_text: String,
     pub passed: bool,
     pub is_loading: bool,
@@ -177,7 +178,7 @@ pub struct ClientTest {
 impl From<config::Test> for ClientTest {
     fn from(test: config::Test) -> Self {
         Self {
-            test_id: test.id,
+            test_id: test.id.to_string(),
             test_text: test.test_text,
             passed: matches!(test.state, config::TestState::Passed),
             is_loading: matches!(test.state, config::TestState::Loading),
@@ -186,7 +187,7 @@ impl From<config::Test> for ClientTest {
     }
 }
 
-async fn handle_select_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>, project_id: u32) {
+async fn handle_select_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>, project_id: Uuid) {
     tracing::debug!("handling project selection: {}", project_id);
     if let Err(e) = state.update_course_state(|s| s.current_project = Some(project_id)).await {
         tracing::error!("failed to update course state: {}", e);
@@ -323,7 +324,7 @@ async fn handle_reset_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>)
             if let Some(lesson) = project.lessons.iter().find(|l| l.id == current_lesson) {
                 if let Some(seed) = &lesson.seed {
                      let seed_test = config::Test {
-                        id: 0,
+                        id: Uuid::new_v4(),
                         test_text: "Seed lesson".to_string(),
                         code: seed.clone(),
                         runner: "bash".to_string(),

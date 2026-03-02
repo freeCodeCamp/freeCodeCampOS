@@ -11,6 +11,7 @@ export const Tests = ({ tests }: TestsProps) => {
       {tests.map(({ test_text, passed, is_loading, test_id, feedback }, i) => (
         <Test
           key={i}
+          index={i}
           {...{
             test_text,
             passed,

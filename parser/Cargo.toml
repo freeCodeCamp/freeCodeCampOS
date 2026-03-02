@@ -15,3 +15,4 @@ comrak = { version = "0.50.0", features = ["shortcodes"] }
 regex = "1.12.3"
 anyhow = "1.0"
 thiserror = "2.0.18"
+uuid = { version = "1.12.1", features = ["v4", "serde"] }

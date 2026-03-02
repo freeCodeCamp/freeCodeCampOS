@@ -24,7 +24,7 @@ export type TestType = {
   test_text: string;
   passed: boolean;
   is_loading: boolean;
-  test_id: number;
+  test_id: string;
   feedback?: string;
 };
 
@@ -37,7 +37,8 @@ export type LoaderT = {
 };
 
 export interface ProjectI {
-  id: number;
+  id: string;
+  order: number;
   title: string;
   description: string;
   is_integrated: boolean;

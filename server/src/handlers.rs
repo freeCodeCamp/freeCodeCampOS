@@ -7,6 +7,7 @@ use std::sync::Arc;
 use parser::CurriculumParser;
 use std::fs;
 use std::path::PathBuf;
+use uuid::Uuid;
 
 use crate::AppState;
 
@@ -187,7 +188,7 @@ pub async fn reset_lesson(
         // We can use BashRunner to execute it.
         // We need to wrap it in a Test struct for the runner.
         let seed_test = config::Test {
-            id: 0,
+            id: Uuid::new_v4(),
             test_text: "Seed lesson".to_string(),
             code: seed.clone(),
             runner: "bash".to_string(),

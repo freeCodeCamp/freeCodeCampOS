@@ -2,6 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use uuid::Uuid;
 
 /// Main application configuration
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -27,11 +28,11 @@ pub struct Config {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct CourseState {
-    pub current_project: Option<u32>,
+    pub current_project: Option<Uuid>,
     pub locale: String,
     pub last_seed: Option<LastSeed>,
     #[serde(default)]
-    pub current_lessons: HashMap<u32, u32>,
+    pub current_lessons: HashMap<Uuid, u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -82,7 +83,8 @@ pub struct HotReloadConfig {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ProjectMeta {
-    pub id: u32,
+    pub id: Uuid,
+    pub order: u32,
     #[serde(default)]
     pub is_integrated: bool,
     #[serde(default)]
@@ -103,7 +105,8 @@ pub struct ProjectMeta {
 /// A summary of a project for listing
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProjectSummary {
-    pub id: u32,
+    pub id: Uuid,
+    pub order: u32,
     pub title: String,
     pub dashed_name: String,
     pub description: String,
@@ -130,7 +133,7 @@ pub struct Lesson {
 /// A test that runs for a lesson
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Test {
-    pub id: u32,
+    pub id: Uuid,
     pub test_text: String,
     pub code: String,
     pub runner: String,

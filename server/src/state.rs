@@ -1,5 +1,6 @@
 use config::{AppConfig, CourseState, ProjectSummary};
 use tokio::sync::{broadcast, RwLock};
+use uuid::Uuid;
 
 #[derive(Debug)]
 pub struct AppState {
@@ -89,7 +90,7 @@ impl AppState {
         Ok(res)
     }
 
-    pub async fn get_project(&self, project_id: u32) -> Option<config::Project> {
+    pub async fn get_project(&self, project_id: Uuid) -> Option<config::Project> {
         let (locale, dashed_name) = {
             let cs = self.course_state.read().await;
             let projects = self.projects.read().await;

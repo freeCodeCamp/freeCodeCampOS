@@ -3,6 +3,7 @@
 use anyhow::{anyhow, Result};
 use config::{Lesson, Project, ProjectMeta, Test};
 use regex::Regex;
+use uuid::Uuid;
 
 pub struct CurriculumParser;
 
@@ -130,7 +131,7 @@ impl CurriculumParser {
                     let runner = extract_runner(&current_lang);
                     if current_section == "tests" && !current_code.is_empty() {
                         tests.push(Test {
-                            id: tests.len() as u32,
+                            id: Uuid::new_v4(),
                             test_text: current_test_text.trim().to_string(),
                             code: current_code.trim().to_string(),
                             runner,
@@ -217,7 +218,8 @@ fn extract_meta(content: &str) -> Result<ProjectMeta> {
     } else {
         // Return default meta if not found
         Ok(ProjectMeta {
-            id: 0,
+            id: Uuid::nil(),
+            order: 0,
             is_integrated: false,
             is_public: true,
             run_tests_on_watch: true,
@@ -256,12 +258,13 @@ mod tests {
 
 ```json
 {
-  "id": 0,
+  "id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+  "order": 0,
   "is_integrated": false,
   "is_public": true,
   "run_tests_on_watch": true,
   "seed_every_lesson": false,
-  "is_reset_enabled": true,
+  "is_reset_enabled": true
 }
 ```
 
@@ -292,7 +295,8 @@ assert(true);
 
 ```json
 {
-  "id": 0,
+  "id": "b2c3d4e5-f6a1-4b5c-9d0e-1f2a3b4c5d6e",
+  "order": 0,
   "is_integrated": false,
   "is_public": true,
   "run_tests_on_watch": true,

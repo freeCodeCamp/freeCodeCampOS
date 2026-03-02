@@ -27,6 +27,7 @@ pub fn discover_projects(config: &AppConfig) -> Vec<ProjectSummary> {
                                 tracing::info!("discovered project: {} (id: {})", project.title, project.meta.id);
                                 projects.push(ProjectSummary {
                                     id: project.meta.id,
+                                    order: project.meta.order,
                                     title: project.title,
                                     dashed_name,
                                     description: project.description,
@@ -53,8 +54,8 @@ pub fn discover_projects(config: &AppConfig) -> Vec<ProjectSummary> {
         tracing::error!("locale 'english' not found in config");
     }
     
-    // Sort projects by ID
-    projects.sort_by_key(|p| p.id);
+    // Sort projects by order
+    projects.sort_by_key(|p| p.order);
     tracing::info!("discovered {} total projects", projects.len());
     projects
 }
