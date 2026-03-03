@@ -98,7 +98,7 @@
 
 2. Instead of `FCC_OS_PORT` environment variable, use `port` field in `freecodecamp.conf.json` file
 3. Add a SemVer compliant `version` field to `freecodecamp.conf.json` file
-4. Remove the `title` and `description` fields in the `project.json`, and add the `description` to each corresponding Markdown file immediately after the `title`
+4. Remove the `title` and `description` fields in the `projects.json`, and add the `description` to each corresponding Markdown file immediately after the `title`
 5. Rename the `.terminal-out.log` file to `.terminal_out.log`
 
 ## [2.1.0] - 2024-01-23

@@ -94,6 +94,8 @@ pub fn add_project() -> InquireResult<()> {
     };
     let project = Project {
         id,
+        title: title.clone(),
+        order: id,
         dashed_name,
         current_lesson: 0,
         is_integrated,

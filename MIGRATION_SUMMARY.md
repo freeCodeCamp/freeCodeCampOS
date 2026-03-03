@@ -53,7 +53,7 @@ Successfully migrated freeCodeCampOS from Node.js/Webpack architecture to a mode
 
 #### `server` (HTTP API)
 - **Status**: Complete
-- **Framework**: Axum 0.7
+- **Framework**: Axum 0.8
 - **Features**:
   - REST API endpoints
   - WebSocket support infrastructure
@@ -62,9 +62,9 @@ Successfully migrated freeCodeCampOS from Node.js/Webpack architecture to a mode
   - Configuration management
 - **Endpoints**:
   - `GET /health` - Health check
-  - `GET /api/curriculum/:project` - Fetch curriculum
-  - `POST /api/tests/:project/:lesson` - Run tests
-  - `POST /api/reset/:project/:lesson` - Reset lesson
+  - `GET /api/curriculum/{project}` - Fetch curriculum
+  - `POST /api/tests/{project}/{lesson}` - Run tests
+  - `POST /api/reset/{project}/{lesson}` - Reset lesson
 - **WebSocket**: Infrastructure in place for real-time updates
 
 #### `cli` (Command-Line Tool)

@@ -92,21 +92,28 @@ freeCodeCampOS/
 
 ## Curriculum Format
 
-Curricula are written in GitHub Flavored Markdown with embedded JSON metadata:
+Curricula are written in GitHub Flavored Markdown. Project metadata is defined in a separate `projects.json` file:
 
+**`config/projects.json`**:
+```json
+[
+  {
+    "id": "e5f6a1b2-c3d4-4e5f-1a2b-3c4d5e6f7a8b",
+    "title": "Course Title",
+    "dashed_name": "course-title",
+    "order": 0,
+    "is_integrated": false,
+    "is_public": true,
+    "run_tests_on_watch": true,
+    "seed_every_lesson": false,
+    "is_reset_enabled": true
+  }
+]
+```
+
+**`curriculum/locales/english/course-title.md`**:
 ````markdown
 # Course Title
-
-```json
-{
-  "id": 0,
-  "is_integrated": false,
-  "is_public": true,
-  "run_tests_on_watch": true,
-  "seed_every_lesson": false,
-  "is_reset_enabled": true
-}
-```
 
 Course description and introduction.
 

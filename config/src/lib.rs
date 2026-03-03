@@ -79,11 +79,13 @@ pub struct HotReloadConfig {
     pub ignore: Vec<String>,
 }
 
-/// Project metadata embedded in markdown
+/// Project metadata
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ProjectMeta {
     pub id: Uuid,
+    pub title: String,
+    pub dashed_name: String,
     pub order: u32,
     #[serde(default)]
     pub is_integrated: bool,

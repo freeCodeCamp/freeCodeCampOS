@@ -1,16 +1,5 @@
 # Leer freeCodeCampOS
 
-```json
-{
-  "id": 4,
-  "is_integrated": false,
-  "is_public": true,
-  "run_tests_on_watch": true,
-  "seed_every_lesson": false,
-  "is_reset_enabled": true
-}
-```
-
 In hierdie kursus, jy sal leer hoe om 'n kursus te skep met `@freecodecamp/freecodecamp-os`.
 
 ## 0

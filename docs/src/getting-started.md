@@ -66,8 +66,10 @@ Create the `projects.json` file:
 ```json
 [
   {
-    "id": 0,
-    "dashedName": "<PROJECT_DASHED_NAME>"
+    "id": "e5f6a1b2-c3d4-4e5f-1a2b-3c4d5e6f7a8b",
+    "title": "Course Title",
+    "dashed_name": "<PROJECT_DASHED_NAME>",
+    "order": 0
   }
 ]
 ```
@@ -82,7 +84,7 @@ Create the `state.json` file:
 {}
 ```
 
-Initialise this file with the initial state of the course. If you want the course to start on a project (instead of the landing page), replace `null` with the `dashedName` of the project.
+Initialise this file with the initial state of the course. If you want the course to start on a project (instead of the landing page), replace `null` with the `id` of the project.
 
 Create the curricula files:
 

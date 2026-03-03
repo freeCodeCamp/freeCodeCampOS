@@ -19,37 +19,20 @@ pub async fn get_curriculum(
     State(state): State<Arc<AppState>>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, String)> {
     tracing::info!("retrieving curriculum for project: {}", project_id);
-    // Find project file path from config
-    // For now we use english locale and look in the directory from config
-    let locale = "english";
-    let locale_dir = state.config.curriculum.locales.get(locale)
+    
+    let project = state.get_project_by_dashed_name(&project_id).await
         .ok_or_else(|| {
-            tracing::error!("locale 'english' not found");
-            (StatusCode::NOT_FOUND, "Locale not found".to_string())
-        })?;
-    
-    let project_path = PathBuf::from(locale_dir).join(format!("{}.md", project_id));
-    tracing::debug!("looking for curriculum at {:?}", project_path);
-    
-    if !project_path.exists() {
-        tracing::error!("project file not found at {:?}", project_path);
-        return Err((StatusCode::NOT_FOUND, format!("Project file not found at {:?}", project_path)));
-    }
-
-    let parsed = CurriculumParser::parse_project(&project_path)
-        .map_err(|e| {
-            tracing::error!("failed to parse project file at {:?}", project_path);
-            eprintln!("{e:?}");
-            (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to parse project: {}", e))
+            tracing::error!("project {} not found", project_id);
+            (StatusCode::NOT_FOUND, format!("Project {} not found", project_id))
         })?;
 
-    tracing::info!("curriculum retrieved: {}", parsed.title);
+    tracing::info!("curriculum retrieved: {}", project.title);
     // Return as JSON
     Ok(Json(serde_json::json!({
-        "title": parsed.title,
-        "description": parsed.description,
-        "meta": parsed.meta,
-        "lessons": parsed.lessons
+        "title": project.title,
+        "description": project.description,
+        "meta": project.meta,
+        "lessons": project.lessons
     })))
 }
 
@@ -63,25 +46,10 @@ pub async fn run_tests(
 ) -> Result<Json<serde_json::Value>, (StatusCode, String)> {
     tracing::info!("running tests for project: {}, lesson: {}", project_id, lesson_id);
     // 1. Find and parse project
-    let locale = "english";
-    let locale_dir = state.config.curriculum.locales.get(locale)
+    let project = state.get_project_by_dashed_name(&project_id).await
         .ok_or_else(|| {
-            tracing::error!("locale 'english' not found");
-            (StatusCode::NOT_FOUND, "Locale not found".to_string())
-        })?;
-    
-    let project_path = PathBuf::from(locale_dir).join(format!("{}.md", project_id));
-    
-    if !project_path.exists() {
-        tracing::error!("project file not found at {:?}", project_path);
-        return Err((StatusCode::NOT_FOUND, format!("Project file not found at {:?}", project_path)));
-    }
-
-    let project = CurriculumParser::parse_project(&project_path)
-        .map_err(|e| {
-            tracing::error!("failed to parse project file at {:?}", project_path);
-            eprintln!("{e:?}");
-            (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to parse project: {}", e))
+            tracing::error!("project {} not found", project_id);
+            (StatusCode::NOT_FOUND, format!("Project {} not found", project_id))
         })?;
 
     // 2. Find lesson
@@ -137,25 +105,10 @@ pub async fn reset_lesson(
 ) -> Result<Json<serde_json::Value>, (StatusCode, String)> {
     tracing::info!("resetting lesson for project: {}, lesson: {}", project_id, lesson_id);
     // 1. Find and parse project
-    let locale = "english";
-    let locale_dir = state.config.curriculum.locales.get(locale)
+    let project = state.get_project_by_dashed_name(&project_id).await
         .ok_or_else(|| {
-            tracing::error!("locale 'english' not found");
-            (StatusCode::NOT_FOUND, "Locale not found".to_string())
-        })?;
-    
-    let project_path = PathBuf::from(locale_dir).join(format!("{}.md", project_id));
-    
-    if !project_path.exists() {
-        tracing::error!("project file not found at {:?}", project_path);
-        return Err((StatusCode::NOT_FOUND, format!("Project file not found at {:?}", project_path)));
-    }
-
-    let project = CurriculumParser::parse_project(&project_path)
-        .map_err(|e| {
-            tracing::error!("failed to parse project file at {:?}", project_path);
-            eprintln!("{e:?}");
-            (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to parse project: {}", e))
+            tracing::error!("project {} not found", project_id);
+            (StatusCode::NOT_FOUND, format!("Project {} not found", project_id))
         })?;
 
     // 2. Find lesson

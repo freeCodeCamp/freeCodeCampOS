@@ -71,7 +71,7 @@ pub struct CurriculumParser;
 
 impl CurriculumParser {
     /// Parse a curriculum markdown file from a path
-    pub fn parse_project<P: AsRef<std::path::Path>>(path: P) -> Result<Project> {
+    pub fn parse_project<P: AsRef<std::path::Path>>(path: P, meta: ProjectMeta) -> Result<Project> {
         let path = path.as_ref();
         let markdown = std::fs::read_to_string(path).map_err(ParserError::IoError)?;
         let file_name = path.file_name()
@@ -79,15 +79,15 @@ impl CurriculumParser {
             .unwrap_or("curriculum.md")
             .to_string();
         
-        Self::parse_project_internal(&markdown, file_name)
+        Self::parse_project_internal(&markdown, file_name, meta)
     }
 
     /// Parse a curriculum markdown string (useful for tests)
-    pub fn parse_project_from_str(markdown: &str) -> Result<Project> {
-        Self::parse_project_internal(markdown, "memory.md".to_string())
+    pub fn parse_project_from_str(markdown: &str, meta: ProjectMeta) -> Result<Project> {
+        Self::parse_project_internal(markdown, "memory.md".to_string(), meta)
     }
 
-    fn parse_project_internal(markdown: &str, file_name: String) -> Result<Project> {
+    fn parse_project_internal(markdown: &str, file_name: String, mut meta: ProjectMeta) -> Result<Project> {
         let arena = Arena::new();
         let mut options = Options::default();
         options.extension.shortcodes = true;
@@ -96,7 +96,6 @@ impl CurriculumParser {
         let src = NamedSource::new(file_name, markdown.to_string());
 
         let mut title = None;
-        let mut meta = None;
         let mut description_nodes = Vec::new();
         let mut lessons = Vec::new();
 
@@ -121,16 +120,6 @@ impl CurriculumParser {
                         }.into());
                     }
                 }
-                NodeValue::CodeBlock(c) if !first_lesson_found && c.info == "json" && meta.is_none() => {
-                    let m: ProjectMeta = serde_json::from_str(&c.literal).map_err(|e| {
-                        ParserError::JsonError {
-                            error: e,
-                            src: src.clone(),
-                            span: source_pos_to_span(markdown, data.sourcepos),
-                        }
-                    })?;
-                    meta = Some(m);
-                }
                 _ if !first_lesson_found => {
                     if title.is_some() {
                          description_nodes.push(node);
@@ -144,20 +133,6 @@ impl CurriculumParser {
             src: src.clone(),
             span: (0, 0).into(),
         })?;
-
-        let mut meta = meta.unwrap_or(ProjectMeta {
-            id: Uuid::nil(),
-            order: 0,
-            is_integrated: false,
-            is_public: true,
-            run_tests_on_watch: true,
-            seed_every_lesson: false,
-            is_reset_enabled: true,
-            number_of_lessons: None,
-            blocking_tests: None,
-            break_on_failure: None,
-            tags: vec![]
-        });
 
         if lessons.is_empty() {
             return Err(ParserError::NoLessons { src }.into());
@@ -373,21 +348,27 @@ fn extract_runner(lang: &str) -> String {
 mod tests {
     use super::*;
 
+    fn create_test_meta() -> ProjectMeta {
+        ProjectMeta {
+            id: Uuid::new_v4(),
+            title: "Test Project".to_string(),
+            dashed_name: "test-project".to_string(),
+            order: 0,
+            is_integrated: false,
+            is_public: true,
+            run_tests_on_watch: true,
+            seed_every_lesson: false,
+            is_reset_enabled: true,
+            number_of_lessons: None,
+            blocking_tests: None,
+            break_on_failure: None,
+            tags: vec![]
+        }
+    }
+
     #[test]
     fn test_parse_basic_curriculum() {
         let markdown = r#"# Learn Rust
-
-```json
-{
-  "id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
-  "order": 0,
-  "is_integrated": false,
-  "is_public": true,
-  "run_tests_on_watch": true,
-  "seed_every_lesson": false,
-  "is_reset_enabled": true
-}
-```
 
 Learn Rust basics.
 
@@ -403,7 +384,7 @@ Welcome!
 assert(true);
 ```
 "#;
-        let result = CurriculumParser::parse_project_from_str(markdown);
+        let result = CurriculumParser::parse_project_from_str(markdown, create_test_meta());
         assert!(result.is_ok());
         let parsed = result.unwrap();
         assert_eq!(parsed.title, "Learn Rust");
@@ -413,18 +394,6 @@ assert(true);
     #[test]
     fn test_description_paragraphs() {
         let markdown = r#"# Project Title
-
-```json
-{
-  "id": "b2c3d4e5-f6a1-4b5c-9d0e-1f2a3b4c5d6e",
-  "order": 0,
-  "is_integrated": false,
-  "is_public": true,
-  "run_tests_on_watch": true,
-  "seed_every_lesson": false,
-  "is_reset_enabled": true
-}
-```
 
 Project description paragraph one.
 
@@ -444,7 +413,7 @@ Lesson paragraph two.
 assert(true);
 ```
 "#;
-        let project = CurriculumParser::parse_project_from_str(markdown).unwrap();
+        let project = CurriculumParser::parse_project_from_str(markdown, create_test_meta()).unwrap();
         
         assert!(project.description.contains("Project description paragraph one."), "Should contain project description paragraph one");
         assert!(project.description.contains("Project description paragraph two."), "Should contain project description paragraph two");
@@ -457,10 +426,6 @@ assert(true);
     #[test]
     fn test_multiple_hooks_fail() {
         let markdown = r#"# Project
-
-```json
-{ "id": "b2c3d4e5-f6a1-4b5c-9d0e-1f2a3b4c5d6e", "order": 0 }
-```
 
 ## 1
 ### --before-all--
@@ -475,7 +440,7 @@ echo "second"
 assert(true);
 ```
 "#;
-        let result = CurriculumParser::parse_project_from_str(markdown);
+        let result = CurriculumParser::parse_project_from_str(markdown, create_test_meta());
         assert!(result.is_err());
         assert!(result.unwrap_err().to_string().contains("Multiple before-all hooks found. Only one block is allowed."));
     }

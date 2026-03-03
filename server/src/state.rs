@@ -98,6 +98,14 @@ impl AppState {
             (cs.locale.clone(), p.dashed_name.clone())
         };
 
+        // Read projects.json to get full metadata
+        let projects_json_path = std::path::PathBuf::from(&self.config.config.projects);
+        let project_metas: Vec<config::ProjectMeta> = match std::fs::read_to_string(projects_json_path) {
+            Ok(content) => serde_json::from_str(&content).ok()?,
+            Err(_) => return None,
+        };
+        let meta = project_metas.into_iter().find(|m| m.id == project_id)?;
+
         let locale_dir = self.config.curriculum.locales.get(&locale)?;
         let project_path = std::path::PathBuf::from(locale_dir).join(format!("{}.md", dashed_name));
 
@@ -106,7 +114,7 @@ impl AppState {
             return None;
         }
 
-        match parser::CurriculumParser::parse_project(&project_path) {
+        match parser::CurriculumParser::parse_project(&project_path, meta) {
             Ok(p) => Some(p),
             Err(e) => {
                 tracing::error!("failed to parse project file at {:?}", project_path);
@@ -114,6 +122,17 @@ impl AppState {
                 None
             }
         }
+    }
+
+    pub async fn get_project_by_dashed_name(&self, dashed_name: &str) -> Option<config::Project> {
+        let (locale, id) = {
+            let cs = self.course_state.read().await;
+            let projects = self.projects.read().await;
+            let p = projects.iter().find(|p| p.dashed_name == dashed_name)?;
+            (cs.locale.clone(), p.id)
+        };
+
+        self.get_project(id).await
     }
 
     pub async fn save_course_state(&self) -> anyhow::Result<()> {

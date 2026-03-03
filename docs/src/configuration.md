@@ -146,19 +146,22 @@ Currently, `english` is a required locale, and is used as the default.
 
 ## `projects.json`
 
+The `projects.json` file is where you define the project(s) metadata.
+
 ### Definitions
 
-- `id`: A unique, incremental integer - `number`
+- `id`: A unique UUID - `string`
+- `title`: The title of the project - `string`
 - `dashedName`: The name of the project corresponding to the `curriculum/locales/<PROJECT_DASHED_NAME>.md` file - `string`
-- `isIntegrated`: Whether or not to treat the project as a single-lesson project - `boolean` (default: `false`)
-- `isPublic`: Whether or not to enable the project for public viewing. **Note:** the project will still be visible on the landing page, but will be disabled - `boolean` (default: `false`)
-- `currentLesson`: The current lesson of the project - `number` (default: `1`)
-- `runTestsOnWatch`: Whether or not to run tests on file change - `boolean` (default: `false`)
-- `isResetEnabled`: Whether or not to enable the reset button - `boolean` (default: `false`)
-- `numberOfLessons`: The number of lessons in the project - `number`[^1]
-- `seedEveryLesson`: Whether or not to run the seed on lesson load - `boolean` (default: `false`)
-- `blockingTests`: Run tests synchronously - `boolean` (default: `false`)
-  - `breakOnFailure`: Stop running tests on the first failure - `boolean` (default: `false`)
+- `order`: The order in which the project should be displayed - `number`
+- `is_integrated`: Whether or not to treat the project as a single-lesson project - `boolean` (default: `false`)
+- `is_public`: Whether or not to enable the project for public viewing. **Note:** the project will still be visible on the landing page, but will be disabled - `boolean` (default: `false`)
+- `run_tests_on_watch`: Whether or not to run tests on file change - `boolean` (default: `false`)
+- `is_reset_enabled`: Whether or not to enable the reset button - `boolean` (default: `false`)
+- `number_of_lessons`: The number of lessons in the project - `number`[^1]
+- `seed_every_lesson`: Whether or not to run the seed on lesson load - `boolean` (default: `false`)
+- `blocking_tests`: Run tests synchronously - `boolean` (default: `false`)
+  - `break_on_failure`: Stop running tests on the first failure - `boolean` (default: `false`)
 
 [^1]: This is automagically calculated when the app is launched.
 
@@ -167,8 +170,10 @@ Currently, `english` is a required locale, and is used as the default.
 ```json
 [
   {
-    "id": 0, // Unique ID
-    "dashedName": "<PROJECT_DASHED_NAME>"
+    "id": "e5f6a1b2-c3d4-4e5f-1a2b-3c4d5e6f7a8b",
+    "title": "Course Title",
+    "dashedName": "<PROJECT_DASHED_NAME>",
+    "order": 0
   }
 ]
 ```
@@ -179,11 +184,13 @@ Currently, `english` is a required locale, and is used as the default.
 ```json
 [
   {
-    "id": 0,
+    "id": "e5f6a1b2-c3d4-4e5f-1a2b-3c4d5e6f7a8b",
+    "title": "Learn X by Building Y",
     "dashedName": "learn-x-by-building-y",
+    "order": 0,
     "isIntegrated": false,
     "isPublic": false,
-    "currentLesson": 1,
+    "currentLesson": 0,
     "runTestsOnWatch": false,
     "isResetEnabled": false,
     "numberOfLessons": 10,
