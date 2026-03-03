@@ -55,5 +55,3 @@ The `index.js` file should be run.
 const { access, constants } = await import('fs/promises');
 await access(join(ROOT, project.dashedName, 'log'), constants.F_OK);
 ```
-
-## --fcc-end--

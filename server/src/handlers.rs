@@ -5,7 +5,6 @@ use axum::{
 };
 use std::sync::Arc;
 use parser::CurriculumParser;
-use std::fs;
 use std::path::PathBuf;
 use uuid::Uuid;
 
@@ -37,15 +36,10 @@ pub async fn get_curriculum(
         return Err((StatusCode::NOT_FOUND, format!("Project file not found at {:?}", project_path)));
     }
 
-    let content = fs::read_to_string(&project_path)
+    let parsed = CurriculumParser::parse_project(&project_path)
         .map_err(|e| {
-            tracing::error!("failed to read project file at {:?}: {}", project_path, e);
-            (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to read file: {}", e))
-        })?;
-
-    let parsed = CurriculumParser::parse_project(&content)
-        .map_err(|e| {
-            tracing::error!("failed to parse project file at {:?}: {}", project_path, e);
+            tracing::error!("failed to parse project file at {:?}", project_path);
+            eprintln!("{e:?}");
             (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to parse project: {}", e))
         })?;
 
@@ -83,15 +77,10 @@ pub async fn run_tests(
         return Err((StatusCode::NOT_FOUND, format!("Project file not found at {:?}", project_path)));
     }
 
-    let content = fs::read_to_string(&project_path)
+    let project = CurriculumParser::parse_project(&project_path)
         .map_err(|e| {
-            tracing::error!("failed to read project file at {:?}: {}", project_path, e);
-            (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to read file: {}", e))
-        })?;
-
-    let project = CurriculumParser::parse_project(&content)
-        .map_err(|e| {
-            tracing::error!("failed to parse project file at {:?}: {}", project_path, e);
+            tracing::error!("failed to parse project file at {:?}", project_path);
+            eprintln!("{e:?}");
             (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to parse project: {}", e))
         })?;
 
@@ -162,15 +151,10 @@ pub async fn reset_lesson(
         return Err((StatusCode::NOT_FOUND, format!("Project file not found at {:?}", project_path)));
     }
 
-    let content = fs::read_to_string(&project_path)
+    let project = CurriculumParser::parse_project(&project_path)
         .map_err(|e| {
-            tracing::error!("failed to read project file at {:?}: {}", project_path, e);
-            (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to read file: {}", e))
-        })?;
-
-    let project = CurriculumParser::parse_project(&content)
-        .map_err(|e| {
-            tracing::error!("failed to parse project file at {:?}: {}", project_path, e);
+            tracing::error!("failed to parse project file at {:?}", project_path);
+            eprintln!("{e:?}");
             (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to parse project: {}", e))
         })?;
 

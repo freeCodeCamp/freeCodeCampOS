@@ -121,5 +121,3 @@ Hello
 ```bash
 npm install
 ```
-
-## --fcc-end--

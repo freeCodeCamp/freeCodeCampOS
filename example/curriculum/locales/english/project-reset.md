@@ -117,5 +117,3 @@ File from lesson 3
 ```bash
 echo "Lesson 3" && sleep 2
 ```
-
-## --fcc-end--

@@ -953,5 +953,3 @@ When you are done, type `done` in the terminal.
 const lastCommand = await __helpers.getLastCommand();
 assert.include(lastCommand, 'done');
 ```
-
-## --fcc-end--

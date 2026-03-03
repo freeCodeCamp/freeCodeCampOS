@@ -70,5 +70,3 @@ This always fails.
 ```js
 assert.fail();
 ```
-
-## --fcc-end--

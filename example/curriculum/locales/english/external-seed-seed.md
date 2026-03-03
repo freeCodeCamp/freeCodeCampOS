@@ -26,5 +26,3 @@ console.log(a);
 touch external-seed/log
 node external-seed/index.js > external-seed/log
 ```
-
-## --fcc-end--

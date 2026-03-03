@@ -106,8 +106,14 @@ impl AppState {
             return None;
         }
 
-        let content = std::fs::read_to_string(&project_path).ok()?;
-        parser::CurriculumParser::parse_project(&content).ok()
+        match parser::CurriculumParser::parse_project(&project_path) {
+            Ok(p) => Some(p),
+            Err(e) => {
+                tracing::error!("failed to parse project file at {:?}", project_path);
+                eprintln!("{e:?}");
+                None
+            }
+        }
     }
 
     pub async fn save_course_state(&self) -> anyhow::Result<()> {
