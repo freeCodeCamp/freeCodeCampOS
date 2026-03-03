@@ -28,10 +28,10 @@ impl Runner for NodeRunner {
 
         // Extract Node-specific hooks
         let node_hooks = serde_json::json!({
-            "before_all": hooks.before_all.get("node"),
-            "after_all": hooks.after_all.get("node"),
-            "before_each": hooks.before_each.get("node"),
-            "after_each": hooks.after_each.get("node"),
+            "before_all": hooks.before_all.as_ref().filter(|h| h.runner == "node" || h.runner == "js" || h.runner == "javascript").map(|h| &h.code),
+            "after_all": hooks.after_all.as_ref().filter(|h| h.runner == "node" || h.runner == "js" || h.runner == "javascript").map(|h| &h.code),
+            "before_each": hooks.before_each.as_ref().filter(|h| h.runner == "node" || h.runner == "js" || h.runner == "javascript").map(|h| &h.code),
+            "after_each": hooks.after_each.as_ref().filter(|h| h.runner == "node" || h.runner == "js" || h.runner == "javascript").map(|h| &h.code),
         });
 
         // Write hooks file

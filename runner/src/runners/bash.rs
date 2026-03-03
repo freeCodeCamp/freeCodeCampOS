@@ -14,10 +14,10 @@ impl Runner for BashRunner {
     ) -> Result<Vec<Test>> {
         let mut results = Vec::new();
 
-        let bash_before_all = hooks.before_all.get("bash");
-        let bash_after_all = hooks.after_all.get("bash");
-        let bash_before_each = hooks.before_each.get("bash");
-        let bash_after_each = hooks.after_each.get("bash");
+        let bash_before_all = hooks.before_all.as_ref().filter(|h| h.runner == "bash" || h.runner == "sh").map(|h| &h.code);
+        let bash_after_all = hooks.after_all.as_ref().filter(|h| h.runner == "bash" || h.runner == "sh").map(|h| &h.code);
+        let bash_before_each = hooks.before_each.as_ref().filter(|h| h.runner == "bash" || h.runner == "sh").map(|h| &h.code);
+        let bash_after_each = hooks.after_each.as_ref().filter(|h| h.runner == "bash" || h.runner == "sh").map(|h| &h.code);
 
         // Run before_all hook
         if let Some(code) = bash_before_all {

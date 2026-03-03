@@ -54,9 +54,7 @@ impl CurriculumParser {
                         vec![]
                     };
 
-                    if let Ok(lesson) = Self::parse_lesson(id, &lesson_lines.join("\n")) {
-                        lessons.push(lesson);
-                    }
+                    lessons.push(Self::parse_lesson(id, &lesson_lines.join("\n"))?);
                 }
             }
         }
@@ -142,13 +140,25 @@ impl CurriculumParser {
                     } else if current_section == "seed" && !current_code.is_empty() {
                         seed_content.push_str(&current_code);
                     } else if current_section == "before-each" && !current_code.is_empty() {
-                        hooks.before_each.entry(runner).or_default().push_str(&current_code);
+                        if hooks.before_each.is_some() {
+                            return Err(anyhow!("Multiple before-each hooks found. Only one block is allowed."));
+                        }
+                        hooks.before_each = Some(config::Hook { runner, code: current_code.trim().to_string() });
                     } else if current_section == "after-each" && !current_code.is_empty() {
-                        hooks.after_each.entry(runner).or_default().push_str(&current_code);
+                        if hooks.after_each.is_some() {
+                            return Err(anyhow!("Multiple after-each hooks found. Only one block is allowed."));
+                        }
+                        hooks.after_each = Some(config::Hook { runner, code: current_code.trim().to_string() });
                     } else if current_section == "before-all" && !current_code.is_empty() {
-                        hooks.before_all.entry(runner).or_default().push_str(&current_code);
+                        if hooks.before_all.is_some() {
+                            return Err(anyhow!("Multiple before-all hooks found. Only one block is allowed."));
+                        }
+                        hooks.before_all = Some(config::Hook { runner, code: current_code.trim().to_string() });
                     } else if current_section == "after-all" && !current_code.is_empty() {
-                        hooks.after_all.entry(runner).or_default().push_str(&current_code);
+                        if hooks.after_all.is_some() {
+                            return Err(anyhow!("Multiple after-all hooks found. Only one block is allowed."));
+                        }
+                        hooks.after_all = Some(config::Hook { runner, code: current_code.trim().to_string() });
                     }
                     in_code_block = false;
                     current_code.clear();
@@ -333,5 +343,31 @@ assert(true);
         assert!(lesson.description.contains("Lesson paragraph one."), "Should contain lesson paragraph one");
         assert!(lesson.description.contains("Lesson paragraph two."), "Should contain lesson paragraph two");
         assert!(lesson.description.contains("\n\n"), "Should preserve lesson description paragraph separation");
+    }
+
+    #[test]
+    fn test_multiple_hooks_fail() {
+        let markdown = r#"# Project
+
+```json
+{ "id": "b2c3d4e5-f6a1-4b5c-9d0e-1f2a3b4c5d6e", "order": 0 }
+```
+
+## 1
+### --before-all--
+```bash
+echo "first"
+```
+```bash
+echo "second"
+```
+### --tests--
+```js
+assert(true);
+```
+"#;
+        let result = CurriculumParser::parse_project(markdown);
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "Multiple before-all hooks found. Only one block is allowed.");
     }
 }

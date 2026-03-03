@@ -178,12 +178,18 @@ pub struct Project {
 }
 
 /// Hook definitions for tests
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Hook {
+    pub runner: String,
+    pub code: String,
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Hooks {
-    pub before_all: HashMap<String, String>,
-    pub after_all: HashMap<String, String>,
-    pub before_each: HashMap<String, String>,
-    pub after_each: HashMap<String, String>,
+    pub before_all: Option<Hook>,
+    pub after_all: Option<Hook>,
+    pub before_each: Option<Hook>,
+    pub after_each: Option<Hook>,
 }
 
 /// Test manifest for execution
