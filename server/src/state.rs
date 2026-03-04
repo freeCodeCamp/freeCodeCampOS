@@ -125,7 +125,7 @@ impl AppState {
     }
 
     pub async fn get_project_by_dashed_name(&self, dashed_name: &str) -> Option<config::Project> {
-        let (locale, id) = {
+        let (_locale, id) = {
             let cs = self.course_state.read().await;
             let projects = self.projects.read().await;
             let p = projects.iter().find(|p| p.dashed_name == dashed_name)?;

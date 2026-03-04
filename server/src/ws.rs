@@ -11,7 +11,7 @@ use tokio::sync::mpsc;
 use uuid::Uuid;
 use crate::AppState;
 use runner::{NodeRunner, BashRunner, Runner};
-use config::{Hooks, ProjectSummary};
+use config::ProjectSummary;
 
 #[derive(Debug, Deserialize)]
 pub struct ClientMessage {
@@ -198,11 +198,19 @@ impl From<config::Test> for ClientTest {
 
 async fn handle_select_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>, project_id: Uuid) {
     tracing::debug!("handling project selection: {}", project_id);
-    if let Err(e) = state.update_course_state(|s| s.current_project = Some(project_id)).await {
-        tracing::error!("failed to update course state: {}", e);
+    
+    // Only update state if it has changed to prevent recursion during hot-reload
+    let changed = {
+        let s = state.course_state.read().await;
+        s.current_project != Some(project_id)
+    };
+    if changed {
+        if let Err(e) = state.update_course_state(|s| s.current_project = Some(project_id)).await {
+            tracing::error!("failed to update course state: {}", e);
+        }
     }
 
-    // Load project content
+    // Load project content and notify client
     if let Some(project) = state.get_project(project_id).await {
         // Find current_lesson and project summary from projects
         let (current_lesson, p_summary) = {

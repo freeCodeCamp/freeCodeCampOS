@@ -4,7 +4,6 @@ use axum::{
     Json,
 };
 use std::sync::Arc;
-use uuid::Uuid;
 
 use crate::AppState;
 
@@ -35,7 +34,6 @@ pub async fn get_curriculum(
 }
 
 use runner::{NodeRunner, BashRunner, Runner};
-use config::Hooks;
 
 pub async fn run_tests(
     Path((project_id, lesson_id)): Path<(String, u32)>,
