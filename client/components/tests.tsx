@@ -8,7 +8,7 @@ interface TestsProps {
 export const Tests = ({ tests }: TestsProps) => {
   return (
     <ul style={{ listStyle: 'none' }}>
-      {tests.map(({ test_text, passed, is_loading, test_id, feedback }, i) => (
+      {tests.map(({ test_text, passed, is_loading, test_id, error }, i) => (
         <Test
           key={i}
           index={i}
@@ -17,7 +17,7 @@ export const Tests = ({ tests }: TestsProps) => {
             passed,
             is_loading,
             test_id,
-            feedback
+            error
           }}
         />
       ))}

@@ -59,7 +59,7 @@ export const Output = ({ hints, tests, cons }: OutputProps) => {
             case 'tests':
               return <Tests tests={tests} />;
             case 'console':
-              return <Console cons={cons} />;
+              return <Console cons={cons} tests={tests} />;
             case 'hints':
               return <Hints hints={hints} />;
             default:

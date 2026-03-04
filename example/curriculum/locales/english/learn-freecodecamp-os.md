@@ -23,7 +23,7 @@ Did you know the "OS" in freeCodeCampOS stands for "Open Source"?
 
 This is a test that will always pass.
 
-```js
+```js,runner=node
 assert(true);
 ```
 

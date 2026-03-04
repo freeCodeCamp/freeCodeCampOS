@@ -18,11 +18,10 @@ async function runTest(test, project, hooks) {
       
       if (error) {
         test.state = 'FAILED';
-        if (error.type === 'AssertionError') {
-          test.feedback = error.message || 'Test failed';
-        } else {
-          test.feedback = `${error.type}: ${error.message}\n${error.stack || ''}`;
-        }
+        test.error = {
+          message: error.message || 'Test failed',
+          detail: error
+        };
       }
 
       await writeFile(test.path, JSON.stringify(test), 'utf-8');

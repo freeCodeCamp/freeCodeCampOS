@@ -4,8 +4,6 @@ use axum::{
     Json,
 };
 use std::sync::Arc;
-use parser::CurriculumParser;
-use std::path::PathBuf;
 use uuid::Uuid;
 
 use crate::AppState;
@@ -36,7 +34,7 @@ pub async fn get_curriculum(
     })))
 }
 
-use runner::execute_tests;
+use runner::{NodeRunner, BashRunner, Runner};
 use config::Hooks;
 
 pub async fn run_tests(
@@ -66,11 +64,25 @@ pub async fn run_tests(
     // Use current directory as work_dir for now
     let work_dir = "."; 
     tracing::debug!("executing {} tests", lesson.tests.len());
-    let results = execute_tests(&project, lesson.tests.clone(), &hooks, work_dir)
-        .map_err(|e| {
-            tracing::error!("failed to execute tests: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to execute tests: {}", e))
-        })?;
+    
+    let mut results = Vec::new();
+    let node_tests: Vec<_> = lesson.tests.iter().filter(|t| matches!(t.runner.as_str(), "node" | "js" | "javascript")).cloned().collect();
+    let bash_tests: Vec<_> = lesson.tests.iter().filter(|t| matches!(t.runner.as_str(), "bash" | "sh")).cloned().collect();
+
+    if !node_tests.is_empty() {
+        results.extend(NodeRunner::execute(&project, node_tests, &hooks, work_dir)
+            .map_err(|e| {
+                tracing::error!("failed to execute node tests: {}", e);
+                (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to execute node tests: {}", e))
+            })?);
+    }
+    if !bash_tests.is_empty() {
+        results.extend(BashRunner::execute(&project, bash_tests, &hooks, work_dir)
+            .map_err(|e| {
+                tracing::error!("failed to execute bash tests: {}", e);
+                (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to execute bash tests: {}", e))
+            })?);
+    }
 
     tracing::info!("test execution completed with {} results", results.len());
 
@@ -130,13 +142,13 @@ pub async fn reset_lesson(
             code: seed.clone(),
             runner: "bash".to_string(),
             state: Default::default(),
-            feedback: None,
+            error: None,
         };
         
         let hooks = Hooks::default();
         let work_dir = ".";
         
-        execute_tests(&project, vec![seed_test], &hooks, work_dir)
+        BashRunner::execute(&project, vec![seed_test], &hooks, work_dir)
             .map_err(|e| {
                 tracing::error!("failed to run seed for lesson {}: {}", lesson_id, e);
                 (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to run seed: {}", e))

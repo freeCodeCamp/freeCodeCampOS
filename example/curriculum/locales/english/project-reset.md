@@ -1,17 +1,5 @@
 # Project Reset
 
-```json
-{
-  "id": "d4e5f6a1-b2c3-4d5e-0f1a-2b3c4d5e6f7a",
-  "order": 3,
-  "is_integrated": false,
-  "is_public": true,
-  "run_tests_on_watch": true,
-  "seed_every_lesson": false,
-  "is_reset_enabled": true
-}
-```
-
 This project tests the reset functionality of `freecodecamp-os`
 
 ## 0

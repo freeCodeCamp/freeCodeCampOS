@@ -141,7 +141,14 @@ pub struct Test {
     pub runner: String,
     #[serde(default)]
     pub state: TestState,
-    pub feedback: Option<String>,
+    pub error: Option<TestError>,
+}
+
+/// Detailed error information for a failed test
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TestError {
+    pub message: String,
+    pub detail: Option<serde_json::Value>,
 }
 
 /// Current state of a test

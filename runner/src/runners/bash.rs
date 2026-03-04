@@ -51,15 +51,23 @@ impl Runner for BashRunner {
                 .output()?;
 
             if output.status.success() {
-                test.state = TestState::Passed;
+                test.state = config::TestState::Passed;
             } else {
-                test.state = TestState::Failed;
+                test.state = config::TestState::Failed;
                 let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
-                test.feedback = if stderr.is_empty() {
-                    Some("Test failed".to_string())
+                let message = if stderr.is_empty() {
+                    "Test failed".to_string()
                 } else {
-                    Some(stderr)
+                    stderr.clone()
                 };
+                test.error = Some(config::TestError {
+                    message,
+                    detail: Some(serde_json::json!({
+                        "stdout": String::from_utf8_lossy(&output.stdout),
+                        "stderr": stderr,
+                        "exit_code": output.status.code()
+                    })),
+                });
             }
 
             results.push(test);

@@ -168,14 +168,19 @@ const App = () => {
     if (!Object.keys(cons).length) {
       return setCons([]);
     }
-    // Insert cons in array at index `id`
     setCons(prev => {
-      const sorted = [
-        ...prev.slice(0, cons.test_id),
-        cons,
-        ...prev.slice(cons.test_id)
-      ].filter(Boolean);
-      return sorted;
+      const existing = prev.findIndex(c => c.test_id === cons.test_id);
+      let nextCons = [...prev];
+      if (existing !== -1) {
+        nextCons[existing] = cons;
+      } else {
+        nextCons.push(cons);
+      }
+      return nextCons.sort((a, b) => {
+        const indexA = tests.findIndex(t => t.test_id === a.test_id);
+        const indexB = tests.findIndex(t => t.test_id === b.test_id);
+        return indexA - indexB;
+      });
     });
   }
 

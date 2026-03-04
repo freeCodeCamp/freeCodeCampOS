@@ -20,12 +20,17 @@ export enum Events {
   CHANGE_LANGUAGE = 'change_language'
 }
 
+export type TestError = {
+  message: string;
+  detail?: any;
+};
+
 export type TestType = {
   test_text: string;
   passed: boolean;
   is_loading: boolean;
   test_id: string;
-  feedback?: string;
+  error?: TestError;
 };
 
 export type LoaderT = {
@@ -51,8 +56,12 @@ export interface ProjectI {
 }
 
 export type ConsoleError = {
-  error: string;
-} & TestType;
+  test_id: string;
+  test_text: string;
+  passed: boolean;
+  is_loading: boolean;
+  error?: TestError;
+};
 
 export type FreeCodeCampConfigI = {
   [key: string]: any;

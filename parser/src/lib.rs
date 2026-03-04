@@ -197,7 +197,7 @@ impl CurriculumParser {
                                 code: c.literal.trim().to_string(),
                                 runner,
                                 state: Default::default(),
-                                feedback: None,
+                                error: None,
                             });
                             current_test_text.clear();
                         }

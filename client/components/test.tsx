@@ -7,7 +7,7 @@ export const Test = ({
   passed,
   is_loading,
   test_id,
-  feedback,
+  error,
   index
 }: TestType & { index: number }) => {
   return (
@@ -19,12 +19,12 @@ export const Test = ({
         style={{ display: 'inline' }}
         dangerouslySetInnerHTML={{ __html: parseMarkdown(test_text) }}
       ></div>
-      {!passed && !is_loading && feedback && (
+      {!passed && !is_loading && error && (
         <div
           className='test-feedback'
           style={{ marginLeft: '20px', fontSize: '0.9em', color: '#ffadad' }}
         >
-          {feedback}
+          {error.message}
         </div>
       )}
     </li>

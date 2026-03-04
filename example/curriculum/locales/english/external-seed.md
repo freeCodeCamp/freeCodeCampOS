@@ -1,17 +1,5 @@
 # External Seed
 
-```json
-{
-  "id": "b2c3d4e5-f6a1-4b5c-9d0e-1f2a3b4c5d6e",
-  "order": 1,
-  "is_integrated": false,
-  "is_public": true,
-  "run_tests_on_watch": true,
-  "seed_every_lesson": false,
-  "is_reset_enabled": true
-}
-```
-
 A project to test the default parser `external seed` feature.
 
 ## 0

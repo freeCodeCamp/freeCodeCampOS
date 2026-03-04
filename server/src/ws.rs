@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use uuid::Uuid;
 use crate::AppState;
-use runner::execute_tests;
+use runner::{NodeRunner, BashRunner, Runner};
 use config::{Hooks, ProjectSummary};
 
 #[derive(Debug, Deserialize)]
@@ -172,7 +172,7 @@ pub struct ClientTest {
     pub test_text: String,
     pub passed: bool,
     pub is_loading: bool,
-    pub feedback: Option<String>,
+    pub error: Option<config::TestError>,
 }
 
 impl From<config::Test> for ClientTest {
@@ -182,7 +182,7 @@ impl From<config::Test> for ClientTest {
             test_text: test.test_text,
             passed: matches!(test.state, config::TestState::Passed),
             is_loading: matches!(test.state, config::TestState::Loading),
-            feedback: test.feedback,
+            error: test.error,
         }
     }
 }
@@ -259,8 +259,18 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
                 let lesson_id = lesson.id;
 
                 tokio::spawn(async move {
-                    let results = tokio::task::spawn_blocking(move || {
-                        execute_tests(&project_clone, tests_clone, &hooks, &work_dir)
+                    let results = tokio::task::spawn_blocking(move || -> anyhow::Result<Vec<config::Test>> {
+                        let mut results = Vec::new();
+                        let node_tests: Vec<_> = tests_clone.iter().filter(|t| matches!(t.runner.as_str(), "node" | "js" | "javascript")).cloned().collect();
+                        let bash_tests: Vec<_> = tests_clone.iter().filter(|t| matches!(t.runner.as_str(), "bash" | "sh")).cloned().collect();
+
+                        if !node_tests.is_empty() {
+                            results.extend(NodeRunner::execute(&project_clone, node_tests, &hooks, &work_dir)?);
+                        }
+                        if !bash_tests.is_empty() {
+                            results.extend(BashRunner::execute(&project_clone, bash_tests, &hooks, &work_dir)?);
+                        }
+                        Ok(results)
                     }).await;
 
                     match results {
@@ -279,8 +289,7 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
                                             "test_text": ct.test_text,
                                             "passed": ct.passed,
                                             "is_loading": ct.is_loading,
-                                            "feedback": ct.feedback.clone(),
-                                            "error": ct.feedback.clone().unwrap_or_else(|| "Test failed".to_string())
+                                            "error": ct.error
                                         }
                                     })).await;
                                 }
@@ -329,13 +338,13 @@ async fn handle_reset_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>)
                         code: seed.clone(),
                         runner: "bash".to_string(),
                         state: Default::default(),
-                        feedback: None,
+                        error: None,
                     };
                     
                     let hooks = Hooks::default();
                     let work_dir = ".";
                     
-                    if let Err(e) = execute_tests(&project, vec![seed_test], &hooks, work_dir) {
+                    if let Err(e) = BashRunner::execute(&project, vec![seed_test], &hooks, work_dir) {
                         tracing::error!("failed to run seed for lesson reset: {}", e);
                         send_message(tx, "update_error", serde_json::json!({ "error": e.to_string() })).await;
                     } else {
