@@ -87,6 +87,15 @@ async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
             while let Ok(msg) = rx.recv().await {
                 if msg == "reload" {
                     tracing::info!("hot-reload triggered, refreshing client state");
+                    
+                    // Reload global state from disk
+                    let _ = state_clone.load_projects().await;
+                    let _ = state_clone.load_course_state().await;
+
+                    // Send updated projects list to client
+                    let projects = state_clone.projects.read().await;
+                    send_message(&tx_out_clone, "update_projects", &*projects).await;
+
                     handle_select_project_current(&state_clone, &tx_out_clone).await;
                 }
             }

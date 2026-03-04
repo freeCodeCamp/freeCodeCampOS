@@ -14,12 +14,34 @@ use rust_embed::RustEmbed;
 use axum::response::{IntoResponse};
 use axum::http::{header, StatusCode, Uri};
 
+use std::path::Path;
 mod handlers;
 mod state;
 mod ws;
 mod projects;
 
 pub use state::AppState;
+
+fn is_ignored(path: &Path, root: &Path, ignore_list: &[String]) -> bool {
+    let Ok(relative) = path.strip_prefix(root) else {
+        return false;
+    };
+    let path_str = relative.to_string_lossy().replace('\\', "/");
+
+    for pattern in ignore_list {
+        let pattern = pattern.trim_start_matches('/');
+        if pattern.is_empty() {
+            continue;
+        }
+
+        let normalized_pattern = pattern.trim_end_matches('/');
+
+        if path_str == normalized_pattern || path_str.starts_with(&format!("{}/", normalized_pattern)) {
+            return true;
+        }
+    }
+    false
+}
 
 #[derive(RustEmbed)]
 #[folder = "../client/dist/"]
@@ -62,8 +84,6 @@ async fn main() -> anyhow::Result<()> {
         }
     });
 
-    tracing::info!(?config);
-
     let app_state = Arc::new(AppState::new(config.clone()));
 
     // Load state
@@ -76,26 +96,51 @@ async fn main() -> anyhow::Result<()> {
 
     // Setup watcher
     let state_for_watcher = app_state.clone();
+    let hot_reload_config = config.hot_reload.clone();
+    let root_dir = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
+    let root_dir_for_watcher = root_dir.clone();
+
+    // Canonicalize config paths for comparison
+    let projects_path = std::fs::canonicalize(&config.config.projects).unwrap_or_else(|_| std::path::PathBuf::from(&config.config.projects));
+    let state_path = std::fs::canonicalize(&config.config.state).unwrap_or_else(|_| std::path::PathBuf::from(&config.config.state));
+
     let mut watcher = notify::recommended_watcher(move |res: notify::Result<notify::Event>| {
         match res {
             Ok(event) => {
                 if event.kind.is_modify() {
-                    tracing::info!("file modification detected: {:?}", event.paths);
-                    // Notify clients
-                    let _ = state_for_watcher.tx.send("reload".to_string());
+                    let should_reload = if let Some(hr) = &hot_reload_config {
+                        event.paths.iter().any(|p| {
+                            let is_config = p == &projects_path || p == &state_path;
+                            is_config || !is_ignored(p, &root_dir_for_watcher, &hr.ignore)
+                        })
+                    } else {
+                        true
+                    };
+
+                    if should_reload {
+                        tracing::info!("file modification detected: {:?}", event.paths);
+                        // Notify clients
+                        let _ = state_for_watcher.tx.send("reload".to_string());
+                    }
                 }
             }
             Err(e) => tracing::error!("watch error: {:?}", e),
         }
     })?;
 
-    // Start watching locales directories
-    for (locale, path) in &config.curriculum.locales {
-        if let Ok(canonical_path) = std::fs::canonicalize(path) {
-            tracing::info!("watching curriculum directory for locale '{}': {:?}", locale, canonical_path);
-            watcher.watch(&canonical_path, RecursiveMode::Recursive)?;
-        } else {
-            tracing::error!("failed to canonicalize curriculum path for locale '{}': {:?}", locale, path);
+    // Start watching
+    if config.hot_reload.is_some() {
+        tracing::info!("hot reload enabled, watching project root: {:?}", root_dir);
+        watcher.watch(&root_dir, RecursiveMode::Recursive)?;
+    } else {
+        // Start watching locales directories
+        for (locale, path) in &config.curriculum.locales {
+            if let Ok(canonical_path) = std::fs::canonicalize(path) {
+                tracing::info!("watching curriculum directory for locale '{}': {:?}", locale, canonical_path);
+                watcher.watch(&canonical_path, RecursiveMode::Recursive)?;
+            } else {
+                tracing::error!("failed to canonicalize curriculum path for locale '{}': {:?}", locale, path);
+            }
         }
     }
 
