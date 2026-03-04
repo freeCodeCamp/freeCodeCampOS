@@ -65,7 +65,7 @@ const App = () => {
         socket = new WebSocket(
           `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${
             window.location.host
-          }`
+          }/ws`
         );
         connectToWebSocket();
       }, 1000);
