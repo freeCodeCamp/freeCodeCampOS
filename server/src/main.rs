@@ -29,6 +29,11 @@ fn is_ignored(path: &Path, root: &Path, ignore_list: &[String]) -> bool {
     };
     let path_str = relative.to_string_lossy().replace('\\', "/");
 
+    // Always ignore temporary test directories
+    if path_str.contains(".fcc-tests-") {
+        return true;
+    }
+
     for pattern in ignore_list {
         let pattern = pattern.trim_start_matches('/');
         if pattern.is_empty() {
@@ -103,7 +108,7 @@ async fn main() -> anyhow::Result<()> {
 
     // Canonicalize config paths for comparison
     let projects_path = std::fs::canonicalize(&config.config.projects).unwrap_or_else(|_| std::path::PathBuf::from(&config.config.projects));
-    let state_path = std::fs::canonicalize(&config.config.state).unwrap_or_else(|_| std::path::PathBuf::from(&config.config.state));
+    let _state_path = std::fs::canonicalize(&config.config.state).unwrap_or_else(|_| std::path::PathBuf::from(&config.config.state));
 
     let mut watcher = notify::recommended_watcher(move |res: notify::Result<notify::Event>| {
         match res {
@@ -111,8 +116,8 @@ async fn main() -> anyhow::Result<()> {
                 if event.kind.is_modify() {
                     let should_reload = if let Some(hr) = &hot_reload_config {
                         event.paths.iter().any(|p| {
-                            let is_config = p == &projects_path || p == &state_path;
-                            is_config || !is_ignored(p, &root_dir_for_watcher, &hr.ignore)
+                            let is_projects_config = p == &projects_path;
+                            is_projects_config || !is_ignored(p, &root_dir_for_watcher, &hr.ignore)
                         })
                     } else {
                         true
