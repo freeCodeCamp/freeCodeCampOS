@@ -17,8 +17,8 @@ impl Runner for NodeRunner {
         tests: Vec<Test>,
         hooks: &Hooks,
     ) -> Result<Vec<Test>> {
-        // Create temporary directory for test files
-        let test_dir = Builder::new().prefix(".fcc-tests-").tempdir()?;
+        // Create temporary directory for test files in CWD
+        let test_dir = Builder::new().prefix(".fcc-tests-").tempdir_in(".")?;
         let test_dir_path = test_dir.path().to_path_buf();
 
         // Write project file

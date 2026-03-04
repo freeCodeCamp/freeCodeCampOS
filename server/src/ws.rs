@@ -353,6 +353,14 @@ async fn handle_reset_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>)
                         send_message(tx, "update_error", serde_json::json!({ "error": e.to_string() })).await;
                     } else {
                         tracing::info!("seed executed successfully for lesson {}", current_lesson);
+                        // Update last_seed state
+                        let project_dashed_name = project.meta.dashed_name.clone();
+                        let _ = state.update_course_state(|s| {
+                            s.last_seed = Some(config::LastSeed {
+                                project_dashed_name,
+                                lesson_number: current_lesson as i16,
+                            });
+                        }).await;
                     }
                 } else {
                     tracing::debug!("no seed found for lesson {}", current_lesson);
@@ -382,12 +390,28 @@ async fn handle_change_lesson(state: &Arc<AppState>, tx: &mpsc::Sender<Message>,
                 if let Some(project) = state.get_project(project_id).await {
                     if let Some(lesson) = project.lessons.iter().find(|l| l.id == new_lesson) {
                         // Check if we should seed this lesson
-                        if project.meta.seed_every_lesson {
-                            tracing::info!("seeding lesson {} because seed_every_lesson is enabled", new_lesson);
+                        let already_seeded = {
+                            let s = state.course_state.read().await;
+                            s.last_seed.as_ref().map_or(false, |ls| {
+                                ls.project_dashed_name == project.meta.dashed_name && ls.lesson_number == new_lesson as i16
+                            })
+                        };
+
+                        if project.meta.seed_every_lesson && !already_seeded {
+                            tracing::info!("seeding lesson {} because seed_every_lesson is enabled and it was not yet seeded", new_lesson);
                             if let Some(seed) = &lesson.seed {
                                 if let Err(e) = crate::utils::perform_seed(seed).await {
                                     tracing::error!("failed to run seed for lesson change: {}", e);
                                     send_message(tx, "update_error", serde_json::json!({ "error": e.to_string() })).await;
+                                } else {
+                                    // Update last_seed state
+                                    let project_dashed_name = project.meta.dashed_name.clone();
+                                    let _ = state.update_course_state(|s| {
+                                        s.last_seed = Some(config::LastSeed {
+                                            project_dashed_name,
+                                            lesson_number: new_lesson as i16,
+                                        });
+                                    }).await;
                                 }
                             }
                         }

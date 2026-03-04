@@ -134,6 +134,17 @@ pub async fn reset_lesson(
                 tracing::error!("failed to run seed for lesson {}: {}", lesson_id, e);
                 (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to run seed: {}", e))
             })?;
+        
+        // Update last_seed state
+        let project_dashed_name = project.meta.dashed_name.clone();
+        if let Err(e) = state.update_course_state(|s| {
+            s.last_seed = Some(config::LastSeed {
+                project_dashed_name,
+                lesson_number: lesson_id as i16,
+            });
+        }).await {
+            tracing::error!("failed to update course state after seed: {}", e);
+        }
     } else {
         tracing::debug!("no seed found for lesson {}", lesson_id);
     }
