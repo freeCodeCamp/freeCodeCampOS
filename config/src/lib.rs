@@ -128,8 +128,15 @@ pub struct Lesson {
     pub title: String,
     pub description: String,
     pub tests: Vec<Test>,
-    pub seed: Option<String>,
+    pub seed: Option<Seed>,
     pub hooks: Hooks,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type", content = "data")]
+pub enum Seed {
+    Command { runner: String, code: String },
+    File { path: String, code: String },
 }
 
 /// A test that runs for a lesson

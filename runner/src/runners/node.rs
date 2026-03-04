@@ -16,10 +16,9 @@ impl Runner for NodeRunner {
         project: &Project,
         tests: Vec<Test>,
         hooks: &Hooks,
-        work_dir: &str,
     ) -> Result<Vec<Test>> {
         // Create temporary directory for test files
-        let test_dir = Builder::new().prefix(".fcc-tests-").tempdir_in(work_dir)?;
+        let test_dir = Builder::new().prefix(".fcc-tests-").tempdir()?;
         let test_dir_path = test_dir.path().to_path_buf();
 
         // Write project file
@@ -67,7 +66,6 @@ impl Runner for NodeRunner {
             .arg(entry_path.to_str().unwrap())
             .env("MANIFEST_PATH", manifest_path.to_str().unwrap())
             .env("TEST_WORKER_PATH", worker_path.to_str().unwrap())
-            .current_dir(work_dir)
             .output()?;
 
         if !output.status.success() {

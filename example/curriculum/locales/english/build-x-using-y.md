@@ -91,7 +91,7 @@ const code_block = true;
 
 #### --force--
 
-#### --"build-x-using-y/readme.md"--
+#### --"readme.md"--
 
 ```markdown
 # Build X Using Y

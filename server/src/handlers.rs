@@ -61,8 +61,6 @@ pub async fn run_tests(
     let hooks = lesson.hooks.clone();
 
     // 4. Execute tests
-    // Use current directory as work_dir for now
-    let work_dir = "."; 
     tracing::debug!("executing {} tests", lesson.tests.len());
     
     let mut results = Vec::new();
@@ -70,14 +68,14 @@ pub async fn run_tests(
     let bash_tests: Vec<_> = lesson.tests.iter().filter(|t| matches!(t.runner.as_str(), "bash" | "sh")).cloned().collect();
 
     if !node_tests.is_empty() {
-        results.extend(NodeRunner::execute(&project, node_tests, &hooks, work_dir)
+        results.extend(NodeRunner::execute(&project, node_tests, &hooks)
             .map_err(|e| {
                 tracing::error!("failed to execute node tests: {}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to execute node tests: {}", e))
             })?);
     }
     if !bash_tests.is_empty() {
-        results.extend(BashRunner::execute(&project, bash_tests, &hooks, work_dir)
+        results.extend(BashRunner::execute(&project, bash_tests, &hooks)
             .map_err(|e| {
                 tracing::error!("failed to execute bash tests: {}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to execute bash tests: {}", e))
@@ -133,22 +131,7 @@ pub async fn reset_lesson(
     // 3. Run seed if it exists
     if let Some(seed) = &lesson.seed {
         tracing::debug!("running seed for lesson {}", lesson_id);
-        // For now, we assume seed is bash commands if it's there.
-        // We can use BashRunner to execute it.
-        // We need to wrap it in a Test struct for the runner.
-        let seed_test = config::Test {
-            id: Uuid::new_v4(),
-            test_text: "Seed lesson".to_string(),
-            code: seed.clone(),
-            runner: "bash".to_string(),
-            state: Default::default(),
-            error: None,
-        };
-        
-        let hooks = Hooks::default();
-        let work_dir = ".";
-        
-        BashRunner::execute(&project, vec![seed_test], &hooks, work_dir)
+        crate::utils::perform_seed(seed).await
             .map_err(|e| {
                 tracing::error!("failed to run seed for lesson {}: {}", lesson_id, e);
                 (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to run seed: {}", e))

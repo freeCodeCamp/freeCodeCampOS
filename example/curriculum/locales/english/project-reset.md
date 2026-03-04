@@ -38,7 +38,7 @@ await new Promise(resolve => setTimeout(resolve, 1000));
 
 ### --seed--
 
-#### --"project-reset/a.md"--
+#### --"a.md"--
 
 ```md
 File from lesson 1
@@ -66,7 +66,7 @@ await new Promise(resolve => setTimeout(resolve, 1000));
 
 ### --seed--
 
-#### --"project-reset/b.md"--
+#### --"b.md"--
 
 ```md
 File from lesson 2
@@ -94,7 +94,7 @@ await new Promise(resolve => setTimeout(resolve, 1000));
 
 ### --seed--
 
-#### --"project-reset/c.md"--
+#### --"c.md"--
 
 ```md
 File from lesson 3

@@ -19,6 +19,7 @@ mod handlers;
 mod state;
 mod ws;
 mod projects;
+mod utils;
 
 pub use state::AppState;
 

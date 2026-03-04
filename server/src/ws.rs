@@ -262,7 +262,6 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
                 let hooks = lesson.hooks.clone();
                 let project_clone = project.clone();
                 let tests_clone = lesson.tests.clone();
-                let work_dir = ".".to_string();
                 let tx_clone = tx.clone();
                 let state_clone = state.clone();
                 let lesson_id = lesson.id;
@@ -274,10 +273,10 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
                         let bash_tests: Vec<_> = tests_clone.iter().filter(|t| matches!(t.runner.as_str(), "bash" | "sh")).cloned().collect();
 
                         if !node_tests.is_empty() {
-                            results.extend(NodeRunner::execute(&project_clone, node_tests, &hooks, &work_dir)?);
+                            results.extend(NodeRunner::execute(&project_clone, node_tests, &hooks)?);
                         }
                         if !bash_tests.is_empty() {
-                            results.extend(BashRunner::execute(&project_clone, bash_tests, &hooks, &work_dir)?);
+                            results.extend(BashRunner::execute(&project_clone, bash_tests, &hooks)?);
                         }
                         Ok(results)
                     }).await;
@@ -341,19 +340,7 @@ async fn handle_reset_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>)
         if let Some(project) = state.get_project(project_id).await {
             if let Some(lesson) = project.lessons.iter().find(|l| l.id == current_lesson) {
                 if let Some(seed) = &lesson.seed {
-                     let seed_test = config::Test {
-                        id: Uuid::new_v4(),
-                        test_text: "Seed lesson".to_string(),
-                        code: seed.clone(),
-                        runner: "bash".to_string(),
-                        state: Default::default(),
-                        error: None,
-                    };
-                    
-                    let hooks = Hooks::default();
-                    let work_dir = ".";
-                    
-                    if let Err(e) = BashRunner::execute(&project, vec![seed_test], &hooks, work_dir) {
+                    if let Err(e) = crate::utils::perform_seed(seed).await {
                         tracing::error!("failed to run seed for lesson reset: {}", e);
                         send_message(tx, "update_error", serde_json::json!({ "error": e.to_string() })).await;
                     } else {
@@ -386,6 +373,17 @@ async fn handle_change_lesson(state: &Arc<AppState>, tx: &mpsc::Sender<Message>,
             Ok(Some((new_lesson, p_summary_clone))) => {
                 if let Some(project) = state.get_project(project_id).await {
                     if let Some(lesson) = project.lessons.iter().find(|l| l.id == new_lesson) {
+                        // Check if we should seed this lesson
+                        if project.meta.seed_every_lesson {
+                            tracing::info!("seeding lesson {} because seed_every_lesson is enabled", new_lesson);
+                            if let Some(seed) = &lesson.seed {
+                                if let Err(e) = crate::utils::perform_seed(seed).await {
+                                    tracing::error!("failed to run seed for lesson change: {}", e);
+                                    send_message(tx, "update_error", serde_json::json!({ "error": e.to_string() })).await;
+                                }
+                            }
+                        }
+
                         let client_tests: Vec<ClientTest> = lesson.tests.clone().into_iter().map(ClientTest::from).collect();
                         send_message(tx, "update_project", p_summary_clone).await;
                         send_message(tx, "update_lesson", serde_json::json!({

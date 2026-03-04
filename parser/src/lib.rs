@@ -160,7 +160,7 @@ impl CurriculumParser {
         let markdown = src.inner();
         let mut description_nodes = Vec::new();
         let mut tests = Vec::new();
-        let mut seed_content = String::new();
+        let mut seed_raw = String::new();
         let mut hooks = config::Hooks::default();
         
         // Track spans for duplicate hook detection
@@ -202,7 +202,7 @@ impl CurriculumParser {
                             current_test_text.clear();
                         }
                         "--seed--" => {
-                            seed_content.push_str(&c.literal);
+                            seed_raw.push_str(&c.literal);
                         }
                         "--before-each--" => {
                             if let Some(first_span) = hook_spans.get("--before-each--") {
@@ -275,16 +275,31 @@ impl CurriculumParser {
             .trim()
             .to_string();
 
+        let seed = if seed_raw.is_empty() {
+            None
+        } else {
+            let lines: Vec<&str> = seed_raw.lines().collect();
+            let first_line = lines[0].trim();
+            if first_line.starts_with("#### --") && first_line.ends_with("--") {
+                let target = &first_line[7..first_line.len() - 2].trim();
+                let code = lines[1..].join("\n");
+                if *target == "cmd" {
+                    let runner = tests.first().map(|t| t.runner.clone()).unwrap_or_else(|| "bash".to_string());
+                    Some(config::Seed::Command { runner, code })
+                } else {
+                    Some(config::Seed::File { path: target.trim_matches('"').to_string(), code })
+                }
+            } else {
+                Some(config::Seed::Command { runner: "bash".to_string(), code: seed_raw })
+            }
+        };
+
         Ok(Lesson {
             id,
             title: format!("Lesson {}", id),
             description,
             tests,
-            seed: if seed_content.is_empty() {
-                None
-            } else {
-                Some(seed_content)
-            },
+            seed,
             hooks,
         })
     }

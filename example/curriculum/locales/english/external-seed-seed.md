@@ -13,7 +13,7 @@ rm -f external-seed/log
 
 ### --seed--
 
-#### --"external-seed/index.js"--
+#### --"index.js"--
 
 ```js
 const a = 'seeding works';

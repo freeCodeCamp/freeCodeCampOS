@@ -1,6 +1,6 @@
 use crate::Runner;
 use anyhow::Result;
-use config::{Hooks, Project, Test, TestState};
+use config::{Hooks, Project, Test};
 use std::process::Command;
 
 pub struct BashRunner;
@@ -10,7 +10,6 @@ impl Runner for BashRunner {
         _project: &Project,
         tests: Vec<Test>,
         hooks: &Hooks,
-        work_dir: &str,
     ) -> Result<Vec<Test>> {
         let mut results = Vec::new();
 
@@ -24,7 +23,6 @@ impl Runner for BashRunner {
             Command::new("bash")
                 .arg("-c")
                 .arg(code)
-                .current_dir(work_dir)
                 .status()?;
         }
 
@@ -47,7 +45,6 @@ impl Runner for BashRunner {
             let output = Command::new("bash")
                 .arg("-c")
                 .arg(&script)
-                .current_dir(work_dir)
                 .output()?;
 
             if output.status.success() {
@@ -78,7 +75,6 @@ impl Runner for BashRunner {
             Command::new("bash")
                 .arg("-c")
                 .arg(code)
-                .current_dir(work_dir)
                 .status()?;
         }
 
