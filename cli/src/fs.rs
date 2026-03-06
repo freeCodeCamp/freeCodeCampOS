@@ -1,11 +1,13 @@
 use std::path::PathBuf;
 
 use indicatif::ProgressBar;
-use serde_json::{json, Value};
+use serde_json::json;
+
+use config::{CourseState as State, ProjectMeta as Project};
 
 use crate::{
     conf::{
-        Client, Conf, Config, Curriculum, HotReload, Landing, Locales, Project, State, Tooling,
+        Client, Conf, Config, Curriculum, HotReload, Landing, Locales, Tooling,
     },
     environment::Environment,
     features::Features,
@@ -489,19 +491,19 @@ pluginEvents.onLessonPassed = async project => {};
             let mut projects = Vec::new();
             for i in 0..self.num_projects {
                 let project = Project {
-                    id: u16::from(i),
+                    id: uuid::Uuid::new_v4(),
                     title: format!("Project {i}"),
-                    order: u16::from(i),
+                    order: i as u32,
                     dashed_name: format!("project-{i}"),
                     is_integrated: false,
                     is_public: true,
-                    current_lesson: 0,
                     run_tests_on_watch: true,
                     seed_every_lesson: false,
                     is_reset_enabled: false,
-                    number_of_lessons: 1,
-                    blocking_tests: false,
-                    break_on_failure: false,
+                    number_of_lessons: Some(1),
+                    blocking_tests: None,
+                    break_on_failure: None,
+                    tags: vec![],
                 };
                 projects.push(project);
             }
@@ -516,9 +518,10 @@ pluginEvents.onLessonPassed = async project => {};
 
     fn touch_state(&self) {
         let state = State {
-            current_project: Value::Null,
+            current_project: None,
             locale: "english".to_string(),
             last_seed: None,
+            current_lessons: std::collections::HashMap::new(),
         };
         if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join("config")) {
             eprintln!("Failed to create config directory: {e}");

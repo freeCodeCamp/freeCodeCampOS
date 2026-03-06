@@ -5,11 +5,13 @@ use std::{fs::canonicalize, path::Path};
 use crate::conf::Conf;
 use crate::features::Features;
 use crate::fs::Course;
-use crate::{conf::Project, environment::Environment};
+use crate::environment::Environment;
 use indicatif::ProgressBar;
 use inquire::{
     error::InquireResult, min_length, validator::Validation, Confirm, CustomType, MultiSelect, Select, Text,
 };
+use config::ProjectMeta as Project;
+use uuid::Uuid;
 
 #[derive(Debug, Parser)]
 /// A CLI tool to help developers create courses for freeCodeCamp
@@ -28,6 +30,8 @@ pub enum SubCommand {
     AddProject,
     /// Rename a project in an existing course
     RenameProject,
+    /// Validate the course configuration files
+    Validate,
 }
 
 /// Appends and creates the necessary metadata for a new project within an existing course
@@ -67,16 +71,17 @@ pub fn add_project() -> InquireResult<()> {
         .with_default(true)
         .prompt()?;
     let mut seed_every_lesson = false;
-    let mut blocking_tests = false;
-    let mut break_on_failure = false;
+    let mut blocking_tests = None;
+    let mut break_on_failure = None;
     if is_integrated {
-        blocking_tests = Confirm::new("Blocking tests?")
+        let is_blocking = Confirm::new("Blocking tests?")
             .with_default(true)
             .prompt()?;
-        if blocking_tests {
-            break_on_failure = Confirm::new("Break on failure?")
+        blocking_tests = Some(is_blocking);
+        if is_blocking {
+            break_on_failure = Some(Confirm::new("Break on failure?")
                 .with_default(true)
-                .prompt()?;
+                .prompt()?);
         }
     } else {
         seed_every_lesson = Confirm::new("Seed every lesson?")
@@ -92,16 +97,15 @@ pub fn add_project() -> InquireResult<()> {
     let mut projects = get_projects();
     let latest_project = projects.last();
 
-    let id = match latest_project {
-        Some(project) => project.id + 1,
+    let order = match latest_project {
+        Some(project) => project.order + 1,
         None => 1,
     };
     let project = Project {
-        id,
+        id: Uuid::new_v4(),
         title: title.clone(),
-        order: id,
+        order,
         dashed_name,
-        current_lesson: 0,
         is_integrated,
         is_public,
         run_tests_on_watch,
@@ -109,7 +113,8 @@ pub fn add_project() -> InquireResult<()> {
         is_reset_enabled,
         blocking_tests,
         break_on_failure,
-        number_of_lessons: 1,
+        number_of_lessons: Some(1),
+        tags: vec![],
     };
     projects.push(project);
     create_project_metadata(&freecodecamp_conf, &projects);
@@ -200,6 +205,71 @@ pub fn rename_project() -> InquireResult<()> {
     create_project_metadata(&freecodecamp_conf, &projects);
 
     println!("Project renamed successfully");
+    Ok(())
+}
+
+/// Validates the course configuration files
+pub fn validate() -> InquireResult<()> {
+    let path = Path::new("freecodecamp.conf.json");
+    println!("Validating freecodecamp.conf.json...");
+    let file = match std::fs::read(path) {
+        Ok(file) => file,
+        Err(e) => {
+            eprintln!("Error opening config file: {e}");
+            return Ok(());
+        }
+    };
+
+    let freecodecamp_conf: Conf = match serde_json::from_slice(&file) {
+        Ok(conf) => {
+            println!("  ✅ freecodecamp.conf.json is valid");
+            conf
+        }
+        Err(e) => {
+            eprintln!("  ❌ Error parsing freecodecamp.conf.json: {e}");
+            return Ok(());
+        }
+    };
+
+    println!("Validating projects.json...");
+    let projects_path = &freecodecamp_conf.config.projects;
+    let projects_file = match std::fs::read_to_string(projects_path) {
+        Ok(file) => file,
+        Err(e) => {
+            eprintln!("  ❌ Error reading projects.json file at '{}': {e}", projects_path);
+            return Ok(());
+        }
+    };
+
+    match serde_json::from_str::<Vec<Project>>(&projects_file) {
+        Ok(_) => {
+            println!("  ✅ projects.json is valid");
+        }
+        Err(e) => {
+            eprintln!("  ❌ Error parsing projects.json: {e}");
+        }
+    };
+
+    println!("Validating state.json...");
+    let state_path = &freecodecamp_conf.config.state;
+    let state_file = match std::fs::read_to_string(state_path) {
+        Ok(file) => file,
+        Err(e) => {
+            eprintln!("  ❌ Error reading state.json file at '{}': {e}", state_path);
+            return Ok(());
+        }
+    };
+
+    match serde_json::from_str::<config::CourseState>(&state_file) {
+        Ok(_) => {
+            println!("  ✅ state.json is valid");
+        }
+        Err(e) => {
+            eprintln!("  ❌ Error parsing state.json: {e}");
+        }
+    };
+
+    println!("\nValidation complete.");
     Ok(())
 }
 
