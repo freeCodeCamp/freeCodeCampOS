@@ -41,17 +41,6 @@ pub enum ParserError {
         duplicate_span: SourceSpan,
     },
 
-    #[error("Failed to parse JSON")]
-    #[diagnostic(code(parser::json_error))]
-    JsonError {
-        #[source]
-        error: serde_json::Error,
-        #[source_code]
-        src: NamedSource<String>,
-        #[label("in this block")]
-        span: SourceSpan,
-    },
-
     #[error("Invalid lesson ID: {id}")]
     #[diagnostic(code(parser::invalid_lesson_id), help("Lesson headings must be '## <number>'"))]
     InvalidLessonId {
