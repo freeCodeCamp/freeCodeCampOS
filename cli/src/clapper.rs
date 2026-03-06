@@ -20,6 +20,8 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum SubCommand {
+    /// Create a new course in the current directory
+    Create,
     /// Add a project to an existing course
     ///
     /// Run this command in the root directory of the course.
@@ -113,6 +115,46 @@ pub fn add_project() -> InquireResult<()> {
     Ok(())
 }
 
+/// Creates all the minimum boilerplate in the current directory
+pub fn create_boilerplate() -> InquireResult<()> {
+    let current_dir = std::env::current_dir().expect("unable to get current directory");
+    let directory_name = current_dir
+        .file_name()
+        .expect("unable to get directory name")
+        .to_str()
+        .expect("unable to convert directory name to string")
+        .to_string();
+
+    println!("Creating course in current directory: {directory_name}");
+
+    let is_git_repository = Confirm::new("Initialise as a git repository?")
+        .with_default(true)
+        .prompt()?;
+
+    let is_translated = Confirm::new("Is this course going to be translated?")
+        .with_default(true)
+        .prompt()?;
+
+    let course = Course::new(
+        current_dir,
+        directory_name,
+        vec![Environment::VSCode],
+        vec![],
+        is_git_repository,
+        is_translated,
+        1,
+    );
+
+    let pb = ProgressBar::new(14);
+    println!("Creating boilerplate...");
+
+    course.create_course(&pb);
+
+    pb.finish_with_message("done");
+    println!("Start by `npm i`.");
+    Ok(())
+}
+
 pub fn create_course() -> InquireResult<()> {
     let directory_name = Text::new("Name of course?")
         .with_help_message("This will be used as the directory name for the repository.")
@@ -184,6 +226,7 @@ pub fn create_course() -> InquireResult<()> {
     //     .prompt()?;
 
     let course = Course::new(
+        canonicalize(&directory_name).expect("unable to canonicalize path"),
         directory_name.clone(),
         environment,
         features,

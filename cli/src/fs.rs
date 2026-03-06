@@ -14,7 +14,6 @@ use crate::{
 
 pub struct Course {
     canonicalized_path: PathBuf,
-    #[allow(unused)]
     directory_name: String,
     environment: Vec<Environment>,
     features: Vec<Features>,
@@ -73,7 +72,8 @@ impl Course {
     }
 
     pub fn new(
-        directory_name: String,
+        path: PathBuf,
+        name: String,
         environment: Vec<Environment>,
         features: Vec<Features>,
         is_git_repository: bool,
@@ -81,8 +81,8 @@ impl Course {
         num_projects: u8,
     ) -> Self {
         Self {
-            canonicalized_path: std::fs::canonicalize(&directory_name).expect("Failed to get path"),
-            directory_name,
+            canonicalized_path: path,
+            directory_name: name,
             environment,
             features,
             is_git_repository,
