@@ -8,7 +8,7 @@ use crate::fs::Course;
 use crate::{conf::Project, environment::Environment};
 use indicatif::ProgressBar;
 use inquire::{
-    error::InquireResult, min_length, validator::Validation, Confirm, CustomType, MultiSelect, Text,
+    error::InquireResult, min_length, validator::Validation, Confirm, CustomType, MultiSelect, Select, Text,
 };
 
 #[derive(Debug, Parser)]
@@ -26,6 +26,8 @@ pub enum SubCommand {
     ///
     /// Run this command in the root directory of the course.
     AddProject,
+    /// Rename a project in an existing course
+    RenameProject,
 }
 
 /// Appends and creates the necessary metadata for a new project within an existing course
@@ -112,6 +114,92 @@ pub fn add_project() -> InquireResult<()> {
     projects.push(project);
     create_project_metadata(&freecodecamp_conf, &projects);
 
+    Ok(())
+}
+
+/// Renames a project within an existing course
+pub fn rename_project() -> InquireResult<()> {
+    let mut projects = get_projects();
+    let freecodecamp_conf = get_config();
+
+    let project_titles: Vec<String> = projects.iter().map(|p| p.title.clone()).collect();
+    let selected_title = Select::new("Which project to rename?", project_titles).prompt()?;
+
+    let project_index = projects
+        .iter()
+        .position(|p| p.title == selected_title)
+        .unwrap();
+    let old_dashed_name = projects[project_index].dashed_name.clone();
+    let old_title = projects[project_index].title.clone();
+
+    let validator = |input: &str| {
+        if input.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
+            Ok(Validation::Valid)
+        } else {
+            Ok(Validation::Invalid(
+                "Your dashed name should be a valid string for a file and directory name".into(),
+            ))
+        }
+    };
+    let new_dashed_name = Text::new("New dashed name of project?")
+        .with_default(&old_dashed_name)
+        .with_validator(validator)
+        .prompt()?;
+    let new_title = Text::new("New title of project?")
+        .with_default(&old_title)
+        .with_validator(min_length!(1, "Minimum of 1 character"))
+        .prompt()?;
+
+    // Rename project directory
+    if old_dashed_name != new_dashed_name {
+        if let Err(e) = std::fs::rename(&old_dashed_name, &new_dashed_name) {
+            eprintln!(
+                "Warning: Failed to rename directory '{}' to '{}': {e}",
+                old_dashed_name, new_dashed_name
+            );
+        }
+    }
+
+    // Rename curriculum file and update H1
+    let curriculum_dir = PathBuf::from(freecodecamp_conf.curriculum.locales.english.clone());
+    let old_curriculum_path = curriculum_dir.join(format!("{old_dashed_name}.md"));
+    let new_curriculum_path = curriculum_dir.join(format!("{new_dashed_name}.md"));
+
+    if old_curriculum_path.exists() {
+        // Read file
+        let mut content =
+            std::fs::read_to_string(&old_curriculum_path).expect("Failed to read curriculum file");
+        // Update H1
+        if content.starts_with("# ") {
+            if let Some(first_line_end) = content.find('\n') {
+                content.replace_range(2..first_line_end, &new_title);
+            } else {
+                content = format!("# {new_title}");
+            }
+        }
+
+        // Write to new path
+        std::fs::write(&new_curriculum_path, content).expect("Failed to write curriculum file");
+
+        // Remove old file if it was renamed
+        if old_dashed_name != new_dashed_name {
+            if let Err(e) = std::fs::remove_file(&old_curriculum_path) {
+                eprintln!("Warning: Failed to remove old curriculum file: {e}");
+            }
+        }
+    } else {
+        eprintln!(
+            "Warning: Curriculum file '{}' not found",
+            old_curriculum_path.display()
+        );
+    }
+
+    // Update metadata
+    projects[project_index].dashed_name = new_dashed_name;
+    projects[project_index].title = new_title;
+    create_project_metadata(&freecodecamp_conf, &projects);
+
+    println!("Project renamed successfully");
     Ok(())
 }
 
