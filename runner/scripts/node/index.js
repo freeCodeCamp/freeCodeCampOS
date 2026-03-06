@@ -5,11 +5,11 @@ import path from 'node:path';
 const MANIFEST_PATH = process.env.MANIFEST_PATH;
 const TEST_WORKER_PATH = process.env.TEST_WORKER_PATH;
 
-async function runTest(test, project, hooks) {
+async function runTest(test, project, hooks, helpersPath) {
   return new Promise((resolve, reject) => {
     const worker = new Worker(TEST_WORKER_PATH, {
       name: `worker-${test.id}`,
-      workerData: { before_each: hooks.before_each, project }
+      workerData: { before_each: hooks.before_each, project, helpersPath }
     });
 
     worker.on('message', async message => {
@@ -72,10 +72,12 @@ async function main() {
 
   if (PROJECT.blocking_tests) {
     for (const test of tests) {
-      await runTest(test, PROJECT, HOOKS);
+      await runTest(test, PROJECT, HOOKS, MANIFEST.helpers_path);
     }
   } else {
-    await Promise.all(tests.map(test => runTest(test, PROJECT, HOOKS)));
+    await Promise.all(
+      tests.map(test => runTest(test, PROJECT, HOOKS, MANIFEST.helpers_path))
+    );
   }
 
   if (after_all) {

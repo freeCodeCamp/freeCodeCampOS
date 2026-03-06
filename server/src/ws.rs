@@ -275,18 +275,19 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
                 let lesson_id = lesson.id;
 
                 tokio::spawn(async move {
+                    let state_for_runner = state_clone.clone();
                     let results = tokio::task::spawn_blocking(move || -> anyhow::Result<Vec<config::Test>> {
                         let mut results = Vec::new();
                         let node_tests: Vec<_> = tests_clone.iter().filter(|t| matches!(t.runner.as_str(), "node" | "js" | "javascript")).cloned().collect();
                         let bash_tests: Vec<_> = tests_clone.iter().filter(|t| matches!(t.runner.as_str(), "bash" | "sh")).cloned().collect();
 
                         if !node_tests.is_empty() {
-                            results.extend(NodeRunner::execute(&project_clone, node_tests, &hooks)?);
+                            let helpers = state_for_runner.config.tooling.as_ref().and_then(|t| t.helpers.as_deref());
+                            results.extend(NodeRunner::execute(&project_clone, node_tests, &hooks, helpers)?);
                         }
                         if !bash_tests.is_empty() {
-                            results.extend(BashRunner::execute(&project_clone, bash_tests, &hooks)?);
-                        }
-                        Ok(results)
+                            results.extend(BashRunner::execute(&project_clone, bash_tests, &hooks, None)?);
+                        }                        Ok(results)
                     }).await;
 
                     match results {

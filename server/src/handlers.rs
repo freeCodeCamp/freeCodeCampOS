@@ -66,14 +66,15 @@ pub async fn run_tests(
     let bash_tests: Vec<_> = lesson.tests.iter().filter(|t| matches!(t.runner.as_str(), "bash" | "sh")).cloned().collect();
 
     if !node_tests.is_empty() {
-        results.extend(NodeRunner::execute(&project, node_tests, &hooks)
+        let helpers = state.config.tooling.as_ref().and_then(|t| t.helpers.as_deref());
+        results.extend(NodeRunner::execute(&project, node_tests, &hooks, helpers)
             .map_err(|e| {
                 tracing::error!("failed to execute node tests: {}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to execute node tests: {}", e))
             })?);
     }
     if !bash_tests.is_empty() {
-        results.extend(BashRunner::execute(&project, bash_tests, &hooks)
+        results.extend(BashRunner::execute(&project, bash_tests, &hooks, None)
             .map_err(|e| {
                 tracing::error!("failed to execute bash tests: {}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to execute bash tests: {}", e))

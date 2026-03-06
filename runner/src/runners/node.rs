@@ -16,6 +16,7 @@ impl Runner for NodeRunner {
         project: &Project,
         tests: Vec<Test>,
         hooks: &Hooks,
+        helpers: Option<&str>,
     ) -> Result<Vec<Test>> {
         // Create temporary directory for test files in CWD
         let test_dir = Builder::new().prefix(".fcc-tests-").tempdir_in(".")?;
@@ -52,11 +53,17 @@ impl Runner for NodeRunner {
         let worker_path = test_dir_path.join("worker.js");
         fs::write(&worker_path, NODE_WORKER)?;
 
+        // Resolve absolute path for helpers if provided
+        let absolute_helpers_path = helpers.map(|h| {
+            std::fs::canonicalize(h).map(|p| p.to_string_lossy().to_string()).unwrap_or_else(|_| h.to_string())
+        });
+
         // Write manifest
         let manifest = serde_json::json!({
             "project_path": project_path.to_str().unwrap(),
             "hooks_path": hooks_path.to_str().unwrap(),
             "test_paths": test_paths.iter().map(|p| p.to_str().unwrap()).collect::<Vec<_>>(),
+            "helpers_path": absolute_helpers_path,
         });
         let manifest_path = test_dir_path.join("manifest.json");
         fs::write(&manifest_path, serde_json::to_string(&manifest)?)?;

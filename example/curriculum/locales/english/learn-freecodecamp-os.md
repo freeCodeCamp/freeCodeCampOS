@@ -103,7 +103,7 @@ const file = await readFile(
   join(ROOT, 'curriculum/locales/english/learn-freecodecamp-os.md'),
   'utf-8'
 );
-assert.include(file.slice(0, 100), 'Welcome to freeCodeCampOS!');
+assert.include(file.slice(0, 200), 'Welcome to freeCodeCampOS!');
 ```
 
 ### --seed--

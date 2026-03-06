@@ -10,6 +10,7 @@ impl Runner for BashRunner {
         _project: &Project,
         tests: Vec<Test>,
         hooks: &Hooks,
+        _helpers: Option<&str>,
     ) -> Result<Vec<Test>> {
         let mut results = Vec::new();
 

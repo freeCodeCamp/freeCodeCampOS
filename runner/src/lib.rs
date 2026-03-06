@@ -12,6 +12,7 @@ pub trait Runner {
         project: &Project,
         tests: Vec<Test>,
         hooks: &Hooks,
+        helpers: Option<&str>,
     ) -> Result<Vec<Test>>;
 }
 

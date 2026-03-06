@@ -13,6 +13,14 @@ pub struct AppConfig {
     pub curriculum: CurriculumConfig,
     pub config: Config,
     pub hot_reload: Option<HotReloadConfig>,
+    pub tooling: Option<ToolingConfig>,
+}
+
+/// Tooling configuration
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ToolingConfig {
+    pub helpers: Option<String>,
+    pub plugins: Option<String>,
 }
 
 /// Paths to course configuration and state files
