@@ -1,5 +1,9 @@
 # Plugin System
 
+```admonish attention
+The plugin system described below is currently **not implemented** in freeCodeCampOS v4.0.0.
+```
+
 The plugin system is a way to _hook_ into events during the runtime of the application.
 
 Plugins are defined within the JS file specified by the [`tooling.plugins`](./configuration.md#tooling) configuration option.

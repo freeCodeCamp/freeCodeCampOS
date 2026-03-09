@@ -6,12 +6,18 @@ use axum::{
 };
 use futures::{sink::SinkExt, stream::StreamExt};
 use std::sync::Arc;
+use std::io::Write;
+use std::process::Command;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use uuid::Uuid;
+use tempfile::NamedTempFile;
 use crate::AppState;
 use runner::{NodeRunner, BashRunner, Runner};
 use config::ProjectSummary;
+
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
 
 #[derive(Debug, Deserialize)]
 pub struct ClientMessage {
@@ -151,6 +157,12 @@ async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
                                     let _ = state_clone.update_course_state(|s| {
                                         s.locale = locale.to_string();
                                     }).await;
+                                }
+                            }
+                            "__run-client-code" => {
+                                if let Some(code) = client_msg.data.as_str() {
+                                    tracing::info!("client requested code execution via __run-client-code");
+                                    handle_run_client_code(&tx_out_clone, code).await;
                                 }
                             }
                             _ => {
@@ -440,6 +452,88 @@ async fn handle_select_project_current(state: &Arc<AppState>, tx: &mpsc::Sender<
         tracing::debug!("re-selecting current project: {}", id);
         handle_select_project(state, tx, id).await;
     }
+}
+
+async fn handle_run_client_code(tx: &mpsc::Sender<Message>, code: &str) {
+    if !code.starts_with("#!") {
+        send_message(tx, "RESPONSE", serde_json::json!({
+            "event": "__run-client-code",
+            "error": "Code must start with a shebang (#!), e.g. '#!/usr/bin/env node'"
+        })).await;
+        return;
+    }
+
+    let mut temp_file = match NamedTempFile::new() {
+        Ok(file) => file,
+        Err(e) => {
+            tracing::error!("failed to create temporary file for __run-client-code: {}", e);
+            send_message(tx, "RESPONSE", serde_json::json!({
+                "event": "__run-client-code",
+                "error": format!("Failed to create temporary file: {}", e)
+            })).await;
+            return;
+        }
+    };
+
+    if let Err(e) = temp_file.write_all(code.as_bytes()) {
+        tracing::error!("failed to write code to temporary file: {}", e);
+        send_message(tx, "RESPONSE", serde_json::json!({
+            "event": "__run-client-code",
+            "error": format!("Failed to write code to temporary file: {}", e)
+        })).await;
+        return;
+    }
+
+    let path = temp_file.path().to_owned();
+
+    #[cfg(unix)]
+    {
+        if let Ok(metadata) = std::fs::metadata(&path) {
+            let mut permissions = metadata.permissions();
+            permissions.set_mode(0o755);
+            if let Err(e) = std::fs::set_permissions(&path, permissions) {
+                tracing::warn!("failed to set executable permissions on temporary file: {}", e);
+            }
+        }
+    }
+
+    // Use spawn_blocking for long running or blocking process execution
+    let tx_clone = tx.clone();
+    tokio::task::spawn_blocking(move || {
+        let output = Command::new(&path)
+            .output();
+
+        let runtime = tokio::runtime::Handle::current();
+        match output {
+            Ok(output) => {
+                let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+                let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+                let exit_code = output.status.code();
+                
+                runtime.block_on(async {
+                    send_message(&tx_clone, "RESPONSE", serde_json::json!({
+                        "event": "__run-client-code",
+                        "data": {
+                            "event": "__run-client-code",
+                            "stdout": stdout,
+                            "stderr": stderr,
+                            "exit_code": exit_code,
+                            "__result": stdout.trim() // Legacy support: some scripts expect __result
+                        }
+                    })).await;
+                });
+            }
+            Err(e) => {
+                tracing::error!("failed to execute client code: {}", e);
+                runtime.block_on(async {
+                    send_message(&tx_clone, "RESPONSE", serde_json::json!({
+                        "event": "__run-client-code",
+                        "error": format!("Failed to execute code: {}", e)
+                    })).await;
+                });
+            }
+        }
+    });
 }
 
 async fn send_message<T: Serialize>(tx: &mpsc::Sender<Message>, event: &str, data: T) {

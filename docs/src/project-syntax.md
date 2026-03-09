@@ -1,6 +1,6 @@
 # Project Syntax
 
-This is the Markdown syntax used to create projects in the curriculum using the default parser. The parser can be configured using the [plugin-system](./plugin-system.md).
+This is the Markdown syntax used to create projects in the curriculum using the default parser.
 
 ## Markers
 
@@ -10,7 +10,7 @@ This is the Markdown syntax used to create projects in the curriculum using the 
 # <TITLE>
 ```
 
-The first paragraph is used as the description of the project. The first `json` code block is used for extra metadata such as tags:
+The first paragraph is used as the description of the project. Optionally, a `json` code block can be used for extra metadata:
 
 `````admonish example collapsible=true
 ````markdown
@@ -18,6 +18,10 @@ The first paragraph is used as the description of the project. The first `json` 
 
 ```json
 {
+  "id": "e5f6a1b2-c3d4-4e5f-1a2b-3c4d5e6f7a8b",
+  "dashed_name": "learn-x-by-building-y",
+  "order": 0,
+  "is_integrated": false,
   "tags": ["Coming Soon!"]
 }
 ```
@@ -84,10 +88,12 @@ This is the description content.
 
 <TEST_TEXT>
 
-```js
+```<LANGUAGE>,runner=<RUNNER>
 <TEST_CODE>
 ```
 ````
+
+Available runners include `node` (for JavaScript/TypeScript), `bash` (for shell scripts), and `python`.
 
 `````admonish example collapsible=true
 ````markdown
@@ -95,7 +101,7 @@ This is the description content.
 
 You should ...
 
-```js
+```js,runner=node
 await new Promise(resolve => setTimeout(resolve, 2000));
 assert.equal(true, true);
 ```
@@ -160,9 +166,35 @@ impl Developer for Camper {
 ```
 ````
 
-#### `#### --force--`
+### Hooks
 
-Any seed marked with the force flag will overwrite the [`seedEveryLesson` configuration option](configuration.md#definitions-1). Specifically, the force flag causes the seed to run, if it were not going to, and it prevents the seed from running, if it were going to.
+Hooks can be defined at the lesson level to run code before or after tests.
+
+#### `### --before-all--`
+Runs once before all tests in the lesson.
+
+#### `### --after-all--`
+Runs once after all tests in the lesson.
+
+#### `### --before-each--`
+Runs before each individual test in the lesson.
+
+#### `### --after-each--`
+Runs after each individual test in the lesson.
+
+````admonish example collapsible=true
+```markdown
+### --before-each--
+
+```js,runner=node
+const __testVar = 1;
+```
+```
+````
+
+### `#### --force--`
+
+Any seed marked with the force flag will overwrite the [`seed_every_lesson` configuration option](configuration.md#definitions-1). Specifically, the force flag causes the seed to run, if it were not going to, and it prevents the seed from running, if it were going to.
 
 ```markdown
 ### --seed--

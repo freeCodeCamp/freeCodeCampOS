@@ -2,6 +2,7 @@
 
 - [Introduction](./introduction.md)
 - [Getting Started](./getting-started.md)
+- [Getting Started with v4.0](./getting-started-v4.md)
 - [CLI](./cli.md)
 - [Examples](./examples.md)
 - [Configuration](./configuration.md)

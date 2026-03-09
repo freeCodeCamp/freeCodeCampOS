@@ -2,9 +2,20 @@
 
 ## Local Development
 
-1. Open `freeCodeCampOS/self` as a new workspace in VSCode
-2. Run `npm i`
-3. Run `freeCodeCamp: Develop Course` in the command palette
+1. Open `freeCodeCampOS/example` as a new workspace in VSCode
+2. Install dependencies and build the project:
+   ```bash
+   bun install
+   bun run build
+   ```
+3. Run the development server:
+   ```bash
+   cargo run --bin server
+   ```
+4. In a separate terminal, run the client in development mode:
+   ```bash
+   cd client && bun run dev
+   ```
 
 ## Gitpod
 
