@@ -2,6 +2,8 @@ import { parentPort, workerData } from 'node:worker_threads';
 import { assert, AssertionError, expect, config as chaiConfig } from 'chai';
 import { join } from 'node:path';
 import { readFile, writeFile } from 'node:fs/promises';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
 const { before_each = '', project, helpersPath } = workerData;
 

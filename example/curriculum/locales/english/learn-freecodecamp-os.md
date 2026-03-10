@@ -127,7 +127,7 @@ Open a new terminal, and cd into the `learn-freecodecamp-os/` directory.
 You should be in the `learn-freecodecamp-os/` directory.
 
 ```js
-const cwd = await __helpers.getCWD();
+const cwd = await getCWD();
 assert.include(cwd, 'learn-freecodecamp-os');
 ```
 
@@ -179,7 +179,7 @@ Version `>=3` should be installed.
 
 ```js
 try {
-  const { stdout, stderr } = await __helpers.getCommandOutput(
+  const { stdout, stderr } = await getCommandOutput(
     'npm list',
     project.dashedName
   );
@@ -938,6 +938,6 @@ You have learnt how to:
 When you are done, type `done` in the terminal.
 
 ```js
-const lastCommand = await __helpers.getLastCommand();
+const lastCommand = await getLastCommand();
 assert.include(lastCommand, 'done');
 ```

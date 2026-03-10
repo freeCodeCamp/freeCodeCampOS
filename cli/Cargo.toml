@@ -1,5 +1,5 @@
 [package]
-name = "create-freecodecamp-os-app"
+name = "freecodecamp-os-cli"
 version.workspace = true
 edition.workspace = true
 description = "CLI to create the boilerplate for a new freeCodeCamp-OS app"
