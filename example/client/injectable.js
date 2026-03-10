@@ -1,14 +1,16 @@
 function checkForToken() {
-  const serverTokenCode = `
-    try {
-      const {readFile} = await import('fs/promises');
-      const tokenFile = await readFile(join(ROOT, 'config/token.txt'));
-      const token = tokenFile.toString();
-      console.log(token);
-      __result = token;
-    } catch (e) {
-      __result = null;
-    }`;
+  const serverTokenCode = `#!/usr/bin/env node
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+const ROOT = process.cwd();
+
+try {
+  const tokenFile = await readFile(join(ROOT, 'config/token.txt'));
+  const token = tokenFile.toString();
+  console.log(token);
+} catch (e) {
+  process.exit(1);
+}`;
   socket.send(
     JSON.stringify({
       event: '__run-client-code',
@@ -31,15 +33,17 @@ async function askForToken() {
   button.style.color = 'black';
   button.onclick = async () => {
     const token = input.value;
-    const serverTokenCode = `
-      try {
-        const {writeFile} = await import('fs/promises');
-        await writeFile(join(ROOT, 'config/token.txt'), '${token}');
-        __result = true;
-      } catch (e) {
-        console.error(e);
-        __result = false;
-      }`;
+    const serverTokenCode = `#!/usr/bin/env node
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+const ROOT = process.cwd();
+
+try {
+  await writeFile(join(ROOT, 'config/token.txt'), '${token}');
+  process.exit(0);
+} catch (e) {
+  process.exit(1);
+}`;
     socket.send(
       JSON.stringify({
         event: '__run-client-code',
@@ -70,15 +74,16 @@ window.onload = function () {
       parsedData.data.event === '__run-client-code'
     ) {
       if (parsedData.data.error) {
-        console.log(parsedData.data.error);
+        console.error(parsedData.data.error);
         return;
       }
-      const { __result } = parsedData.data;
-      if (!__result) {
+      
+      const { stdout, exit_code } = parsedData.data;
+      if (exit_code !== 0 || !stdout.trim()) {
         askForToken();
         return;
       }
-      window.__token = __result;
+      window.__token = stdout.trim();
     }
   };
   let interval;

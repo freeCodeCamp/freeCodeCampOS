@@ -517,8 +517,7 @@ async fn handle_run_client_code(tx: &mpsc::Sender<Message>, code: &str) {
                             "event": "__run-client-code",
                             "stdout": stdout,
                             "stderr": stderr,
-                            "exit_code": exit_code,
-                            "__result": stdout.trim() // Legacy support: some scripts expect __result
+                            "exit_code": exit_code
                         }
                     })).await;
                 });
