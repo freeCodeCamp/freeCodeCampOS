@@ -84,7 +84,9 @@ export async function runTests(ws, projectDashedName) {
       WORKER_POOL.push(worker);
 
       // When result is received back from worker, update the client state
+      worker.on('error', workerError);
       worker.on('message', workerMessage);
+      worker.on('messageerror', workerError);
       worker.stdout.on('data', data => {
         logover.debug(`Blocking Worker:`, data.toString());
       });
@@ -121,7 +123,9 @@ export async function runTests(ws, projectDashedName) {
         WORKER_POOL.push(worker);
 
         // When result is received back from worker, update the client state
+        worker.on('error', workerError);
         worker.on('message', workerMessage);
+        worker.on('messageerror', workerError);
         worker.stdout.on('data', data => {
           logover.debug(`Worker-${i}:`, data.toString());
         });
@@ -175,6 +179,10 @@ export async function runTests(ws, projectDashedName) {
         testsState,
         afterAll
       });
+    }
+
+    async function workerError(error) {
+      logover.error(`Worker Error:`, error);
     }
   } catch (e) {
     logover.error('Test Error: ');
