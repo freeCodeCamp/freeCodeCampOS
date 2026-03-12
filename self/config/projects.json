@@ -68,5 +68,19 @@
     "blockingTests": false,
     "breakOnFailure": false,
     "numberOfLessons": 3
+  },
+  {
+    "id": 5,
+    "dashedName": "dot-logs",
+    "isIntegrated": false,
+    "isPublic": true,
+    "currentLesson": 0,
+    "runTestsOnWatch": true,
+    "seedEveryLesson": false,
+    "isResetEnabled": false,
+    "numberofLessons": null,
+    "blockingTests": false,
+    "breakOnFailure": false,
+    "numberOfLessons": 2
   }
 ]

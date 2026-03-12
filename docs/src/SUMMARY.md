@@ -22,4 +22,3 @@
 - [Client Injection](./client-injection.md)
 - [Contributing](./contributing.md)
 - [CHANGELOG](./CHANGELOG.md)
-- [Roadmap](./roadmap.md)

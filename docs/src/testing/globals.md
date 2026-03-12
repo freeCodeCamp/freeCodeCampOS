@@ -33,7 +33,7 @@ The root of the workspace.
 ### `watcher`
 
 ```admonish note
-This is only available in the `beforeAll` and `beforeEach` context - on the main thread.
+This is only available in the `beforeAll` and `afterAll` context - on the main thread.
 ```
 
 The [Chokidar](https://www.npmjs.com/package/chokidar) `FSWatcher` instance.

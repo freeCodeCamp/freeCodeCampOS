@@ -1,5 +1,3 @@
-// This file parses answer files for lesson content
-import { join } from 'path';
 import {
   updateDescription,
   updateProjectHeading,
@@ -8,16 +6,11 @@ import {
   updateError,
   resetBottomPanel
 } from './client-socks.js';
-import { ROOT, getState, getProjectConfig, setState } from './env.js';
+import { getState, getProjectConfig } from './env.js';
 import { logover } from './logger.js';
 import { seedLesson } from './seed.js';
 import { pluginEvents } from '../plugin/index.js';
-import {
-  unwatchAll,
-  watchAll,
-  watchPathRelativeToRoot,
-  watcher
-} from './hot-reload.js';
+import { watchPath, unwatchPath, resetPathLists } from './watcher/watcher.js';
 
 /**
  * Runs the lesson from the `projectDashedName` config.
@@ -27,14 +20,14 @@ import {
 export async function runLesson(ws, projectDashedName) {
   const project = await getProjectConfig(projectDashedName);
   const { isIntegrated, dashedName, seedEveryLesson, currentLesson } = project;
-  const { lastSeed, lastWatchChange } = await getState();
+  const { lastSeed } = await getState();
   try {
     const { description, seed, isForce, tests, meta } =
       await pluginEvents.getLesson(projectDashedName, currentLesson);
 
     // TODO: Consider performance optimizations
     // - Do not run at all if whole project does not contain any `meta`.
-    await handleWatcher(meta, { lastWatchChange, currentLesson });
+    await handleWatcher(meta);
 
     if (currentLesson === 0) {
       await pluginEvents.onProjectStart(project);
@@ -83,22 +76,17 @@ export async function runLesson(ws, projectDashedName) {
   }
 }
 
-async function handleWatcher(meta, { lastWatchChange, currentLesson }) {
-  // Calling `watcher` methods takes a performance hit. So, check is behind a check that the lesson has changed.
-  if (lastWatchChange !== currentLesson) {
-    if (meta?.watch) {
-      unwatchAll();
-      for (const path of meta.watch) {
-        const toWatch = join(ROOT, path);
-        watchPathRelativeToRoot(toWatch);
-      }
-    } else if (meta?.ignore) {
-      await watchAll();
-      watcher.unwatch(meta.ignore);
-    } else {
-      // Reset watcher back to default/freecodecamp.conf.json
-      await watchAll();
+async function handleWatcher(meta) {
+  if (meta?.watch) {
+    for (const path of meta.watch) {
+      watchPath(path);
     }
+  } else if (meta?.ignore) {
+    for (const path of meta.ignore) {
+      unwatchPath(path);
+    }
+  } else {
+    // Reset watcher back to default/freecodecamp.conf.json
+    resetPathLists();
   }
-  await setState({ lastWatchChange: currentLesson });
 }

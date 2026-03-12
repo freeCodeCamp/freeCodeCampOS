@@ -118,15 +118,16 @@ fi
 
 PS1='\[[01;32m\]\u\[[00m\] \[[01;34m\]\w\[[00m\]$(__git_ps1 " (%s)") $ '
 
-for i in $(ls -A $HOME/.bashrc.d/); do source $HOME/.bashrc.d/$i; done
-
-
 # freeCodeCamp - Needed for most tests to work
 WD=/workspace/freeCodeCampOS
 
 # Ensure `$WD/.logs/` directory and files exist
 mkdir -p $WD/.logs/
-touch $WD/.logs/.bash_history.log $WD/.logs/.cwd.log $WD/.logs/.history_cwd.log $WD/.logs/.terminal_out.log $WD/.logs/.temp.log
+touch $WD/.logs/.bash_history.log $WD/.logs/.cwd.log $WD/.logs/.history_cwd.log
 
-PROMPT_COMMAND='>| $WD/.logs/.terminal_out.log && cat $WD/.logs/.temp.log >| $WD/.logs/.terminal_out.log && truncate -s 0 $WD/.logs/.temp.log; echo $PWD >> $WD/.logs/.cwd.log; history -a $WD/.logs/.bash_history.log; echo $PWD\$ $(history | tail -n 1) >> $WD/.logs/.history_cwd.log;'
-exec > >(tee -ia $WD/.logs/.temp.log) 2>&1
+PROMPT_COMMAND='echo $PWD >> $WD/.logs/.cwd.log; history -a $WD/.logs/.bash_history.log; echo $PWD\$ $(history | tail -n 1) >> $WD/.logs/.history_cwd.log;'
+
+if test -t 0 ; then
+  script --flush --append --log-out $WD/.logs/.script_out.log
+  exit
+fi

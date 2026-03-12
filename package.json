@@ -1,7 +1,7 @@
 {
   "name": "@freecodecamp/freecodecamp-os",
   "author": "freeCodeCamp",
-  "version": "3.5.1",
+  "version": "3.6.0",
   "description": "Package used for freeCodeCamp projects with the freeCodeCamp Courses VSCode extension",
   "scripts": {
     "build:client": "NODE_ENV=production webpack --config ./.freeCodeCamp/webpack.config.cjs",
@@ -9,7 +9,6 @@
     "develop:client": "NODE_ENV=development webpack --mode development --config ./.freeCodeCamp/webpack.config.cjs --watch",
     "develop:server": "nodemon --watch ./.freeCodeCamp/dist/ --watch ./.freeCodeCamp/tooling/ --watch ./tooling/ --ignore ./config/ ./.freeCodeCamp/tooling/server.js",
     "start": "npm run build:client && node ./.freeCodeCamp/tooling/server.js",
-    "test": "node ./.freeCodeCamp/tests/parser.test.js",
     "prepublishOnly": "npm run build:client"
   },
   "dependencies": {

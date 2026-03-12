@@ -30,4 +30,4 @@ To add a project to an existing course:
 create-freecodecamp-os-app add-project
 ```
 
-The version of the CLI is tied to the version of `freecodecamp-os`. Some options may not be available if the version of the CLI is not compatible with the version of `freecodecamp-os` that is installed.
+The major version of the CLI is tied to the version of `freecodecamp-os`. Some options may not be available if the version of the CLI is not compatible with the version of `freecodecamp-os` that is installed.

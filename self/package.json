@@ -2,10 +2,13 @@
   "name": "self",
   "private": true,
   "author": "freeCodeCamp",
-  "version": "3.4.0",
+  "version": "3.6.0",
   "description": "Test repo for @freecodecamp/freecodecamp-os",
   "scripts": {
-    "start": "node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js"
+    "start": "node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js",
+    "test": "npm run test:parser && npm run test:node",
+    "test:parser": "node ../.freeCodeCamp/tests/parser.test.js",
+    "test:node": "node --test ../.freeCodeCamp/tests/watcher.test.js"
   },
   "dependencies": {
     "@freecodecamp/freecodecamp-os": "../"
