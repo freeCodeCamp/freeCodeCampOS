@@ -4,7 +4,7 @@ use anyhow::Result;
 use config::{Hooks, Project, Test};
 
 pub mod runners;
-pub use runners::{node::NodeRunner, bash::BashRunner};
+pub use runners::{node::NodeRunner, bash::BashRunner, python::PythonRunner};
 
 /// Trait for test runners
 pub trait Runner {
@@ -21,6 +21,15 @@ pub fn run_cmd(
     code: &str,
 ) -> Result<()> {
     match runner {
+        "python" | "py" => {
+            let output = std::process::Command::new("python3")
+                .arg("-c")
+                .arg(code)
+                .output()?;
+            if !output.status.success() {
+                anyhow::bail!("Python command failed: {}", String::from_utf8_lossy(&output.stderr));
+            }
+        }
         "node" | "js" | "javascript" => {
             let output = std::process::Command::new("node")
                 .arg("-e")

@@ -13,7 +13,7 @@ use tokio::sync::mpsc;
 use uuid::Uuid;
 use tempfile::NamedTempFile;
 use crate::AppState;
-use runner::{NodeRunner, BashRunner, Runner};
+use runner::{NodeRunner, BashRunner, PythonRunner, Runner};
 use config::ProjectSummary;
 
 #[cfg(unix)]
@@ -292,6 +292,7 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
                         let mut results = Vec::new();
                         let node_tests: Vec<_> = tests_clone.iter().filter(|t| matches!(t.runner.as_str(), "node" | "js" | "javascript")).cloned().collect();
                         let bash_tests: Vec<_> = tests_clone.iter().filter(|t| matches!(t.runner.as_str(), "bash" | "sh")).cloned().collect();
+                        let python_tests: Vec<_> = tests_clone.iter().filter(|t| matches!(t.runner.as_str(), "python" | "py")).cloned().collect();
 
                         if !node_tests.is_empty() {
                             let helpers = state_for_runner.config.tooling.as_ref().and_then(|t| t.helpers.as_deref());
@@ -299,6 +300,9 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
                         }
                         if !bash_tests.is_empty() {
                             results.extend(BashRunner::execute(&project_clone, bash_tests, &hooks, None)?);
+                        }
+                        if !python_tests.is_empty() {
+                            results.extend(PythonRunner::execute(&project_clone, python_tests, &hooks, None)?);
                         }                        Ok(results)
                     }).await;
 

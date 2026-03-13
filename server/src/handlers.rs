@@ -33,7 +33,7 @@ pub async fn get_curriculum(
     })))
 }
 
-use runner::{NodeRunner, BashRunner, Runner};
+use runner::{NodeRunner, BashRunner, PythonRunner, Runner};
 
 pub async fn run_tests(
     Path((project_id, lesson_id)): Path<(String, u32)>,
@@ -64,6 +64,7 @@ pub async fn run_tests(
     let mut results = Vec::new();
     let node_tests: Vec<_> = lesson.tests.iter().filter(|t| matches!(t.runner.as_str(), "node" | "js" | "javascript")).cloned().collect();
     let bash_tests: Vec<_> = lesson.tests.iter().filter(|t| matches!(t.runner.as_str(), "bash" | "sh")).cloned().collect();
+    let python_tests: Vec<_> = lesson.tests.iter().filter(|t| matches!(t.runner.as_str(), "python" | "py")).cloned().collect();
 
     if !node_tests.is_empty() {
         let helpers = state.config.tooling.as_ref().and_then(|t| t.helpers.as_deref());
@@ -78,6 +79,13 @@ pub async fn run_tests(
             .map_err(|e| {
                 tracing::error!("failed to execute bash tests: {}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to execute bash tests: {}", e))
+            })?);
+    }
+    if !python_tests.is_empty() {
+        results.extend(PythonRunner::execute(&project, python_tests, &hooks, None)
+            .map_err(|e| {
+                tracing::error!("failed to execute python tests: {}", e);
+                (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to execute python tests: {}", e))
             })?);
     }
 
