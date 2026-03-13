@@ -67,7 +67,7 @@ const file = await readFile(
   'utf-8'
 );
 await new Promise(resolve => setTimeout(resolve, 5000));
-assert.notInclude(file.slice(0, 100), 'Welcome to freeCodeCampOS!');
+assert.notInclude(file.slice(0, 500), 'Welcome to freeCodeCampOS!');
 ```
 
 I always fail 🙃
@@ -100,10 +100,10 @@ The `curriculum/locales/english/learn-freecodecamp-os.md` file should contain th
 ```js
 const { readFile } = await import('fs/promises');
 const file = await readFile(
-  'curriculum/locales/english/learn-freecodecamp-os.md',
+  join(ROOT, 'curriculum/locales/english/learn-freecodecamp-os.md'),
   'utf-8'
 );
-assert.include(file.slice(0, 100), 'Welcome to freeCodeCampOS!');
+assert.include(file.slice(0, 200), 'Welcome to freeCodeCampOS!');
 ```
 
 ### --seed--
@@ -127,7 +127,7 @@ Open a new terminal, and cd into the `learn-freecodecamp-os/` directory.
 You should be in the `learn-freecodecamp-os/` directory.
 
 ```js
-const cwd = await __helpers.getCWD();
+const cwd = await getCWD();
 assert.include(cwd, 'learn-freecodecamp-os');
 ```
 
@@ -165,25 +165,25 @@ Install `@freecodecamp/freecodecamp-os`.
 You should have `@freecodecamp/freecodecamp-os` installed.
 
 ```js
-const { access, constants } = await import('fs/promises');
+const { access } = await import('fs/promises');
 try {
   await access(
-    join(project.dashedName, 'node_modules/@freecodecamp/freecodecamp-os')
+    join(project.dashed_name, 'node_modules/@freecodecamp/freecodecamp-os')
   );
 } catch (e) {
   assert.fail(e);
 }
 ```
 
-Version `>=2` should be installed.
+Version `>=4` should be installed.
 
 ```js
 try {
-  const { stdout, stderr } = await __helpers.getCommandOutput(
+  const { stdout, stderr } = await getCommandOutput(
     'npm list',
-    project.dashedName
+    project.dashed_name
   );
-  assert.include(stdout, '@freecodecamp/freecodecamp-os@2');
+  assert.include(stdout, '@freecodecamp/freecodecamp-os@4');
 } catch (e) {
   assert.fail(e);
 }
@@ -250,15 +250,19 @@ assert.equal(file?.trim(), '[]');
 
 The mandatory properties for a project in the `projects.json` file are:
 
-- `id`: a unique identifier for the project
-- `dashedName`: a string of `-` separated words
+- `id`: a UUID string uniquely identifying the project
+- `title`: a human-readable title for the project
+- `dashed_name`: a string of `-` separated words
+- `order`: an integer indicating the project's display order
 
 Add the following to the `projects.json` file:
 
 ```json
 {
-  "id": 0,
-  "dashedName": "learn-freecodecamp-os"
+  "id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+  "title": "Learn freeCodeCampOS",
+  "dashed_name": "learn-freecodecamp-os",
+  "order": 0
 }
 ```
 
@@ -272,16 +276,36 @@ assert.lengthOf(__projects, 1);
 assert.isObject(__projects[0]);
 ```
 
-The object should have the `id` and `dashedName` properties.
+The object should have the `id`, `title`, `dashed_name`, and `order` properties.
 
 ```js
-assert.hasAllKeys(__projects[0], ['id', 'dashedName']);
+assert.hasAllKeys(__projects[0], ['id', 'title', 'dashed_name', 'order']);
 ```
 
-The `id` property should be `0`.
+The `id` property should be a non-empty string.
 
 ```js
-assert.equal(__projects[0].id, 0);
+assert.isString(__projects[0].id);
+assert.isNotEmpty(__projects[0].id);
+```
+
+The `dashed_name` property should be `"learn-freecodecamp-os"`.
+
+```js
+assert.equal(__projects[0].dashed_name, 'learn-freecodecamp-os');
+```
+
+The `title` property should be a non-empty string.
+
+```js
+assert.isString(__projects[0].title);
+assert.isNotEmpty(__projects[0].title);
+```
+
+The `order` property should be `0`.
+
+```js
+assert.equal(__projects[0].order, 0);
 ```
 
 ### --before-each--
@@ -507,10 +531,6 @@ Within the `freecodecamp.conf.json` file, add the following:
 ```json
 {
   "version": "0.0.1",
-  "scripts": {
-    "develop-course": "",
-    "run-course": ""
-  },
   "config": {
     "projects.json": "<PROJECTS_JSON>",
     "state.json": "<STATE_JSON>"
@@ -535,42 +555,6 @@ The `version` property should be `0.0.1`.
 
 ```js
 assert.equal(__conf.version, '0.0.1');
-```
-
-The `freecodecamp.conf.json` file should contain the `scripts` property.
-
-```js
-assert.hasAllKeys(__conf, ['scripts']);
-```
-
-The `scripts` property should be an object.
-
-```js
-assert.isObject(__conf.scripts);
-```
-
-The `scripts` property should contain the `develop-course` property.
-
-```js
-assert.hasAllKeys(__conf.scripts, ['develop-course']);
-```
-
-The `develop-course` property should be a string.
-
-```js
-assert.isString(__conf.scripts['develop-course']);
-```
-
-The `scripts` property should contain the `run-course` property.
-
-```js
-assert.hasAllKeys(__conf.scripts, ['run-course']);
-```
-
-The `run-course` property should be a string.
-
-```js
-assert.isString(__conf.scripts['run-course']);
 ```
 
 The `freecodecamp.conf.json` file should contain the `config` property.
@@ -719,10 +703,10 @@ assert.include(
 
 ### --description--
 
-Those are all the pre-requisites to start the development server. Within the `learn-freecodecamp-os/` directory, run:
+Those are all the pre-requisites to start the development server. Within the `learn-freecodecamp-os/` directory, run the server binary from the parent repo:
 
 ```bash
-NODE_ENV=development node ./node_modules/@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/server.js
+../../target/release/server
 ```
 
 ### --tests--
@@ -907,22 +891,22 @@ assert.fail(
 
 ### --description--
 
-To run the tests, you could click the `Run Tests` button again, but there is a better way. A project can be configured to run tests on file change with the `runTestsOnWatch` flag.
+To run the tests, you could click the `Run Tests` button again, but there is a better way. A project can be configured to run tests on file change with the `run_tests_on_watch` flag.
 
-Add `"runTestsOnWatch": true` to the project in the `projects.json` file.
+Add `"run_tests_on_watch": true` to the project in the `projects.json` file.
 
 ### --tests--
 
-The `projects.json` file should contain the `runTestsOnWatch` property.
+The `projects.json` file should contain the `run_tests_on_watch` property.
 
 ```js
-assert.hasAllKeys(__projects[0], ['runTestsOnWatch']);
+assert.hasAllKeys(__projects[0], ['run_tests_on_watch']);
 ```
 
-The `runTestsOnWatch` property should have a value of `true`.
+The `run_tests_on_watch` property should have a value of `true`.
 
 ```js
-assert.isTrue(__projects[0].runTestsOnWatch);
+assert.isTrue(__projects[0].run_tests_on_watch);
 ```
 
 ### --before-each--
@@ -944,7 +928,7 @@ const __projects = JSON.parse(file);
 
 You have learnt how to:
 
-- [x] install freecodecamp-os
+- [x] build freecodecamp-os from source
 - [x] add required files
 - use the Markdown syntax to:
   - [x] add a title
@@ -956,15 +940,15 @@ You have learnt how to:
 - [ ] use the `tooling` feature
 - [ ] use the reset feature
 - [ ] use the `terminal` feature
-- [ ] use the `static` feature
+- [ ] use the `static_paths` feature
 - [ ] use the various project flags:
-  - [ ] `isPublic`
-  - [ ] `isIntegrated`
-  - [ ] `blockingTests`
-  - [ ] `breakOnFailure`
-  - [x] `runTestsOnWatch`
-  - [ ] `seedEveryLesson`
-  - [ ] `isResetEnabled`
+  - [ ] `is_public`
+  - [ ] `is_integrated`
+  - [ ] `blocking_tests`
+  - [ ] `break_on_failure`
+  - [x] `run_tests_on_watch`
+  - [ ] `seed_every_lesson`
+  - [ ] `is_reset_enabled`
 - [ ] ignore directories for the hot-reload feature
 
 ### --tests--
@@ -972,7 +956,7 @@ You have learnt how to:
 When you are done, type `done` in the terminal.
 
 ```js
-const lastCommand = await __helpers.getLastCommand();
+const lastCommand = await getLastCommand();
 assert.include(lastCommand, 'done');
 ```
 

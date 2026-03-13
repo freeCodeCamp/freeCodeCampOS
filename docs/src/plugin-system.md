@@ -42,7 +42,7 @@ Called once when a lesson is loaded, after the `onProjectStart` if the first les
 
 It is possible to define a custom parser for the curriculum files. This is useful when the curriculum files are not in the default format described in the [project syntax](./project-syntax.md) section.
 
-The first parameter of the parser functions is the project dashed name. This is the same as the `dashedName` field in the `projects.json` file.
+The first parameter of the parser functions is the project dashed name. This is the same as the `dashed_name` field in the `projects.json` file.
 
 It is up to the parser to read, parse, and return the data in the format expected by the application.
 
@@ -94,7 +94,7 @@ The `seed[].filePath` field is the relative path to the file from the workspace 
 
 The `seed[]` field can also be a plain string, which is then treated as a `bash` command to be run in the workspace root.
 
-An example of this can be seen in the default parser used: <https://github.com/freeCodeCamp/freeCodeCampOS/blob/main/.freeCodeCamp/plugin/index.js>
+An example of this can be seen in the default parser implementation in the `parser` crate.
 
 ## Example
 

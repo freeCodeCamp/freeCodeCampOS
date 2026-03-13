@@ -93,7 +93,7 @@ This is the description content.
 ```
 ````
 
-Available runners include `node` (for JavaScript/TypeScript), `bash` (for shell scripts), and `python`.
+Available runners: `node` (for JavaScript/TypeScript) and `bash` (for shell scripts).
 
 `````admonish example collapsible=true
 ````markdown

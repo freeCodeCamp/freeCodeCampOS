@@ -24,7 +24,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 curl -fsSL https://bun.sh/install | bash
 
 # Build everything
-./build.sh
+bun run build
 
 # Run the server
 ./target/release/freecodecamp-server
@@ -100,8 +100,8 @@ Example `freecodecamp.conf.json`:
       "english": {
         "title": "My Course",
         "description": "Learn amazing things",
-        "faq-link": "https://example.com",
-        "faq-text": "Frequently Asked Questions"
+        "faq_link": "https://example.com",
+        "faq_text": "Frequently Asked Questions"
       }
     }
   },

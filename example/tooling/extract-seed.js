@@ -8,105 +8,86 @@
  */
 
 import { copyFile, readFile, rm, writeFile } from 'fs/promises';
-import { Logger } from 'logover';
-import { freeCodeCampConfig } from '@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/env.js';
-import {
-  getLessonFromFile,
-  getLessonSeed,
-  getProjectTitle
-} from '@freecodecamp/freecodecamp-os/.freeCodeCamp/tooling/parser.js';
 import { constants } from 'fs';
 
-const CONFIG_PATH = freeCodeCampConfig.config['projects.json'];
-
 const END_MARKER = '## --fcc-end--';
-const SEED_MARKER = '### --seed--';
+const SEED_HEADER = '### --seed--';
 
 const path = process.argv[2];
 const noBackup = process.argv[3] === '--nobackup';
 
-const logover = new Logger({ level: 'debug' });
+if (!path) {
+  console.info(
+    'Usage: node tooling/extract-seed.js path/to/curriculum/locales/english/learn-x.md [--nobackup]'
+  );
+  process.exit(0);
+}
 
 async function main(filePath, noBackup = false) {
-  const { projectTopic, currentProject } = await getProjectTitle(filePath);
-  const projectsConfig = JSON.parse(await readFile(CONFIG_PATH, 'utf8'));
-  const projectConfig = projectsConfig.find(
-    ({ title }) => title === currentProject
-  );
-  if (!projectConfig) {
-    throw new Error(
-      `No project in ${CONFIG_PATH} associated with "${filePath}".`
-    );
+  const source = await readFile(filePath, 'utf-8');
+
+  // Split into lesson blocks by "## <N>" headings
+  const lessonPattern = /^## (\d+|--fcc-end--)/m;
+  const blocks = source.split(/(?=^## (?:\d+|--fcc-end--))/m);
+
+  const header = blocks[0]; // title + description before first lesson
+  const seedBlocks = [header.trimEnd()];
+  const projectBlocks = [header.trimEnd()];
+
+  for (const block of blocks.slice(1)) {
+    const lessonMatch = block.match(/^## (\d+)/m);
+    if (!lessonMatch) {
+      // end marker or unrecognized — pass through
+      projectBlocks.push(block.trimEnd());
+      continue;
+    }
+    const lessonNumber = lessonMatch[1];
+
+    const seedStart = block.indexOf(`\n${SEED_HEADER}`);
+    if (seedStart === -1) {
+      projectBlocks.push(block.trimEnd());
+      continue;
+    }
+
+    // Find where the seed section ends (next ### heading or end of block)
+    const afterSeedHeader = block.indexOf('\n', seedStart + 1);
+    const nextH3 = block.indexOf('\n### --', afterSeedHeader + 1);
+    const seedContent =
+      nextH3 === -1
+        ? block.slice(seedStart)
+        : block.slice(seedStart, nextH3);
+
+    seedBlocks.push(`\n## ${lessonNumber}\n${SEED_HEADER}${seedContent.slice(SEED_HEADER.length + 1).trimEnd()}`);
+
+    // Remove seed section from project block
+    const blockWithoutSeed = block.slice(0, seedStart) + (nextH3 === -1 ? '' : block.slice(nextH3));
+    projectBlocks.push(blockWithoutSeed.trimEnd());
   }
+
+  seedBlocks.push(`\n${END_MARKER}\n`);
+
   const seedFile = filePath.replace('.md', '-seed.md');
+
   try {
-    // If file with seed already exists, seed from it will be mangled
-    // with seed included in project file.
     await rm(seedFile);
   } catch (err) {
-    if (err?.code !== 'ENOENT') {
-      throw new Error(err);
-    }
+    if (err?.code !== 'ENOENT') throw err;
   }
-
-  const header = `# ${projectTopic} - ${currentProject}\n`;
-  const seedContents = [header];
-  const projectWithoutSeed = [header];
-
-  let lessonNumber = 1;
-  try {
-    while (lessonNumber <= projectConfig.numberOfLessons) {
-      let lesson = await getLessonFromFile(filePath, lessonNumber);
-      const seed = getLessonSeed(lesson);
-      if (seed) {
-        seedContents.push(`## ${lessonNumber}\n\n${SEED_MARKER}`);
-        seedContents.push(`${seed.trimEnd('\n')}\n`);
-      }
-      const lessonWithoutSeed = lesson.replace(
-        new RegExp(`${SEED_MARKER}\n*${seed}`),
-        ''
-      );
-      projectWithoutSeed.push(`## ${lessonNumber}\n`);
-      projectWithoutSeed.push(`${lessonWithoutSeed.trimEnd('\n')}\n`);
-      lessonNumber++;
-    }
-  } catch (err) {
-    logover.error(err);
-  }
-  seedContents.push(`${END_MARKER}\n`);
-  projectWithoutSeed.push(`${END_MARKER}\n`);
 
   if (!noBackup) {
     const backupFile = filePath.replace('.md', '.original');
     try {
       await copyFile(filePath, backupFile, constants.COPYFILE_EXCL);
     } catch (err) {
-      logover.error(err);
+      console.error(err);
       throw new Error(`Backup file already created at ${backupFile}`);
     }
   }
 
-  try {
-    await writeFile(seedFile, seedContents.join('\n'));
-  } catch (err) {
-    logover.error(err);
-  }
+  await writeFile(seedFile, seedBlocks.join('\n') + '\n');
+  await writeFile(filePath, projectBlocks.join('\n') + '\n');
 
-  try {
-    await writeFile(filePath, projectWithoutSeed.join('\n'));
-  } catch (err) {
-    logover.error(err);
-  }
+  console.info(`Seed extracted to ${seedFile}`);
 }
 
-if (path) {
-  try {
-    main(path, noBackup);
-  } catch (err) {
-    logover.debug(err);
-  }
-} else {
-  logover.info(
-    `Usage: node tooling/extract-seed.js path/to/curriculum/markdown/file/learn.md [--nobackup]`
-  );
-}
+main(path, noBackup).catch(err => console.error(err));

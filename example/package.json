@@ -2,8 +2,8 @@
   "name": "self",
   "private": true,
   "author": "freeCodeCamp",
-  "version": "3.4.0",
-  "description": "Test repo for @freecodecamp/freecodecamp-os",
+  "version": "4.0.0",
+  "description": "Example curriculum for freeCodeCampOS",
   "scripts": {
     "start": "cargo run --manifest-path ../Cargo.toml --bin server"
   },

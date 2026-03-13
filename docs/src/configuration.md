@@ -8,8 +8,8 @@
 {
   "version": "4.0.0",
   "config": {
-    "projects": "<PROJECTS_JSON>",
-    "state": "<STATE_JSON>"
+    "projects.json": "<PROJECTS_JSON>",
+    "state.json": "<STATE_JSON>"
   },
   "curriculum": {
     "locales": {
@@ -24,8 +24,8 @@
 {
   "version": "4.0.0",
   "config": {
-    "projects": "./config/projects.json",
-    "state": "./config/state.json"
+    "projects.json": "./config/projects.json",
+    "state.json": "./config/state.json"
   },
   "curriculum": {
     "locales": {
@@ -79,15 +79,15 @@ By default, the server and client communicate over port `8080`. To change this, 
 
 #### `config`
 
-- `projects`: path relative to the root of the course - `string`
-- `state`: path relative to the root of the course - `string`
+- `projects.json`: path relative to the root of the course - `string`
+- `state.json`: path relative to the root of the course - `string`
 
 ````admonish example
 ```json
 {
   "config": {
-    "projects": "./config/projects.json",
-    "state": "./config/state.json"
+    "projects.json": "./config/projects.json",
+    "state.json": "./config/state.json"
   }
 }
 ```
