@@ -50,16 +50,11 @@ async function controlWrapper(cb, { timeout = 10000, stepSize = 250 }) {
  * @returns {Promise<string>}
  */
 async function getBashHistory() {
-  try {
     const bashHistory = await readFile(PATH_BASH_HISTORY, {
       encoding: 'utf8',
       flag: 'a+'
     });
     return bashHistory;
-  } catch (e) {
-    if (e.code === 'ENOENT') return null;
-    throw e;
-  }
 }
 
 const execute = promisify(exec);
@@ -82,16 +77,11 @@ async function getCommandOutput(command, path = '') {
  * @returns {Promise<string>}
  */
 async function getCWD() {
-  try {
     const cwd = await readFile(PATH_CWD, {
       encoding: 'utf8',
       flag: 'a+'
     });
     return cwd;
-  } catch (e) {
-    if (e.code === 'ENOENT') return null;
-    throw e;
-  }
 }
 
 /**
@@ -127,16 +117,11 @@ async function getLastCWD(howManyBack = 0) {
  * @returns {Promise<string>} The `.temp.log` file contents
  */
 async function getTemp() {
-  try {
     const tempLogs = await readFile(PATH_TEMP, {
       encoding: 'utf8',
       flag: 'a+'
     });
     return tempLogs;
-  } catch (e) {
-    if (e.code === 'ENOENT') return null;
-    throw e;
-  }
 }
 
 /**
@@ -144,16 +129,11 @@ async function getTemp() {
  * @returns {Promise<string>} The `.terminal_out.log` file contents
  */
 async function getTerminalOutput() {
-  try {
     const terminalLogs = await readFile(PATH_TERMINAL_OUT, {
       encoding: 'utf8',
       flag: 'a+'
     });
     return terminalLogs;
-  } catch (e) {
-    if (e.code === 'ENOENT') return null;
-    throw e;
-  }
 }
 
 /**
