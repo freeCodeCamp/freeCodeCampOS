@@ -148,7 +148,7 @@ You should have a `package.json` file in `learn-freecodecamp-os/`.
 ```js
 const { access, constants } = await import('fs/promises');
 try {
-  await access(join(project.dashedName, 'package.json'));
+  await access(join(project.meta.dashed_name, 'package.json'));
 } catch (e) {
   assert.fail(e);
 }
@@ -168,7 +168,7 @@ You should have `@freecodecamp/freecodecamp-os` installed.
 const { access } = await import('fs/promises');
 try {
   await access(
-    join(project.dashed_name, 'node_modules/@freecodecamp/freecodecamp-os')
+    join(project.meta.dashed_name, 'node_modules/@freecodecamp/freecodecamp-os')
   );
 } catch (e) {
   assert.fail(e);
@@ -181,7 +181,7 @@ Version `>=4` should be installed.
 try {
   const { stdout, stderr } = await getCommandOutput(
     'npm list',
-    project.dashed_name
+    project.meta.dashed_name
   );
   assert.include(stdout, '@freecodecamp/freecodecamp-os@4');
 } catch (e) {
@@ -208,7 +208,7 @@ You should have a `config/` directory.
 ```js
 const { access, constants } = await import('fs/promises');
 try {
-  await access(join(project.dashedName, 'config'));
+  await access(join(project.meta.dashed_name, 'config'));
 } catch (e) {
   assert.fail(e);
 }
@@ -227,7 +227,7 @@ You should have a `config/projects.json` file.
 ```js
 const { access, constants } = await import('fs/promises');
 try {
-  await access(join(project.dashedName, 'config/projects.json'));
+  await access(join(project.meta.dashed_name, 'config/projects.json'));
 } catch (e) {
   assert.fail(e);
 }
@@ -238,7 +238,7 @@ The `projects.json` file should contain `[]`.
 ```js
 const { readFile } = await import('fs/promises');
 const file = await readFile(
-  join(project.dashedName, 'config/projects.json'),
+  join(project.meta.dashed_name, 'config/projects.json'),
   'utf-8'
 );
 assert.equal(file?.trim(), '[]');
@@ -313,7 +313,7 @@ assert.equal(__projects[0].order, 0);
 ```js
 const { readFile } = await import('fs/promises');
 const file = await readFile(
-  join(ROOT, project.dashedName, 'config/projects.json'),
+  join(ROOT, project.meta.dashed_name, 'config/projects.json'),
   'utf-8'
 );
 const __projects = JSON.parse(file);
@@ -333,7 +333,7 @@ You should have a `learn-freecodecamp-os/learn-freecodecamp-os/` directory.
 
 ```js
 const { access, constants } = await import('fs/promises');
-await access(join(project.dashedName, 'learn-freecodecamp-os'));
+await access(join(project.meta.dashed_name, 'learn-freecodecamp-os'));
 ```
 
 ## 11
@@ -357,7 +357,7 @@ You should have a `curriculum/` directory.
 ```js
 const { access, constants } = await import('fs/promises');
 try {
-  await access(join(project.dashedName, 'curriculum'));
+  await access(join(project.meta.dashed_name, 'curriculum'));
 } catch (e) {
   assert.fail(e);
 }
@@ -368,7 +368,7 @@ You should have a `curriculum/locales/` directory.
 ```js
 const { access, constants } = await import('fs/promises');
 try {
-  await access(join(project.dashedName, 'curriculum/locales'));
+  await access(join(project.meta.dashed_name, 'curriculum/locales'));
 } catch (e) {
   assert.fail(e);
 }
@@ -379,7 +379,7 @@ You should have a `curriculum/locales/english/` directory.
 ```js
 const { access, constants } = await import('fs/promises');
 try {
-  await access(join(project.dashedName, 'curriculum/locales/english'));
+  await access(join(project.meta.dashed_name, 'curriculum/locales/english'));
 } catch (e) {
   assert.fail(e);
 }
@@ -400,7 +400,7 @@ const { access, constants } = await import('fs/promises');
 try {
   await access(
     join(
-      project.dashedName,
+      project.meta.dashed_name,
       'curriculum/locales/english/learn-freecodecamp-os.md'
     )
   );
@@ -427,7 +427,7 @@ The `learn-freecodecamp-os.md` file should contain a title.
 const { readFile } = await import('fs/promises');
 const file = await readFile(
   join(
-    project.dashedName,
+    project.meta.dashed_name,
     'curriculum/locales/english/learn-freecodecamp-os.md'
   ),
   'utf-8'
@@ -455,7 +455,7 @@ The `learn-freecodecamp-os.md` file should contain a lesson.
 const { readFile } = await import('fs/promises');
 const file = await readFile(
   join(
-    project.dashedName,
+    project.meta.dashed_name,
     'curriculum/locales/english/learn-freecodecamp-os.md'
   ),
   'utf-8'
@@ -469,7 +469,7 @@ The lesson should have a description heading.
 const { readFile } = await import('fs/promises');
 const file = await readFile(
   join(
-    project.dashedName,
+    project.meta.dashed_name,
     'curriculum/locales/english/learn-freecodecamp-os.md'
   ),
   'utf-8'
@@ -495,7 +495,7 @@ The `learn-freecodecamp-os.md` file should contain the `--fcc-end--` marker.
 const { readFile } = await import('fs/promises');
 const file = await readFile(
   join(
-    project.dashedName,
+    project.meta.dashed_name,
     'curriculum/locales/english/learn-freecodecamp-os.md'
   ),
   'utf-8'
@@ -516,7 +516,7 @@ You should have a `freecodecamp.conf.json` file.
 ```js
 const { access, constants } = await import('fs/promises');
 try {
-  await access(join(project.dashedName, 'freecodecamp.conf.json'));
+  await access(join(project.meta.dashed_name, 'freecodecamp.conf.json'));
 } catch (e) {
   assert.fail(e);
 }
@@ -646,7 +646,7 @@ assert.isString(__conf.curriculum.locales['<LOCALE_DIR>']);
 ```js
 const { readFile } = await import('fs/promises');
 const conf = await readFile(
-  join(project.dashedName, 'freecodecamp.conf.json'),
+  join(project.meta.dashed_name, 'freecodecamp.conf.json'),
   'utf-8'
 );
 const __conf = JSON.parse(conf);
@@ -786,7 +786,7 @@ You should add the provided text to the `learn-freecodecamp-os.md` file.
 const { readFile } = await import('fs/promises');
 const file = await readFile(
   join(
-    project.dashedName,
+    project.meta.dashed_name,
     'curriculum/locales/english/learn-freecodecamp-os.md'
   ),
   'utf-8'
@@ -868,7 +868,7 @@ You should add the provided test to the `learn-freecodecamp-os.md` file.
 const { readFile } = await import('fs/promises');
 const file = await readFile(
   join(
-    project.dashedName,
+    project.meta.dashed_name,
     'curriculum/locales/english/learn-freecodecamp-os.md'
   ),
   'utf-8'
@@ -914,7 +914,7 @@ assert.isTrue(__projects[0].run_tests_on_watch);
 ```js
 const { readFile } = await import('fs/promises');
 const file = await readFile(
-  join(project.dashedName, 'config/projects.json'),
+  join(project.meta.dashed_name, 'config/projects.json'),
   'utf-8'
 );
 const __projects = JSON.parse(file);

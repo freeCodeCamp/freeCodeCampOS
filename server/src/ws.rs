@@ -340,7 +340,7 @@ async fn handle_run_tests(state: &Arc<AppState>, tx: &mpsc::Sender<Message>) {
                                 }
                             }
 
-                            if results.iter().all(|t| matches!(t.state, config::TestState::Passed)) {
+                            if !results.is_empty() && results.iter().all(|t| matches!(t.state, config::TestState::Passed)) {
                                 tracing::info!("all tests passed for lesson {}, moving to next lesson", lesson_id);
                                 handle_change_lesson(&state_clone, &tx_clone, 1).await;
                             } else {

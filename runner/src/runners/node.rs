@@ -55,7 +55,9 @@ impl Runner for NodeRunner {
 
         // Resolve absolute path for helpers if provided
         let absolute_helpers_path = helpers.map(|h| {
-            std::fs::canonicalize(h).map(|p| p.to_string_lossy().to_string()).unwrap_or_else(|_| h.to_string())
+            std::fs::canonicalize(h)
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|_| h.to_string())
         });
 
         // Write manifest
@@ -76,22 +78,32 @@ impl Runner for NodeRunner {
             .output()?;
 
         let stdout = String::from_utf8_lossy(&output.stdout);
+        let stderr = String::from_utf8_lossy(&output.stderr);
         if !stdout.is_empty() {
             print!("{}", stdout);
         }
+        if !stderr.is_empty() {
+            eprintln!("{}", stderr);
+        }
         if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
             if !stderr.is_empty() {
                 eprintln!("Node runner stderr: {}", stderr);
             }
         }
 
-        // Read back test results
+        // Read back test results, paired with the original tests as fallback
         let mut results = Vec::new();
-        for test_path in test_paths {
-            if let Ok(content) = fs::read_to_string(&test_path) {
-                if let Ok(test) = serde_json::from_str::<Test>(&content) {
-                    results.push(test);
+        for (test_path, original_test) in test_paths.into_iter().zip(tests.into_iter()) {
+            let result = fs::read_to_string(&test_path)
+                .ok()
+                .and_then(|content| serde_json::from_str::<Test>(&content).ok());
+            match result {
+                Some(test) => results.push(test),
+                None => {
+                    // Deserialization failed — treat as failed test to avoid vacuous pass
+                    let mut failed = original_test;
+                    failed.state = config::TestState::Failed;
+                    results.push(failed);
                 }
             }
         }

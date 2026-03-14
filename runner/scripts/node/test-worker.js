@@ -166,21 +166,14 @@ parentPort.on('message', async ({ code, id }) => {
 })();`);
     passed = true;
   } catch (e) {
+    const { message, name, ...rest } = Object.fromEntries(
+      Object.getOwnPropertyNames(e ?? {}).map(k => [k, e[k]])
+    );
     error = {
-      message: e?.message || String(e),
-      stack: e?.stack,
-      type: e?.name || (e instanceof AssertionError ? 'AssertionError' : 'Error')
+      message: typeof message === 'string' ? message : String(e),
+      type: e instanceof AssertionError ? 'AssertionError' : (name ?? 'Error'),
+      ...JSON.parse(JSON.stringify(rest, (_, v) => v instanceof Error ? v.toString() : v)),
     };
-    // Ensure it's correctly identified as AssertionError if it is one
-    if (e instanceof AssertionError) {
-      error.type = 'AssertionError';
-    }
-    // Copy other properties
-    Object.getOwnPropertyNames(e).forEach(key => {
-      if (!error[key]) {
-        error[key] = e[key];
-      }
-    });
   }
   parentPort.postMessage({ passed, id, error });
 });

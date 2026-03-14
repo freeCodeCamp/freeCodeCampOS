@@ -15,10 +15,17 @@ async function runTest(test, project, hooks, helpersPath) {
     worker.on('message', async message => {
       const { passed, id, error } = message;
       test.state = passed ? 'PASSED' : 'FAILED';
-      
+
       if (error) {
         test.state = 'FAILED';
-        test.error = error;
+        const { message: errorMessage, ...detail } = error;
+        test.error = {
+          message:
+            typeof errorMessage === 'string'
+              ? errorMessage
+              : String(errorMessage ?? ''),
+          detail
+        };
       }
 
       await writeFile(test.path, JSON.stringify(test), 'utf-8');
