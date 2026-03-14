@@ -3,12 +3,20 @@
   "author": "freeCodeCamp",
   "version": "4.0.0",
   "description": "Open Source platform for creating and maintaining interactive coding curricula",
+  "bin": {
+    "freecodecamp-server": "bin/freecodecamp-server"
+  },
+  "files": [
+    "bin/",
+    "scripts/postinstall.js"
+  ],
   "scripts": {
     "dev:client": "vite",
     "build:client": "vite build",
     "build:rust": "cargo build --release",
     "build": "bun install && bun run build:client && bun run build:rust",
-    "dev": "bun run dev:client & cargo run --bin server"
+    "dev": "bun run dev:client & cargo run --bin server",
+    "postinstall": "node scripts/postinstall.js"
   },
   "repository": {
     "type": "git",

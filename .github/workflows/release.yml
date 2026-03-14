@@ -1,7 +1,11 @@
 name: Publish to npm
 
+permissions:
+  contents: write
+
 on:
-  # Allows you to run this workflow manually from the Actions tab
+  release:
+    types: [created]
   workflow_dispatch:
 
 jobs:
@@ -9,17 +13,41 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Publish to NPM
-        uses: actions/setup-node@6
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@efa25f7f19611383d5b0ccf2d1c8914531636bf9 # stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+
+      - name: Build client
+        run: bun install && bun run build:client
+
+      - name: Build server binary
+        run: cargo build --release --bin server --target x86_64-unknown-linux-gnu
+
+      - name: Rename binary
+        run: cp target/x86_64-unknown-linux-gnu/release/server freecodecamp-server-x86_64-unknown-linux-gnu
+
+      - name: Upload binary to release
+        if: github.event_name == 'release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ github.ref_name }}" \
+            freecodecamp-server-x86_64-unknown-linux-gnu \
+            --clobber
+
+      - name: Set up Node
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
-      - run: npm ci
 
-      - name: Publish to NPM
-        run: |
-          npm publish
+      - name: Publish to npm
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
