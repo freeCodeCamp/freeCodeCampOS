@@ -93,7 +93,7 @@ async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
             while let Ok(msg) = rx.recv().await {
                 if msg == "reload" {
                     tracing::info!("hot-reload triggered, refreshing client state");
-                    
+
                     // Reload global state from disk
                     let _ = state_clone.load_projects().await;
                     let _ = state_clone.load_course_state().await;
@@ -101,8 +101,20 @@ async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
                     // Send updated projects list to client
                     let projects = state_clone.projects.read().await;
                     send_message(&tx_out_clone, "update_projects", &*projects).await;
+                    drop(projects);
 
                     handle_select_project_current(&state_clone, &tx_out_clone).await;
+
+                    // Auto-run tests if the current project has run_tests_on_watch enabled
+                    let current_project_id = state_clone.course_state.read().await.current_project;
+                    if let Some(project_id) = current_project_id {
+                        if let Some(project) = state_clone.get_project(project_id).await {
+                            if project.meta.run_tests_on_watch {
+                                tracing::info!("run_tests_on_watch is enabled, auto-running tests");
+                                handle_run_tests(&state_clone, &tx_out_clone).await;
+                            }
+                        }
+                    }
                 }
             }
         } => {},
