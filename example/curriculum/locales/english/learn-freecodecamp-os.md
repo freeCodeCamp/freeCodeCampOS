@@ -40,7 +40,7 @@ Click the `Run Tests` button again. Then, click the `Console` tab in the bottom 
 This is a test that will always fail.
 
 ```js
-await new Promise(resolve => setTimeout(resolve, 5000));
+await new Promise(resolve => setTimeout(resolve, 3000));
 assert.fail(
   'This is a custom test assertion message. Click the > button to go to the next lesson'
 );
@@ -66,14 +66,14 @@ const file = await readFile(
   'curriculum/locales/english/learn-freecodecamp-os.md',
   'utf-8'
 );
-await new Promise(resolve => setTimeout(resolve, 5000));
+await new Promise(resolve => setTimeout(resolve, 3000));
 assert.notInclude(file.slice(0, 500), 'Welcome to freeCodeCampOS!');
 ```
 
 I always fail 🙃
 
 ```js
-await new Promise(resolve => setTimeout(resolve, 3000));
+await new Promise(resolve => setTimeout(resolve, 2000));
 console.log('Look! Worker stdout is printed in debug mode: ', __a);
 assert(__a == 1);
 assert.fail('Click the > button to go to the next lesson');
