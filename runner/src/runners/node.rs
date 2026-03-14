@@ -75,12 +75,15 @@ impl Runner for NodeRunner {
             .env("TEST_WORKER_PATH", worker_path.to_str().unwrap())
             .output()?;
 
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        if !stdout.is_empty() {
+            print!("{}", stdout);
+        }
         if !output.status.success() {
-            eprintln!(
-                "Node runner failed:\nstdout: {}\nstderr: {}",
-                String::from_utf8_lossy(&output.stdout),
-                String::from_utf8_lossy(&output.stderr)
-            );
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            if !stderr.is_empty() {
+                eprintln!("Node runner stderr: {}", stderr);
+            }
         }
 
         // Read back test results
