@@ -6,12 +6,10 @@ use serde_json::json;
 use config::{CourseState as State, ProjectMeta as Project};
 
 use crate::{
-    conf::{
-        Client, Conf, Config, Curriculum, HotReload, Landing, Locales, Tooling,
-    },
+    conf::{Client, Conf, Config, Curriculum, HotReload, Landing, Locales, Tooling},
     environment::Environment,
     features::Features,
-    fixtures::{BASHRC, SOURCERER},
+    fixtures::{BASHRC, SOURCERER, VSCODE_SETTINGS},
 };
 
 pub struct Course {
@@ -223,7 +221,7 @@ impl Course {
             eprintln!("Failed to create curriculum directory: {e}");
         } else {
             let boilerplate = r"# Project {i}
-            
+
 Project description.
 
 ## 0
@@ -433,7 +431,7 @@ window.onload = function () {
         console.error(parsedData.data.error);
         return;
       }
-      
+
       const { stdout, exit_code } = parsedData.data;
       if (exit_code !== 0 || !stdout.trim()) {
         askForToken();
@@ -538,48 +536,18 @@ pluginEvents.onLessonPassed = async project => {};
     }
 
     fn touch_vscode(&self) {
-        let settings = json!({
-            "files.exclude": {
-                ".devcontainer": false,
-                ".gitignore": false,
-                ".gitpod.yml": false,
-                ".logs": false,
-                ".vscode": false,
-                "node_modules": false,
-                "package.json": false,
-                "package-lock.json": false
-            },
-            "terminal.integrated.defaultProfile.linux": "bash",
-            "terminal.integrated.profiles.linux": {
-                "bash": {
-                    "path": "bash",
-                    "icon": "terminal-bash",
-                    "args": [
-                        "--init-file",
-                        "./bash/sourcerer.sh"
-                    ]
-                }
-            },
-            "freecodecamp-courses.autoStart": true,
-            "freecodecamp-courses.prepare": "sed -i \"s#WD=.*#WD=$(pwd)#g\" ./bash/.bashrc",
-            "freecodecamp-courses.scripts.develop-course": "NODE_ENV=development npm run start",
-            "freecodecamp-courses.scripts.run-course": "NODE_ENV=production npm run start",
-            "freecodecamp-courses.workspace.previews": [
-                {
-                    "open": true,
-                    "url": "http://localhost:8080",
-                    "showLoader": true,
-                    "timeout": 4000
-                }
-            ]
-        });
-        if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join(".vscode")) {
-            eprintln!("Failed to create .vscode directory: {e}");
-        } else if let Err(e) = std::fs::write(
-            self.canonicalized_path.join(".vscode/settings.json"),
-            serde_json::to_string_pretty(&settings).expect("Failed to serialise settings"),
-        ) {
-            eprintln!("Failed to create .vscode/settings.json file: {e}");
+        if std::fs::DirBuilder::new()
+            .create(self.canonicalized_path.join(".vscode"))
+            .is_ok()
+        {
+            if let Err(e) = std::fs::write(
+                self.canonicalized_path.join(".vscode/settings.json"),
+                VSCODE_SETTINGS,
+            ) {
+                eprintln!("Failed to create .vscode/settings.json file: {e}");
+            }
+        } else {
+            eprintln!("Failed to create .vscode directory");
         }
     }
 }

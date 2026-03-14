@@ -1,0 +1,30 @@
+{
+  "files.exclude": {
+    ".devcontainer": false,
+    ".gitignore": false,
+    ".logs": false,
+    ".vscode": false,
+    "node_modules": false,
+    "package.json": false,
+    "package-lock.json": false
+  },
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.profiles.linux": {
+    "bash": {
+      "path": "bash",
+      "icon": "terminal-bash",
+      "args": ["--init-file", "./bash/sourcerer.sh"]
+    }
+  },
+  "freecodecamp-courses.autoStart": true,
+  "freecodecamp-courses.scripts.develop-course": "NODE_ENV=development npm run start",
+  "freecodecamp-courses.scripts.run-course": "NODE_ENV=production npm run start",
+  "freecodecamp-courses.workspace.previews": [
+    {
+      "open": true,
+      "url": "http://localhost:8080",
+      "showLoader": true,
+      "timeout": 4000
+    }
+  ]
+}
