@@ -26,17 +26,14 @@ if (!target) {
 }
 
 const binDir = join(__dirname, '..', 'bin');
-const binPath = join(binDir, 'freecodecamp-server');
+const binPath = join(binDir, `freecodecamp-server-${target}`);
 const url = `https://github.com/freeCodeCamp/freeCodeCampOS/releases/download/v${version}/freecodecamp-server-${target}`;
 
 mkdirSync(binDir, { recursive: true });
 
-// Binary was bundled with the published package — copy the platform binary into place
-const bundledBin = join(binDir, `freecodecamp-server-${target}`);
-if (existsSync(bundledBin)) {
-  require('fs').copyFileSync(bundledBin, binPath);
+// Binary was bundled with the published package — nothing to do, shim handles selection
+if (existsSync(binPath)) {
   chmodSync(binPath, 0o755);
-  console.log('freecodecamp-os: installed bundled binary for', target);
   process.exit(0);
 }
 

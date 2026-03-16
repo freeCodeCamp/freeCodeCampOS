@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+'use strict';
+
+const { execFileSync } = require('child_process');
+const { join, existsSync } = require('path');
+
+const PLATFORM_MAP = {
+  'linux-x64': 'x86_64-unknown-linux-gnu',
+  'darwin-x64': 'x86_64-apple-darwin',
+  'darwin-arm64': 'aarch64-apple-darwin',
+};
+
+const key = `${process.platform}-${process.arch}`;
+const target = PLATFORM_MAP[key];
+
+if (!target) {
+  console.error(`freecodecamp-os: no pre-built binary for ${key}`);
+  process.exit(1);
+}
+
+const bin = join(__dirname, `freecodecamp-server-${target}`);
+
+if (!existsSync(bin)) {
+  console.error(`freecodecamp-os: binary not found at ${bin} — try reinstalling`);
+  process.exit(1);
+}
+
+execFileSync(bin, process.argv.slice(2), { stdio: 'inherit' });
