@@ -1,8 +1,6 @@
 # Test Utilities
 
-The test utilities are exported/global objects available in the test runner. These are referred to as _"helpers"_, and the included helpers are exported from [https://github.com/freeCodeCamp/freeCodeCampOS/blob/main/.freeCodeCamp/tooling/test-utils.js](https://github.com/freeCodeCamp/freeCodeCampOS/blob/main/.freeCodeCamp/tooling/test-utils.js).
-
-Many of the exported functions are _convinience wrappers_ around Nodejs' `fs` and `child_process` modules. Specifically, they make use of the global `ROOT` variable to run the functions relative to the root of the workspace.
+The following built-in helpers are available directly in the test context. Many are convenience wrappers around Nodejs' `fs` and `child_process` modules, which make use of the global `ROOT` variable to run relative to the root of the workspace.
 
 ## `controlWrapper`
 
@@ -24,7 +22,7 @@ const cb = async () => {
   const flakyFetch = await fetch('http://localhost:3123');
   return flakyFetch.json();
 };
-const result = await __helpers.controlWrapper(cb);
+const result = await controlWrapper(cb);
 ```
 
 ## `getBashHistory`
@@ -40,7 +38,7 @@ function getBashHistory(): Promise<string>;
 ```
 
 ```javascript
-const bashHistory = await __helpers.getBashHistory();
+const bashHistory = await getBashHistory();
 ```
 
 ## `getCommandOutput`
@@ -59,7 +57,7 @@ function getCommandOutput(
 ```
 
 ```javascript
-const { stdout, stderr } = await __helpers.getCommandOutput('ls');
+const { stdout, stderr } = await getCommandOutput('ls');
 ```
 
 ## `getCWD`
@@ -75,7 +73,7 @@ function getCWD(): Promise<string>;
 ```
 
 ```javascript
-const cwd = await __helpers.getCWD();
+const cwd = await getCWD();
 ```
 
 ## `getLastCommand`
@@ -91,7 +89,7 @@ function getLastCommand(n = 0): Promise<string>;
 ```
 
 ```javascript
-const lastCommand = await __helpers.getLastCommand();
+const lastCommand = await getLastCommand();
 ```
 
 ## `getLastCWD`
@@ -107,7 +105,7 @@ function getLastCWD(n = 0): Promise<string>;
 ```
 
 ```javascript
-const lastCWD = await __helpers.getLastCWD();
+const lastCWD = await getLastCWD();
 ```
 
 ## `getTemp`
@@ -123,7 +121,7 @@ function getTemp(): Promise<string>;
 ```
 
 ```javascript
-const temp = await __helpers.getTemp();
+const temp = await getTemp();
 ```
 
 ```admonish note
@@ -145,7 +143,7 @@ function getTerminalOutput(): Promise<string>;
 ```
 
 ```javascript
-const terminalOutput = await __helpers.getTerminalOutput();
+const terminalOutput = await getTerminalOutput();
 ```
 
 ## `importSansCache`
@@ -161,7 +159,7 @@ function importSansCache(path: string): Promise<any>;
 ```
 
 ```javascript
-const { exportedFile } = await __helpers.importSansCache(
+const { exportedFile } = await importSansCache(
   'learn-x-by-building-y/index.js'
 );
 ```

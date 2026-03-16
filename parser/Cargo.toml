@@ -1,0 +1,15 @@
+[package]
+name = "parser"
+version.workspace = true
+edition.workspace = true
+description = "Markdown parser for freeCodeCampOS curriculum"
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+config = { path = "../config" }
+comrak = { version = "0.50.0", features = ["shortcodes"] }
+miette = { version = "7.6", features = ["fancy"] }
+thiserror = "1.0"
+uuid = { version = "1.12.1", features = ["v4", "serde"] }

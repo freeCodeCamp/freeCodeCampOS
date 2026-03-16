@@ -1,54 +1,41 @@
 # Globals
 
-None of the globals are within the `__helpers` module.
+In the new test environment, several utilities are available directly or via the module scope of the test worker.
 
 ### `chai`
 
-#### `assert`
+The `chai` library is used for assertions. The following are available:
 
-The `assert` module: <https://www.chaijs.com/api/assert/>
-
-#### `expect`
-
-The `expect` module: <https://www.chaijs.com/api/bdd/>
-
-#### `config as chaiConfig`
-
-The `config` module: <https://www.chaijs.com/guide/styles/#configuration>
-
-#### `AssertionError`
-
-This is the `AssertionError` class from the `assert` module.
-
-### `logover`
-
-The logger used by `freecodecamp-os`: <https://www.npmjs.com/package/logover>
-
-This is mostly useful for debugging, as any logs will be output in the freeCodeCamp terminal.
+- `assert`: The `assert` module: <https://www.chaijs.com/api/assert/>
+- `expect`: The `expect` module: <https://www.chaijs.com/api/bdd/>
+- `AssertionError`: The `AssertionError` class.
 
 ### `ROOT`
 
-The root of the workspace.
+The root of the workspace. This is available as a global variable.
 
-### `watcher`
+### `path` utilities
 
-```admonish note
-This is only available in the `beforeAll` and `beforeEach` context - on the main thread.
-```
+The `node:path` and `node:fs/promises` modules are available as:
 
-The [Chokidar](https://www.npmjs.com/package/chokidar) `FSWatcher` instance.
+- `join`: From `node:path`.
+- `readFile`: From `node:fs/promises`.
+- `writeFile`: From `node:fs/promises`.
 
-This is useful if you want to stop watching a directory during a test:
+### Built-in Helpers
 
-````admonish example
-```javascript
-const DIRECTORY_PATH_RELATIVE_TO_ROOT = "example";
-watcher.unwatch(DIRECTORY_PATH_RELATIVE_TO_ROOT);
-// Do something
-watcher.add(DIRECTORY_PATH_RELATIVE_TO_ROOT);
-```
-````
+The following helpers are available directly in the test context:
+
+- `controlWrapper`: Retries a function until it succeeds.
+- `getBashHistory`: Gets the `.logs/.bash_history.log` contents.
+- `getCommandOutput`: Returns the output of a command.
+- `getCWD`: Gets the `.logs/.cwd.log` contents.
+- `getLastCommand`: Gets the \\(n^{th}\\) latest line from the bash history.
+- `getLastCWD`: Gets the \\(n^{th}\\) latest line from the CWD history.
+- `getTemp`: Gets the `.logs/.temp.log` contents.
+- `getTerminalOutput`: Gets the `.logs/.terminal_out.log` contents.
+- `importSansCache`: Imports a module while bypassing the Node.js cache.
 
 ## Collisions
 
-As the tests are run in the `eval`ed context of the `freecodecamp-os/.freeCodeCamp/tooling/tests/test-worker.js` module, there is the possibility that variable naming collisions will occur. To avoid this, it is recommended to prefix object names with `__` (dunder).
+As the tests are run in the context of the test worker, variable naming collisions may occur. To avoid this, it is recommended to prefix object names with `__` (dunder).

@@ -1,12 +1,12 @@
 # Client Injection
 
-With the [`static` config](./configuration.md#client) option, you can add a `/script/injectable.js` script to be injected in the `head` of the client.
+With the [`static_paths` config](./configuration.md#client) option, you can add a `/script/injectable.js` script to be injected in the `head` of the client.
 
 ````admonish example
 ```json
 {
   "client": {
-    "static": {
+    "static_paths": {
       "/script/injectable.js": "./client/injectable.js"
     }
   }
@@ -14,27 +14,41 @@ With the [`static` config](./configuration.md#client) option, you can add a `/sc
 ```
 ````
 
-There is a reserved websocket event (`__run-client-code`) that can be used to send code from the client to the server to be run in the server's context. The code has access to a few globals:
+There is a reserved websocket event (`__run-client-code`) that can be used to send code from the client to the server to be executed. 
 
-- `ROOT`: The root of the course
-- `join`: The Node.js `path` module function
+### Execution Environment
+
+The provided code **must** start with a valid shebang (e.g., `#!/usr/bin/env node` or `#!/bin/bash`). The server writes the code to a temporary file, sets executable permissions (on Unix), and executes it directly.
+
+**No globals or automatic imports are provided.** You are responsible for importing any necessary modules and defining the environment within your script.
+
+### Response Data
+
+The server returns a `RESPONSE` event with the following data:
+
+- `stdout`: The standard output of the process.
+- `stderr`: The standard error of the process.
+- `exit_code`: The process exit code.
+
+### Example
 
 This enables scripts like the following to be run:
 
 ````admonish example collapsible=true title="client/injectable.js"
 ```js
 function checkForToken() {
-  const serverTokenCode = `
-    try {
-      const {readFile} = await import('fs/promises');
-      const tokenFile = await readFile(join(ROOT, 'config/token.txt'));
-      const token = tokenFile.toString();
-      console.log(token);
-      __result = token;
-    } catch (e) {
-      console.error(e);
-      __result = null;
-    }`;
+  const serverTokenCode = `#!/usr/bin/env node
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+const ROOT = process.cwd();
+
+try {
+  const tokenFile = await readFile(join(ROOT, 'config/token.txt'));
+  const token = tokenFile.toString();
+  console.log(token);
+} catch (e) {
+  process.exit(1);
+}`;
   socket.send(
     JSON.stringify({
       event: '__run-client-code',
@@ -57,15 +71,17 @@ async function askForToken() {
   button.style.color = 'black';
   button.onclick = async () => {
     const token = input.value;
-    const serverTokenCode = `
-      try {
-        const {writeFile} = await import('fs/promises');
-        await writeFile(join(ROOT, 'config/token.txt'), '${token}');
-        __result = true;
-      } catch (e) {
-        console.error(e);
-        __result = false;
-      }`;
+    const serverTokenCode = `#!/usr/bin/env node
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+const ROOT = process.cwd();
+
+try {
+  await writeFile(join(ROOT, 'config/token.txt'), '${token}');
+  process.exit(0);
+} catch (e) {
+  process.exit(1);
+}`;
     socket.send(
       JSON.stringify({
         event: '__run-client-code',
@@ -85,7 +101,7 @@ async function askForToken() {
 const socket = new WebSocket(
   `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${
     window.location.host
-  }`
+  }/ws`
 );
 
 window.onload = function () {
@@ -96,15 +112,16 @@ window.onload = function () {
       parsedData.data.event === '__run-client-code'
     ) {
       if (parsedData.data.error) {
-        console.log(parsedData.data.error);
+        console.error(parsedData.data.error);
         return;
       }
-      const { __result } = parsedData.data;
-      if (!__result) {
+      
+      const { stdout, exit_code } = parsedData.data;
+      if (exit_code !== 0 || !stdout.trim()) {
         askForToken();
         return;
       }
-      window.__token = __result;
+      window.__token = stdout.trim();
     }
   };
   let interval;
@@ -115,6 +132,5 @@ window.onload = function () {
     }
   }, 1000);
 };
-
 ```
 ````

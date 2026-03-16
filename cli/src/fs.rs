@@ -1,20 +1,19 @@
 use std::path::PathBuf;
 
 use indicatif::ProgressBar;
-use serde_json::{json, Value};
+use serde_json::json;
+
+use config::{CourseState as State, ProjectMeta as Project};
 
 use crate::{
-    conf::{
-        Client, Conf, Config, Curriculum, HotReload, Landing, Locales, Project, State, Tooling,
-    },
+    conf::{Client, Conf, Config, Curriculum, HotReload, Landing, Locales, Tooling},
     environment::Environment,
     features::Features,
-    fixtures::{BASHRC, SOURCERER},
+    fixtures::{BASHRC, SOURCERER, VSCODE_SETTINGS},
 };
 
 pub struct Course {
     canonicalized_path: PathBuf,
-    #[allow(unused)]
     directory_name: String,
     environment: Vec<Environment>,
     features: Vec<Features>,
@@ -73,7 +72,8 @@ impl Course {
     }
 
     pub fn new(
-        directory_name: String,
+        path: PathBuf,
+        name: String,
         environment: Vec<Environment>,
         features: Vec<Features>,
         is_git_repository: bool,
@@ -81,8 +81,8 @@ impl Course {
         num_projects: u8,
     ) -> Self {
         Self {
-            canonicalized_path: std::fs::canonicalize(&directory_name).expect("Failed to get path"),
-            directory_name,
+            canonicalized_path: path,
+            directory_name: name,
             environment,
             features,
             is_git_repository,
@@ -221,7 +221,7 @@ impl Course {
             eprintln!("Failed to create curriculum directory: {e}");
         } else {
             let boilerplate = r"# Project {i}
-            
+
 Project description.
 
 ## 0
@@ -353,17 +353,18 @@ import { join } from 'path';
     fn touch_injectables(&self) {
         if self.features.contains(&Features::ScriptInjection) {
             let injectable = r"function checkForToken() {
-  const serverTokenCode = `
-    try {
-      const {readFile} = await import('fs/promises');
-      const tokenFile = await readFile(join(ROOT, 'config/token.txt'));
-      const token = tokenFile.toString();
-      console.log(token);
-      __result = token;
-    } catch (e) {
-      console.error(e);
-      __result = null;
-    }`;
+  const serverTokenCode = `#!/usr/bin/env node
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+const ROOT = process.cwd();
+
+try {
+  const tokenFile = await readFile(join(ROOT, 'config/token.txt'));
+  const token = tokenFile.toString();
+  console.log(token);
+} catch (e) {
+  process.exit(1);
+}`;
   socket.send(
     JSON.stringify({
       event: '__run-client-code',
@@ -386,15 +387,17 @@ async function askForToken() {
   button.style.color = 'black';
   button.onclick = async () => {
     const token = input.value;
-    const serverTokenCode = `
-      try {
-        const {writeFile} = await import('fs/promises');
-        await writeFile(join(ROOT, 'config/token.txt'), '${token}');
-        __result = true;
-      } catch (e) {
-        console.error(e);
-        __result = false;
-      }`;
+    const serverTokenCode = `#!/usr/bin/env node
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+const ROOT = process.cwd();
+
+try {
+  await writeFile(join(ROOT, 'config/token.txt'), '${token}');
+  process.exit(0);
+} catch (e) {
+  process.exit(1);
+}`;
     socket.send(
       JSON.stringify({
         event: '__run-client-code',
@@ -414,7 +417,7 @@ async function askForToken() {
 const socket = new WebSocket(
   `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${
     window.location.host
-  }`
+  }/ws`
 );
 
 window.onload = function () {
@@ -425,15 +428,16 @@ window.onload = function () {
       parsedData.data.event === '__run-client-code'
     ) {
       if (parsedData.data.error) {
-        console.log(parsedData.data.error);
+        console.error(parsedData.data.error);
         return;
       }
-      const { __result } = parsedData.data;
-      if (!__result) {
+
+      const { stdout, exit_code } = parsedData.data;
+      if (exit_code !== 0 || !stdout.trim()) {
         askForToken();
         return;
       }
-      window.__token = __result;
+      window.__token = stdout.trim();
     }
   };
   let interval;
@@ -489,17 +493,18 @@ pluginEvents.onLessonPassed = async project => {};
             let mut projects = Vec::new();
             for i in 0..self.num_projects {
                 let project = Project {
-                    id: u16::from(i),
+                    id: uuid::Uuid::new_v4(),
+                    order: i as u32,
                     dashed_name: format!("project-{i}"),
                     is_integrated: false,
                     is_public: true,
-                    current_lesson: 0,
                     run_tests_on_watch: true,
                     seed_every_lesson: false,
                     is_reset_enabled: false,
-                    number_of_lessons: 1,
-                    blocking_tests: false,
-                    break_on_failure: false,
+                    number_of_lessons: Some(1),
+                    blocking_tests: None,
+                    break_on_failure: None,
+                    tags: vec![],
                 };
                 projects.push(project);
             }
@@ -514,9 +519,10 @@ pluginEvents.onLessonPassed = async project => {};
 
     fn touch_state(&self) {
         let state = State {
-            current_project: Value::Null,
+            current_project: None,
             locale: "english".to_string(),
             last_seed: None,
+            current_lessons: std::collections::HashMap::new(),
         };
         if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join("config")) {
             eprintln!("Failed to create config directory: {e}");
@@ -529,48 +535,18 @@ pluginEvents.onLessonPassed = async project => {};
     }
 
     fn touch_vscode(&self) {
-        let settings = json!({
-            "files.exclude": {
-                ".devcontainer": false,
-                ".gitignore": false,
-                ".gitpod.yml": false,
-                ".logs": false,
-                ".vscode": false,
-                "node_modules": false,
-                "package.json": false,
-                "package-lock.json": false
-            },
-            "terminal.integrated.defaultProfile.linux": "bash",
-            "terminal.integrated.profiles.linux": {
-                "bash": {
-                    "path": "bash",
-                    "icon": "terminal-bash",
-                    "args": [
-                        "--init-file",
-                        "./bash/sourcerer.sh"
-                    ]
-                }
-            },
-            "freecodecamp-courses.autoStart": true,
-            "freecodecamp-courses.prepare": "sed -i \"s#WD=.*#WD=$(pwd)#g\" ./bash/.bashrc",
-            "freecodecamp-courses.scripts.develop-course": "NODE_ENV=development npm run start",
-            "freecodecamp-courses.scripts.run-course": "NODE_ENV=production npm run start",
-            "freecodecamp-courses.workspace.previews": [
-                {
-                    "open": true,
-                    "url": "http://localhost:8080",
-                    "showLoader": true,
-                    "timeout": 4000
-                }
-            ]
-        });
-        if let Err(e) = std::fs::create_dir_all(self.canonicalized_path.join(".vscode")) {
-            eprintln!("Failed to create .vscode directory: {e}");
-        } else if let Err(e) = std::fs::write(
-            self.canonicalized_path.join(".vscode/settings.json"),
-            serde_json::to_string_pretty(&settings).expect("Failed to serialise settings"),
-        ) {
-            eprintln!("Failed to create .vscode/settings.json file: {e}");
+        if std::fs::DirBuilder::new()
+            .create(self.canonicalized_path.join(".vscode"))
+            .is_ok()
+        {
+            if let Err(e) = std::fs::write(
+                self.canonicalized_path.join(".vscode/settings.json"),
+                VSCODE_SETTINGS,
+            ) {
+                eprintln!("Failed to create .vscode/settings.json file: {e}");
+            }
+        } else {
+            eprintln!("Failed to create .vscode directory");
         }
     }
 }

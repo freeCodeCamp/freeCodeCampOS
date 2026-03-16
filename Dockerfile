@@ -1,5 +1,43 @@
-FROM gitpod/workspace-full:2024-01-17-19-15-31
+FROM rust:latest AS builder
 
-WORKDIR /workspace/freeCodeCampOS
+WORKDIR /app
 
-COPY --chown=gitpod:gitpod . .
+# Copy Cargo files
+COPY Cargo.* ./
+COPY config config
+COPY parser parser
+COPY runner runner
+COPY server server
+COPY cli cli
+
+# Build release binaries
+RUN cargo build --release --bin server
+
+# Build stage for client
+FROM node:24-alpine AS client-builder
+
+WORKDIR /app/client
+
+COPY client/package.json client/bun.lockb* ./
+COPY client . ./
+
+RUN npm install -g bun && \
+    bun install && \
+    bun run build
+
+# Final stage
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y ca-certificates nodejs && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy binaries from builder
+COPY --from=builder /app/target/release/server ./freecodecamp-server
+COPY --from=client-builder /app/client/dist ./client/dist
+
+EXPOSE 8080
+
+ENV RUST_LOG=info
+
+CMD ["./freecodecamp-server"]

@@ -1,0 +1,57 @@
+{
+  "version": "0.1.0",
+  "port": 8080,
+  "client": {
+    "assets": {
+      "header": "./client/assets/fcc_primary_large.svg",
+      "favicon": "./client/assets/fcc_primary_small.svg"
+    },
+    "landing": {
+      "english": {
+        "title": "freeCodeCamp-OS",
+        "description": "Placeholder description",
+        "faq_link": "https://freecodecamp.org",
+        "faq_text": "Link to FAQ related to course"
+      },
+      "afrikaans": {
+        "title": "freeCodeCamp-OS",
+        "description": "Beskrywing",
+        "faq_link": "https://freecodecamp.org",
+        "faq_text": "Skakel na gereelde vra"
+      }
+    },
+    "static_paths": {
+      "/images": "./curriculum/images",
+      "/script/injectable.js": "./client/injectable.js"
+    }
+  },
+  "config": {
+    "projects.json": "./config/projects.json",
+    "state.json": "./config/state.json"
+  },
+  "curriculum": {
+    "locales": {
+      "english": "./curriculum/locales/english",
+      "afrikaans": "./curriculum/locales/afrikaans"
+    },
+    "assertions": {
+      "afrikaans": "./curriculum/assertions/afrikaans.json"
+    }
+  },
+  "hot_reload": {
+    "ignore": [
+      ".logs/.temp.log",
+      "config/",
+      "/node_modules/",
+      ".git/",
+      "/target/",
+      "/test-ledger/",
+      ".vscode/",
+      "freecodecamp.conf.json"
+    ]
+  },
+  "tooling": {
+    "helpers": "./tooling/helpers.js",
+    "plugins": "./tooling/plugins.js"
+  }
+}

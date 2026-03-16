@@ -6,7 +6,7 @@
 
 ```json
 {
-  "version": "0.0.1",
+  "version": "4.0.0",
   "config": {
     "projects.json": "<PROJECTS_JSON>",
     "state.json": "<STATE_JSON>"
@@ -22,7 +22,7 @@
 ````admonish example collapsible=true title="Minimum Usable Example"
 ```json
 {
-  "version": "0.0.1",
+  "version": "4.0.0",
   "config": {
     "projects.json": "./config/projects.json",
     "state.json": "./config/state.json"
@@ -56,9 +56,9 @@ By default, the server and client communicate over port `8080`. To change this, 
 - `assets.favicon`: path relative to the root of the course - `string`
 - `landing.<locale>.description`: description of the course shown on the landing page - `string`
 - `landing.<locale>.title`: title of the course shown on the landing page - `string`
-- `landing.<locale>.faq-link`: link to the FAQ page - `string`
-- `landing.<locale>.faq-text`: text to display for the FAQ link - `string`
-- `static`: static resources to serve - `string | string[] | Record<string, string> | Record<string, string>[]`
+- `landing.<locale>.faq_link`: link to the FAQ page - `string`
+- `landing.<locale>.faq_text`: text to display for the FAQ link - `string`
+- `static_paths`: static resources to serve - `Record<string, string>`
 
 ````admonish example
 ```json
@@ -68,7 +68,10 @@ By default, the server and client communicate over port `8080`. To change this, 
       "header": "./client/assets/header.png",
       "favicon": "./client/assets/favicon.ico"
     },
-    "static": ["./curriculum/", { "/images": "./curriculum/images" }]
+    "static_paths": {
+      "/images": "./curriculum/images",
+      "/script/injectable.js": "./client/injectable.js"
+    }
   }
 }
 ```
@@ -93,7 +96,7 @@ By default, the server and client communicate over port `8080`. To change this, 
 #### `curriculum`
 
 - `locales`: an object of locale names and their corresponding paths relative to the root of the course - `Record<string, string>`
-- `assertions`: an onject of locale names and their corresponding paths to a JSON file containing custom assertions - `string`
+- `assertions`: an object of locale names and their corresponding paths to a JSON file containing custom assertions - `Record<string, string>`
 
 ````admonish example
 ```json
@@ -114,14 +117,14 @@ By default, the server and client communicate over port `8080`. To change this, 
 Currently, `english` is a required locale, and is used as the default.
 ```
 
-#### `hotReload`
+#### `hot_reload`
 
 - `ignore`: a list of paths to ignore when hot reloading - `string[]`
 
 ````admonish example
 ```json
 {
-  "hotReload": {
+  "hot_reload": {
     "ignore": [".logs/.temp.log", "config/", "/node_modules/", ".git"]
   }
 }
@@ -146,19 +149,22 @@ Currently, `english` is a required locale, and is used as the default.
 
 ## `projects.json`
 
+The `projects.json` file is where you define the project(s) metadata.
+
 ### Definitions
 
-- `id`: A unique, incremental integer - `number`
-- `dashedName`: The name of the project corresponding to the `curriculum/locales/<PROJECT_DASHED_NAME>.md` file - `string`
-- `isIntegrated`: Whether or not to treat the project as a single-lesson project - `boolean` (default: `false`)
-- `isPublic`: Whether or not to enable the project for public viewing. **Note:** the project will still be visible on the landing page, but will be disabled - `boolean` (default: `false`)
-- `currentLesson`: The current lesson of the project - `number` (default: `1`)
-- `runTestsOnWatch`: Whether or not to run tests on file change - `boolean` (default: `false`)
-- `isResetEnabled`: Whether or not to enable the reset button - `boolean` (default: `false`)
-- `numberOfLessons`: The number of lessons in the project - `number`[^1]
-- `seedEveryLesson`: Whether or not to run the seed on lesson load - `boolean` (default: `false`)
-- `blockingTests`: Run tests synchronously - `boolean` (default: `false`)
-  - `breakOnFailure`: Stop running tests on the first failure - `boolean` (default: `false`)
+- `id`: A unique UUID - `string`
+- `title`: The title of the project - `string`
+- `dashed_name`: The name of the project corresponding to the `curriculum/locales/<PROJECT_DASHED_NAME>.md` file - `string`
+- `order`: The order in which the project should be displayed - `number`
+- `is_integrated`: Whether or not to treat the project as a single-lesson project - `boolean` (default: `false`)
+- `is_public`: Whether or not to enable the project for public viewing. **Note:** the project will still be visible on the landing page, but will be disabled - `boolean` (default: `false`)
+- `run_tests_on_watch`: Whether or not to run tests on file change - `boolean` (default: `false`)
+- `is_reset_enabled`: Whether or not to enable the reset button - `boolean` (default: `false`)
+- `number_of_lessons`: The number of lessons in the project - `number`[^1]
+- `seed_every_lesson`: Whether or not to run the seed on lesson load - `boolean` (default: `false`)
+- `blocking_tests`: Run tests synchronously - `boolean` (default: `false`)
+- `break_on_failure`: Stop running tests on the first failure - `boolean` (default: `false`)
 
 [^1]: This is automagically calculated when the app is launched.
 
@@ -167,8 +173,10 @@ Currently, `english` is a required locale, and is used as the default.
 ```json
 [
   {
-    "id": 0, // Unique ID
-    "dashedName": "<PROJECT_DASHED_NAME>"
+    "id": "e5f6a1b2-c3d4-4e5f-1a2b-3c4d5e6f7a8b",
+    "title": "Course Title",
+    "dashed_name": "<PROJECT_DASHED_NAME>",
+    "order": 0
   }
 ]
 ```
@@ -179,17 +187,19 @@ Currently, `english` is a required locale, and is used as the default.
 ```json
 [
   {
-    "id": 0,
-    "dashedName": "learn-x-by-building-y",
-    "isIntegrated": false,
-    "isPublic": false,
-    "currentLesson": 1,
-    "runTestsOnWatch": false,
-    "isResetEnabled": false,
-    "numberOfLessons": 10,
-    "seedEveryLesson": false,
-    "blockingTests": false,
-    "breakOnFailure": false
+    "id": "e5f6a1b2-c3d4-4e5f-1a2b-3c4d5e6f7a8b",
+    "title": "Learn X by Building Y",
+    "dashed_name": "learn-x-by-building-y",
+    "order": 0,
+    "is_integrated": false,
+    "is_public": false,
+    "current_lesson": 0,
+    "run_tests_on_watch": false,
+    "is_reset_enabled": false,
+    "number_of_lessons": 10,
+    "seed_every_lesson": false,
+    "blocking_tests": false,
+    "break_on_failure": false
   }
 ]
 ```

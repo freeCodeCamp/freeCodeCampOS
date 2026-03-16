@@ -1,0 +1,64 @@
+import { useEffect, useState } from 'react';
+import { F } from '../types';
+import { parseMarkdown } from '../utils';
+
+interface HeadingProps {
+  title: string;
+  lesson_number?: number;
+  number_of_lessons?: number;
+  goToNextLesson?: F<void, void>;
+  goToPreviousLesson?: F<void, void>;
+}
+
+export const Heading = ({
+  title,
+  lesson_number,
+  number_of_lessons,
+  goToNextLesson,
+  goToPreviousLesson
+}: HeadingProps) => {
+  const [anim, setAnim] = useState('');
+
+  useEffect(() => {
+    setAnim('fade-in');
+    setTimeout(() => setAnim(''), 1000);
+  }, [lesson_number]);
+
+  const lessonNumberExists = typeof lesson_number !== 'undefined';
+  const canGoBack = lessonNumberExists && lesson_number > 0;
+  const canGoForward =
+    lessonNumberExists && number_of_lessons && lesson_number < number_of_lessons - 1;
+
+  const h1 = title + (lessonNumberExists ? ' - Lesson ' + lesson_number : '');
+  return (
+    <nav className='heading'>
+      {goToPreviousLesson && (
+        <button
+          className='previous-lesson-btn'
+          disabled={!canGoBack}
+          onClick={() => goToPreviousLesson()}
+          style={{ cursor: canGoBack ? 'pointer' : 'not-allowed' }}
+        >
+          {'<'}
+        </button>
+      )}
+      <h1
+        id='project-heading'
+        className={anim}
+        dangerouslySetInnerHTML={{
+          __html: parseMarkdown(h1)
+        }}
+      ></h1>
+      {goToNextLesson && (
+        <button
+          className='next-lesson-btn'
+          disabled={!canGoForward}
+          onClick={() => goToNextLesson()}
+          style={{ cursor: canGoForward ? 'pointer' : 'not-allowed' }}
+        >
+          {'>'}
+        </button>
+      )}
+    </nav>
+  );
+};

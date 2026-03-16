@@ -1,0 +1,248 @@
+//! HTTP server for freeCodeCampOS
+
+use axum::{
+    routing::{get, post},
+    Router,
+};
+use tower_http::services::ServeDir;
+use config::AppConfig;
+use std::sync::Arc;
+use tower_http::cors::CorsLayer;
+use notify::{RecursiveMode, Watcher};
+
+use rust_embed::RustEmbed;
+use axum::response::{IntoResponse};
+use axum::http::{header, StatusCode, Uri};
+
+use std::path::Path;
+mod handlers;
+mod state;
+mod ws;
+mod projects;
+mod utils;
+
+pub use state::AppState;
+
+fn is_ignored(path: &Path, root: &Path, ignore_list: &[String]) -> bool {
+    let Ok(relative) = path.strip_prefix(root) else {
+        return false;
+    };
+    let path_str = relative.to_string_lossy().replace('\\', "/");
+
+    // Always ignore temporary test directories
+    if path_str.contains(".fcc-tests-") {
+        return true;
+    }
+
+    for pattern in ignore_list {
+        let pattern = pattern.trim_start_matches('/');
+        if pattern.is_empty() {
+            continue;
+        }
+
+        let normalized_pattern = pattern.trim_end_matches('/');
+
+        if path_str == normalized_pattern || path_str.starts_with(&format!("{}/", normalized_pattern)) {
+            return true;
+        }
+    }
+    false
+}
+
+#[derive(RustEmbed)]
+#[folder = "../client/dist/"]
+struct Assets;
+
+async fn static_handler(uri: Uri) -> impl IntoResponse {
+    let mut path = uri.path().trim_start_matches('/').to_string();
+
+    if path.is_empty() {
+        path = "index.html".to_string();
+    }
+
+    match Assets::get(path.as_str()) {
+        Some(content) => {
+            let mime = mime_guess::from_path(path).first_or_octet_stream();
+            ([(header::CONTENT_TYPE, mime.as_ref())], content.data).into_response()
+        }
+        None => {
+            // Fallback to index.html for SPA
+            if let Some(index) = Assets::get("index.html") {
+                ([(header::CONTENT_TYPE, "text/html")], index.data).into_response()
+            } else {
+                (StatusCode::NOT_FOUND, "Not Found").into_response()
+            }
+        }
+    }
+}
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // Initialize tracing
+    tracing_subscriber::fmt::init();
+
+    // Load configuration
+    let config = load_config().unwrap_or_else(|e| {
+        tracing::warn!("Failed to load config, using defaults: {}", e);
+        AppConfig {
+            port: 8080,
+            ..Default::default()
+        }
+    });
+
+    let app_state = Arc::new(AppState::new(config.clone()));
+
+    // Load state
+    if let Err(e) = app_state.load_course_state().await {
+        tracing::warn!("Failed to load course state: {}, using defaults", e);
+    }
+    if let Err(e) = app_state.load_projects().await {
+        tracing::error!("Failed to load projects: {}", e);
+    }
+
+    // Setup watcher
+    let state_for_watcher = app_state.clone();
+    let hot_reload_config = config.hot_reload.clone();
+    let root_dir = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
+    let root_dir_for_watcher = root_dir.clone();
+
+    // Canonicalize config paths for comparison
+    let projects_path = std::fs::canonicalize(&config.config.projects).unwrap_or_else(|_| std::path::PathBuf::from(&config.config.projects));
+    let state_path = std::fs::canonicalize(&config.config.state).unwrap_or_else(|_| std::path::PathBuf::from(&config.config.state));
+
+    // Canonicalize curriculum locale directories for comparison
+    let curriculum_paths: Vec<std::path::PathBuf> = config.curriculum.locales.values()
+        .map(|p| std::fs::canonicalize(p).unwrap_or_else(|_| std::path::PathBuf::from(p)))
+        .collect();
+
+    let config_paths = vec![projects_path, state_path];
+
+    let mut watcher = notify::recommended_watcher(move |res: notify::Result<notify::Event>| {
+        match res {
+            Ok(event) => {
+                if event.kind.is_modify() {
+                    let should_reload = if let Some(hr) = &hot_reload_config {
+                        event.paths.iter().any(|p| {
+                            let is_projects_config = config_paths.contains(p);
+                            is_projects_config || !is_ignored(p, &root_dir_for_watcher, &hr.ignore)
+                        })
+                    } else {
+                        true
+                    };
+
+                    if should_reload {
+                        // Determine if this is a config/curriculum change (needs project
+                        // re-discovery) or just a user file change (only needs tests re-run).
+                        let is_discovery = event.paths.iter().any(|p| {
+                            config_paths.contains(p)
+                                || curriculum_paths.iter().any(|cp| p.starts_with(cp))
+                        });
+                        let msg = if is_discovery { "reload:discovery" } else { "reload:watch" };
+                        tracing::info!("file modification detected ({msg}): {:?}", event.paths);
+                        let _ = state_for_watcher.tx.send(msg.to_string());
+                    }
+                }
+            }
+            Err(e) => tracing::error!("watch error: {:?}", e),
+        }
+    })?;
+
+    // Start watching
+    if config.hot_reload.is_some() {
+        tracing::info!("hot reload enabled, watching project root: {:?}", root_dir);
+        watcher.watch(&root_dir, RecursiveMode::Recursive)?;
+    } else {
+        // Start watching locales directories
+        for (locale, path) in &config.curriculum.locales {
+            if let Ok(canonical_path) = std::fs::canonicalize(path) {
+                tracing::info!("watching curriculum directory for locale '{}': {:?}", locale, canonical_path);
+                watcher.watch(&canonical_path, RecursiveMode::Recursive)?;
+            } else {
+                tracing::error!("failed to canonicalize curriculum path for locale '{}': {:?}", locale, path);
+            }
+        }
+    }
+
+    // Build router
+    let mut app = Router::new()
+        .route("/api/curriculum/{project}", get(handlers::get_curriculum))
+        .route("/api/tests/{project}/{lesson}", post(handlers::run_tests))
+        .route("/api/reset/{project}/{lesson}", post(handlers::reset_lesson))
+        .route("/health", get(handlers::health_check))
+        .route("/ws", get(ws::ws_handler));
+
+    // Add static paths from config
+    for (route, path) in &config.client.static_paths {
+        tracing::info!("configuring static route: {} -> {}", route, path);
+        app = app.nest_service(route, ServeDir::new(path));
+    }
+
+    let app = app.fallback(static_handler)
+        .with_state(app_state)
+        .layer(CorsLayer::permissive());
+
+    
+    // We need to keep watcher alive
+    let _watcher = watcher;
+    
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", config.port))
+        .await
+        .unwrap();
+    tracing::info!(
+        "Server listening on 0.0.0.0:{} (accessible from any interface)",
+        listener.local_addr().unwrap().port()
+    );
+    tracing::info!("Application: http://127.0.0.1:{}", config.port);
+
+    // Setup graceful shutdown
+    let server = axum::serve(listener, app);
+    
+    // Create shutdown signal handler
+    let shutdown_signal = async {
+        let ctrl_c = async {
+            tokio::signal::ctrl_c()
+                .await
+                .expect("failed to install Ctrl+C handler");
+        };
+
+        #[cfg(unix)]
+        let terminate = async {
+            tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+                .expect("failed to install SIGTERM handler")
+                .recv()
+                .await;
+        };
+
+        #[cfg(not(unix))]
+        let terminate = std::future::pending::<()>();
+
+        tokio::select! {
+            _ = ctrl_c => {
+                tracing::info!("Received SIGINT (Ctrl+C), starting graceful shutdown...");
+            },
+            _ = terminate => {
+                tracing::info!("Received SIGTERM, starting graceful shutdown...");
+            },
+        }
+    };
+
+    // Run server with graceful shutdown
+    if let Err(err) = server.with_graceful_shutdown(shutdown_signal).await {
+        tracing::error!("Server error: {}", err);
+    }
+
+    tracing::info!("Server shutdown complete.");
+
+    Ok(())
+}
+
+fn load_config() -> anyhow::Result<AppConfig> {
+    let config_path = std::env::current_dir()?.join("freecodecamp.conf.json");
+    if config_path.exists() {
+        let content = std::fs::read_to_string(config_path)?;
+        let config: AppConfig = serde_json::from_str(&content)?;
+        Ok(config)
+    } else {
+        anyhow::bail!("Config file not found")
+    }
+}

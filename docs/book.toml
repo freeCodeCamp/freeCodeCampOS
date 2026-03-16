@@ -1,7 +1,6 @@
 [book]
 authors = ["Shaun Hamilton"]
 language = "en"
-multilingual = false
 src = "src"
 title = "freeCodeCampOS"
 
@@ -9,13 +8,13 @@ title = "freeCodeCampOS"
 
 [preprocessor.admonish]
 command = "mdbook-admonish"
-assets_version = "3.0.1" # do not edit: managed by `mdbook-admonish install`
+assets_version = "3.1.0"    # do not edit: managed by `mdbook-admonish install`
 
 [output]
 
-[output.unlink]
-optional = true
-ignore-files = ["CHANGELOG.md"]
+# [output.unlink]
+# optional = true
+# ignore-files = ["CHANGELOG.md"]
 
 [output.html]
 default-theme = "dark"

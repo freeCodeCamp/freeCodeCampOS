@@ -5,11 +5,13 @@ use std::{fs::canonicalize, path::Path};
 use crate::conf::Conf;
 use crate::features::Features;
 use crate::fs::Course;
-use crate::{conf::Project, environment::Environment};
+use crate::environment::Environment;
 use indicatif::ProgressBar;
 use inquire::{
-    error::InquireResult, min_length, validator::Validation, Confirm, CustomType, MultiSelect, Text,
+    error::InquireResult, min_length, validator::Validation, Confirm, CustomType, MultiSelect, Select, Text,
 };
+use config::ProjectMeta as Project;
+use uuid::Uuid;
 
 #[derive(Debug, Parser)]
 /// A CLI tool to help developers create courses for freeCodeCamp
@@ -20,10 +22,16 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum SubCommand {
+    /// Create a new course in the current directory
+    Create,
     /// Add a project to an existing course
     ///
     /// Run this command in the root directory of the course.
     AddProject,
+    /// Rename a project in an existing course
+    RenameProject,
+    /// Validate the course configuration files
+    Validate,
 }
 
 /// Appends and creates the necessary metadata for a new project within an existing course
@@ -63,16 +71,17 @@ pub fn add_project() -> InquireResult<()> {
         .with_default(true)
         .prompt()?;
     let mut seed_every_lesson = false;
-    let mut blocking_tests = false;
-    let mut break_on_failure = false;
+    let mut blocking_tests = None;
+    let mut break_on_failure = None;
     if is_integrated {
-        blocking_tests = Confirm::new("Blocking tests?")
+        let is_blocking = Confirm::new("Blocking tests?")
             .with_default(true)
             .prompt()?;
-        if blocking_tests {
-            break_on_failure = Confirm::new("Break on failure?")
+        blocking_tests = Some(is_blocking);
+        if is_blocking {
+            break_on_failure = Some(Confirm::new("Break on failure?")
                 .with_default(true)
-                .prompt()?;
+                .prompt()?);
         }
     } else {
         seed_every_lesson = Confirm::new("Seed every lesson?")
@@ -88,14 +97,14 @@ pub fn add_project() -> InquireResult<()> {
     let mut projects = get_projects();
     let latest_project = projects.last();
 
-    let id = match latest_project {
-        Some(project) => project.id + 1,
-        None => 1,
+    let order = match latest_project {
+        Some(project) => project.order + 1,
+        None => 0,
     };
     let project = Project {
-        id,
+        id: Uuid::new_v4(),
+        order,
         dashed_name,
-        current_lesson: 0,
         is_integrated,
         is_public,
         run_tests_on_watch,
@@ -103,11 +112,214 @@ pub fn add_project() -> InquireResult<()> {
         is_reset_enabled,
         blocking_tests,
         break_on_failure,
-        number_of_lessons: 1,
+        number_of_lessons: Some(1),
+        tags: vec![],
     };
     projects.push(project);
     create_project_metadata(&freecodecamp_conf, &projects);
 
+    Ok(())
+}
+
+/// Renames a project within an existing course
+pub fn rename_project() -> InquireResult<()> {
+    let mut projects = get_projects();
+    let freecodecamp_conf = get_config();
+
+    let project_dashed_names: Vec<String> = projects.iter().map(|p| p.dashed_name.clone()).collect();
+    let selected_dashed_name = Select::new("Which project to rename?", project_dashed_names).prompt()?;
+
+    let project_index = projects
+        .iter()
+        .position(|p| p.dashed_name == selected_dashed_name)
+        .unwrap();
+    let old_dashed_name = projects[project_index].dashed_name.clone();
+
+    // Read title from the curriculum file H1
+    let curriculum_dir_path = PathBuf::from(freecodecamp_conf.curriculum.locales.english.clone());
+    let old_curriculum_path_for_title = curriculum_dir_path.join(format!("{old_dashed_name}.md"));
+    let old_title = std::fs::read_to_string(&old_curriculum_path_for_title)
+        .ok()
+        .and_then(|content| {
+            content
+                .lines()
+                .next()
+                .and_then(|l| l.strip_prefix("# "))
+                .map(|t| t.to_string())
+        })
+        .unwrap_or_default();
+
+    let validator = |input: &str| {
+        if input.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
+            Ok(Validation::Valid)
+        } else {
+            Ok(Validation::Invalid(
+                "Your dashed name should be a valid string for a file and directory name".into(),
+            ))
+        }
+    };
+    let new_dashed_name = Text::new("New dashed name of project?")
+        .with_default(&old_dashed_name)
+        .with_validator(validator)
+        .prompt()?;
+    let new_title = Text::new("New title of project?")
+        .with_default(&old_title)
+        .with_validator(min_length!(1, "Minimum of 1 character"))
+        .prompt()?;
+
+    // Rename project directory
+    if old_dashed_name != new_dashed_name {
+        if let Err(e) = std::fs::rename(&old_dashed_name, &new_dashed_name) {
+            eprintln!(
+                "Warning: Failed to rename directory '{}' to '{}': {e}",
+                old_dashed_name, new_dashed_name
+            );
+        }
+    }
+
+    // Rename curriculum file and update H1
+    let old_curriculum_path = curriculum_dir_path.join(format!("{old_dashed_name}.md"));
+    let new_curriculum_path = curriculum_dir_path.join(format!("{new_dashed_name}.md"));
+
+    if old_curriculum_path.exists() {
+        // Read file
+        let mut content =
+            std::fs::read_to_string(&old_curriculum_path).expect("Failed to read curriculum file");
+        // Update H1
+        if content.starts_with("# ") {
+            if let Some(first_line_end) = content.find('\n') {
+                content.replace_range(2..first_line_end, &new_title);
+            } else {
+                content = format!("# {new_title}");
+            }
+        }
+
+        // Write to new path
+        std::fs::write(&new_curriculum_path, content).expect("Failed to write curriculum file");
+
+        // Remove old file if it was renamed
+        if old_dashed_name != new_dashed_name {
+            if let Err(e) = std::fs::remove_file(&old_curriculum_path) {
+                eprintln!("Warning: Failed to remove old curriculum file: {e}");
+            }
+        }
+    } else {
+        eprintln!(
+            "Warning: Curriculum file '{}' not found",
+            old_curriculum_path.display()
+        );
+    }
+
+    // Update metadata
+    projects[project_index].dashed_name = new_dashed_name;
+    create_project_metadata(&freecodecamp_conf, &projects);
+
+    println!("Project renamed successfully");
+    Ok(())
+}
+
+/// Validates the course configuration files
+pub fn validate() -> InquireResult<()> {
+    let path = Path::new("freecodecamp.conf.json");
+    println!("Validating freecodecamp.conf.json...");
+    let file = match std::fs::read(path) {
+        Ok(file) => file,
+        Err(e) => {
+            eprintln!("Error opening config file: {e}");
+            return Ok(());
+        }
+    };
+
+    let freecodecamp_conf: Conf = match serde_json::from_slice(&file) {
+        Ok(conf) => {
+            println!("  ✅ freecodecamp.conf.json is valid");
+            conf
+        }
+        Err(e) => {
+            eprintln!("  ❌ Error parsing freecodecamp.conf.json: {e}");
+            return Ok(());
+        }
+    };
+
+    println!("Validating projects.json...");
+    let projects_path = &freecodecamp_conf.config.projects;
+    let projects_file = match std::fs::read_to_string(projects_path) {
+        Ok(file) => file,
+        Err(e) => {
+            eprintln!("  ❌ Error reading projects.json file at '{}': {e}", projects_path);
+            return Ok(());
+        }
+    };
+
+    match serde_json::from_str::<Vec<Project>>(&projects_file) {
+        Ok(_) => {
+            println!("  ✅ projects.json is valid");
+        }
+        Err(e) => {
+            eprintln!("  ❌ Error parsing projects.json: {e}");
+        }
+    };
+
+    println!("Validating state.json...");
+    let state_path = &freecodecamp_conf.config.state;
+    let state_file = match std::fs::read_to_string(state_path) {
+        Ok(file) => file,
+        Err(e) => {
+            eprintln!("  ❌ Error reading state.json file at '{}': {e}", state_path);
+            return Ok(());
+        }
+    };
+
+    match serde_json::from_str::<config::CourseState>(&state_file) {
+        Ok(_) => {
+            println!("  ✅ state.json is valid");
+        }
+        Err(e) => {
+            eprintln!("  ❌ Error parsing state.json: {e}");
+        }
+    };
+
+    println!("\nValidation complete.");
+    Ok(())
+}
+
+/// Creates all the minimum boilerplate in the current directory
+pub fn create_boilerplate() -> InquireResult<()> {
+    let current_dir = std::env::current_dir().expect("unable to get current directory");
+    let directory_name = current_dir
+        .file_name()
+        .expect("unable to get directory name")
+        .to_str()
+        .expect("unable to convert directory name to string")
+        .to_string();
+
+    println!("Creating course in current directory: {directory_name}");
+
+    let is_git_repository = Confirm::new("Initialise as a git repository?")
+        .with_default(true)
+        .prompt()?;
+
+    let is_translated = Confirm::new("Is this course going to be translated?")
+        .with_default(true)
+        .prompt()?;
+
+    let course = Course::new(
+        current_dir,
+        directory_name,
+        vec![Environment::VSCode],
+        vec![],
+        is_git_repository,
+        is_translated,
+        1,
+    );
+
+    let pb = ProgressBar::new(14);
+    println!("Creating boilerplate...");
+
+    course.create_course(&pb);
+
+    pb.finish_with_message("done");
+    println!("Start by `npm i`.");
     Ok(())
 }
 
@@ -182,6 +394,7 @@ pub fn create_course() -> InquireResult<()> {
     //     .prompt()?;
 
     let course = Course::new(
+        canonicalize(&directory_name).expect("unable to canonicalize path"),
         directory_name.clone(),
         environment,
         features,
