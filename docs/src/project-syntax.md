@@ -171,15 +171,19 @@ impl Developer for Camper {
 Hooks can be defined at the lesson level to run code before or after tests.
 
 #### `### --before-all--`
+
 Runs once before all tests in the lesson.
 
 #### `### --after-all--`
+
 Runs once after all tests in the lesson.
 
 #### `### --before-each--`
+
 Runs before each individual test in the lesson.
 
 #### `### --after-each--`
+
 Runs after each individual test in the lesson.
 
 ````admonish example collapsible=true

@@ -108,7 +108,14 @@ async fn main() -> anyhow::Result<()> {
 
     // Canonicalize config paths for comparison
     let projects_path = std::fs::canonicalize(&config.config.projects).unwrap_or_else(|_| std::path::PathBuf::from(&config.config.projects));
-    let _state_path = std::fs::canonicalize(&config.config.state).unwrap_or_else(|_| std::path::PathBuf::from(&config.config.state));
+    let state_path = std::fs::canonicalize(&config.config.state).unwrap_or_else(|_| std::path::PathBuf::from(&config.config.state));
+
+    // Canonicalize curriculum locale directories for comparison
+    let curriculum_paths: Vec<std::path::PathBuf> = config.curriculum.locales.values()
+        .map(|p| std::fs::canonicalize(p).unwrap_or_else(|_| std::path::PathBuf::from(p)))
+        .collect();
+
+    let config_paths = vec![projects_path, state_path];
 
     let mut watcher = notify::recommended_watcher(move |res: notify::Result<notify::Event>| {
         match res {
@@ -116,7 +123,7 @@ async fn main() -> anyhow::Result<()> {
                 if event.kind.is_modify() {
                     let should_reload = if let Some(hr) = &hot_reload_config {
                         event.paths.iter().any(|p| {
-                            let is_projects_config = p == &projects_path;
+                            let is_projects_config = config_paths.contains(p);
                             is_projects_config || !is_ignored(p, &root_dir_for_watcher, &hr.ignore)
                         })
                     } else {
@@ -124,9 +131,15 @@ async fn main() -> anyhow::Result<()> {
                     };
 
                     if should_reload {
-                        tracing::info!("file modification detected: {:?}", event.paths);
-                        // Notify clients
-                        let _ = state_for_watcher.tx.send("reload".to_string());
+                        // Determine if this is a config/curriculum change (needs project
+                        // re-discovery) or just a user file change (only needs tests re-run).
+                        let is_discovery = event.paths.iter().any(|p| {
+                            config_paths.contains(p)
+                                || curriculum_paths.iter().any(|cp| p.starts_with(cp))
+                        });
+                        let msg = if is_discovery { "reload:discovery" } else { "reload:watch" };
+                        tracing::info!("file modification detected ({msg}): {:?}", event.paths);
+                        let _ = state_for_watcher.tx.send(msg.to_string());
                     }
                 }
             }
