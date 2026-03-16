@@ -103,7 +103,6 @@ pub fn add_project() -> InquireResult<()> {
     };
     let project = Project {
         id: Uuid::new_v4(),
-        title: title.clone(),
         order,
         dashed_name,
         is_integrated,
@@ -127,15 +126,28 @@ pub fn rename_project() -> InquireResult<()> {
     let mut projects = get_projects();
     let freecodecamp_conf = get_config();
 
-    let project_titles: Vec<String> = projects.iter().map(|p| p.title.clone()).collect();
-    let selected_title = Select::new("Which project to rename?", project_titles).prompt()?;
+    let project_dashed_names: Vec<String> = projects.iter().map(|p| p.dashed_name.clone()).collect();
+    let selected_dashed_name = Select::new("Which project to rename?", project_dashed_names).prompt()?;
 
     let project_index = projects
         .iter()
-        .position(|p| p.title == selected_title)
+        .position(|p| p.dashed_name == selected_dashed_name)
         .unwrap();
     let old_dashed_name = projects[project_index].dashed_name.clone();
-    let old_title = projects[project_index].title.clone();
+
+    // Read title from the curriculum file H1
+    let curriculum_dir_path = PathBuf::from(freecodecamp_conf.curriculum.locales.english.clone());
+    let old_curriculum_path_for_title = curriculum_dir_path.join(format!("{old_dashed_name}.md"));
+    let old_title = std::fs::read_to_string(&old_curriculum_path_for_title)
+        .ok()
+        .and_then(|content| {
+            content
+                .lines()
+                .next()
+                .and_then(|l| l.strip_prefix("# "))
+                .map(|t| t.to_string())
+        })
+        .unwrap_or_default();
 
     let validator = |input: &str| {
         if input.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
@@ -166,9 +178,8 @@ pub fn rename_project() -> InquireResult<()> {
     }
 
     // Rename curriculum file and update H1
-    let curriculum_dir = PathBuf::from(freecodecamp_conf.curriculum.locales.english.clone());
-    let old_curriculum_path = curriculum_dir.join(format!("{old_dashed_name}.md"));
-    let new_curriculum_path = curriculum_dir.join(format!("{new_dashed_name}.md"));
+    let old_curriculum_path = curriculum_dir_path.join(format!("{old_dashed_name}.md"));
+    let new_curriculum_path = curriculum_dir_path.join(format!("{new_dashed_name}.md"));
 
     if old_curriculum_path.exists() {
         // Read file
@@ -201,7 +212,6 @@ pub fn rename_project() -> InquireResult<()> {
 
     // Update metadata
     projects[project_index].dashed_name = new_dashed_name;
-    projects[project_index].title = new_title;
     create_project_metadata(&freecodecamp_conf, &projects);
 
     println!("Project renamed successfully");

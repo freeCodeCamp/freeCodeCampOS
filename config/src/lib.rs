@@ -53,7 +53,7 @@ pub struct LastSeed {
 /// Client configuration
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ClientConfig {
-    pub assets: ClientAssets,
+    pub assets: Option<ClientAssets>,
     pub landing: HashMap<String, LandingConfig>,
     pub static_paths: HashMap<String, String>,
 }
@@ -78,7 +78,7 @@ pub struct LandingConfig {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CurriculumConfig {
     pub locales: HashMap<String, String>,
-    pub assertions: HashMap<String, String>,
+    pub assertions: Option<HashMap<String, String>>,
 }
 
 /// Hot reload configuration
@@ -92,7 +92,6 @@ pub struct HotReloadConfig {
 #[serde(deny_unknown_fields)]
 pub struct ProjectMeta {
     pub id: Uuid,
-    pub title: String,
     pub dashed_name: String,
     pub order: u32,
     #[serde(default)]

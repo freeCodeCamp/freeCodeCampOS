@@ -494,7 +494,6 @@ pluginEvents.onLessonPassed = async project => {};
             for i in 0..self.num_projects {
                 let project = Project {
                     id: uuid::Uuid::new_v4(),
-                    title: format!("Project {i}"),
                     order: i as u32,
                     dashed_name: format!("project-{i}"),
                     is_integrated: false,
