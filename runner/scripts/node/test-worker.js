@@ -156,6 +156,15 @@ parentPort.on('message', async ({ code, id }) => {
       global.__helpers = helpers.default || helpers;
     } catch (e) {
       console.error(`Failed to load helpers from ${helpersPath}:`, e);
+      parentPort.postMessage({
+        passed: false,
+        id,
+        error: {
+          message: `Failed to load helpers: ${e.message}`,
+          type: e.name ?? 'Error',
+        }
+      });
+      return;
     }
   }
 
