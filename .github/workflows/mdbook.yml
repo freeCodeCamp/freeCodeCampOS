@@ -27,7 +27,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      MDBOOK_VERSION: 0.4.36
+      MDBOOK_VERSION: 0.4.52
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Install mdBook
@@ -43,14 +43,14 @@ jobs:
         run: cd docs && mdbook build
       - name: Check Expected Files
         run: |
-          if [ ! -f docs/book/html/index.html ]; then
-            echo "Expected file docs/book/html/index.html is missing. Double-check the mdBook/Pages config."
+          if [ ! -f docs/book/index.html ]; then
+            echo "Expected file docs/book/index.html is missing. Double-check the mdBook/Pages config."
             exit 1
           fi
       - name: Upload artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
         with:
-          path: ./docs/book/html
+          path: ./docs/book
 
   # Deployment job
   deploy:
