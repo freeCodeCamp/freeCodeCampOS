@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 'use strict';
 
-const { createWriteStream, chmodSync, mkdirSync } = require('fs');
+const { createWriteStream, chmodSync, existsSync, mkdirSync } = require('fs');
 const { get } = require('https');
 const { join } = require('path');
 const { version } = require('../package.json');
+
+// Don't run when doing `bun i` / `npm i` inside this workspace
+if (!__dirname.includes('node_modules')) {
+  process.exit(0);
+}
 
 const PLATFORM_MAP = {
   'linux-x64': 'x86_64-unknown-linux-gnu',
@@ -23,6 +28,13 @@ const binPath = join(binDir, 'freecodecamp-server');
 const url = `https://github.com/freeCodeCamp/freeCodeCampOS/releases/download/v${version}/freecodecamp-server-${target}`;
 
 mkdirSync(binDir, { recursive: true });
+
+// Binary was bundled with the published package — just ensure it's executable
+if (existsSync(binPath)) {
+  chmodSync(binPath, 0o755);
+  console.log('freecodecamp-os: binary already present at', binPath);
+  process.exit(0);
+}
 
 function download(url, dest, cb) {
   get(url, (res) => {
