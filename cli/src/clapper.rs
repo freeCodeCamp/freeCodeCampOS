@@ -99,7 +99,7 @@ pub fn add_project() -> InquireResult<()> {
 
     let order = match latest_project {
         Some(project) => project.order + 1,
-        None => 1,
+        None => 0,
     };
     let project = Project {
         id: Uuid::new_v4(),
