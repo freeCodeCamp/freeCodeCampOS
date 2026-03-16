@@ -13,7 +13,6 @@ export interface ProjectProps {
   runTests: F<void, void>;
   cons: ConsoleError[];
   description: string;
-  hasRunTests: boolean;
   hints: string[];
   loader: LoaderT;
   lesson_number: number;
@@ -27,7 +26,6 @@ export const Project = ({
   resetProject,
   goToNextLesson,
   goToPreviousLesson,
-  hasRunTests,
   loader,
   project,
   lesson_number,
@@ -70,7 +68,7 @@ export const Project = ({
               })}
         />
 
-        <Output {...{ hasRunTests, hints, tests, cons }} />
+        <Output {...{ hints, tests, cons }} />
       </div>
     </>
   );

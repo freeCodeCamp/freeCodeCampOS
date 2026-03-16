@@ -39,8 +39,7 @@ const App = () => {
     is_loading: false,
     progress: { count: 0, total: 1 }
   });
-  const [hasRunTests, setHasRunTests] = useState(false);
-  const [alertCamper, setAlertCamper] = useState<null | string>(null);
+const [alertCamper, setAlertCamper] = useState<null | string>(null);
   const [error, setError] = useState<Error | null>(null);
 
   const [debouncers, setDebouncers] = useState<string[]>([]);
@@ -149,7 +148,6 @@ const App = () => {
     setDescription(description);
     setTests(tests);
     setHints(hints || []);
-    setHasRunTests(false);
   }
 
   function updateDescription({ description }: { description: string }) {
@@ -204,7 +202,6 @@ const App = () => {
     setTests([]);
     setHints([]);
     setCons([]);
-    setHasRunTests(false);
   }
 
   function toggleLoaderAnimation({ loader }: { loader: LoaderT }) {
@@ -212,7 +209,6 @@ const App = () => {
   }
 
   function runTests() {
-    setHasRunTests(true);
     setCons([]);
     sock(Events.RUN_TESTS);
   }
@@ -251,7 +247,6 @@ const App = () => {
               description,
               goToNextLesson,
               goToPreviousLesson,
-              hasRunTests,
               hints,
               loader,
               lesson_number,

@@ -5,13 +5,12 @@ import { Console } from './console';
 import { Hints } from './hints';
 
 interface OutputProps {
-  hasRunTests: boolean;
   hints: string[];
   tests: TestType[];
   cons: ConsoleError[];
 }
 
-export const Output = ({ hasRunTests, hints, tests, cons }: OutputProps) => {
+export const Output = ({ hints, tests, cons }: OutputProps) => {
   const [selectedBtn, setSelectedBtn] = useState('tests');
 
   return (
@@ -58,7 +57,7 @@ export const Output = ({ hasRunTests, hints, tests, cons }: OutputProps) => {
         {(() => {
           switch (selectedBtn) {
             case 'tests':
-              return <Tests hasRunTests={hasRunTests} tests={tests} />;
+              return <Tests tests={tests} />;
             case 'console':
               return <Console cons={cons} tests={tests} />;
             case 'hints':
