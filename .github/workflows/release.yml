@@ -9,7 +9,64 @@ on:
   workflow_dispatch:
 
 jobs:
+  build-linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+
+      - name: Build server binary
+        run: cargo build --release --bin server --target x86_64-unknown-linux-gnu
+
+      - name: Stage binary
+        run: |
+          mkdir -p bin
+          cp target/x86_64-unknown-linux-gnu/release/server bin/freecodecamp-server-x86_64-unknown-linux-gnu
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: bin-linux
+          path: bin/freecodecamp-server-x86_64-unknown-linux-gnu
+
+  build-mac:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: Build server binary (arm64)
+        run: cargo build --release --bin server --target aarch64-apple-darwin
+
+      - name: Build server binary (x86_64)
+        run: cargo build --release --bin server --target x86_64-apple-darwin
+
+      - name: Stage binaries
+        run: |
+          mkdir -p bin
+          cp target/aarch64-apple-darwin/release/server bin/freecodecamp-server-aarch64-apple-darwin
+          cp target/x86_64-apple-darwin/release/server bin/freecodecamp-server-x86_64-apple-darwin
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: bin-mac
+          path: |
+            bin/freecodecamp-server-aarch64-apple-darwin
+            bin/freecodecamp-server-x86_64-apple-darwin
+
   publish:
+    needs: [build-linux, build-mac]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -18,27 +75,27 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
 
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-unknown-linux-gnu
-
       - name: Build client
         run: bun install && bun run build:client
 
-      - name: Build server binary
-        run: cargo build --release --bin server --target x86_64-unknown-linux-gnu
+      - name: Download binaries
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          merge-multiple: true
+          path: bin/
 
-      - name: Rename binary
-        run: cp target/x86_64-unknown-linux-gnu/release/server freecodecamp-server-x86_64-unknown-linux-gnu
+      - name: Mark binaries executable
+        run: chmod +x bin/freecodecamp-server-*
 
-      - name: Upload binary to release
+      - name: Upload binaries to release
         if: github.event_name == 'release'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload "${{ github.ref_name }}" \
-            freecodecamp-server-x86_64-unknown-linux-gnu \
+            bin/freecodecamp-server-x86_64-unknown-linux-gnu \
+            bin/freecodecamp-server-aarch64-apple-darwin \
+            bin/freecodecamp-server-x86_64-apple-darwin \
             --clobber
 
       - name: Set up Node
@@ -48,6 +105,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Publish to npm
-        run: npm publish
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}

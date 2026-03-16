@@ -13,6 +13,8 @@ if (!__dirname.includes('node_modules')) {
 
 const PLATFORM_MAP = {
   'linux-x64': 'x86_64-unknown-linux-gnu',
+  'darwin-x64': 'x86_64-apple-darwin',
+  'darwin-arm64': 'aarch64-apple-darwin',
 };
 
 const key = `${process.platform}-${process.arch}`;
@@ -29,10 +31,12 @@ const url = `https://github.com/freeCodeCamp/freeCodeCampOS/releases/download/v$
 
 mkdirSync(binDir, { recursive: true });
 
-// Binary was bundled with the published package — just ensure it's executable
-if (existsSync(binPath)) {
+// Binary was bundled with the published package — copy the platform binary into place
+const bundledBin = join(binDir, `freecodecamp-server-${target}`);
+if (existsSync(bundledBin)) {
+  require('fs').copyFileSync(bundledBin, binPath);
   chmodSync(binPath, 0o755);
-  console.log('freecodecamp-os: binary already present at', binPath);
+  console.log('freecodecamp-os: installed bundled binary for', target);
   process.exit(0);
 }
 
