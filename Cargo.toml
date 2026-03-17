@@ -3,7 +3,7 @@ members = ["config", "parser", "runner", "server", "cli"]
 resolver = "3"
 
 [workspace.package]
-version = "4.0.0"
+version = "4.1.0"
 edition = "2024"
 license = "BSD-3-Clause"
 repository = "https://github.com/freeCodeCamp/freeCodeCampOS"
