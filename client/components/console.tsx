@@ -1,12 +1,20 @@
 import { ConsoleError, TestType } from '../types';
-import { parseMarkdown } from '../utils';
+import { parseMarkdown, parseMarkdownInline } from '../utils';
 
-export const Console = ({ cons, tests }: { cons: ConsoleError[]; tests: TestType[] }) => {
+export const Console = ({
+  cons,
+  tests
+}: {
+  cons: ConsoleError[];
+  tests: TestType[];
+}) => {
   return (
     <ul style={{ listStyle: 'none' }}>
-      {cons.map((con) => {
+      {cons.map(con => {
         const originalIndex = tests.findIndex(t => t.test_id === con.test_id);
-        return <ConsoleElement key={con.test_id} index={originalIndex} {...con} />;
+        return (
+          <ConsoleElement key={con.test_id} index={originalIndex} {...con} />
+        );
       })}
     </ul>
   );
@@ -17,16 +25,23 @@ const ConsoleElement = ({
   error,
   index
 }: ConsoleError & { index: number }) => {
-  const details = `<summary>${index + 1} ${test_text}</summary>
-
-  \`\`\`json
-  ${error ? JSON.stringify(error, null, 2) : ''}
-  \`\`\``;
   return (
-    <details
-      dangerouslySetInnerHTML={{
-        __html: parseMarkdown(details)
-      }}
-    ></details>
+    <details>
+      <summary>
+        {index + 1}{' '}
+        <span
+          dangerouslySetInnerHTML={{ __html: parseMarkdownInline(test_text) }}
+        />
+      </summary>
+      <div
+        dangerouslySetInnerHTML={{
+          __html: parseMarkdown(
+            '```json\n' +
+              (error ? JSON.stringify(error, null, 2) : '') +
+              '\n```'
+          )
+        }}
+      />
+    </details>
   );
 };

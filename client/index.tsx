@@ -148,6 +148,7 @@ const [alertCamper, setAlertCamper] = useState<null | string>(null);
     setDescription(description);
     setTests(tests);
     setHints(hints || []);
+    setCons([]);
   }
 
   function updateDescription({ description }: { description: string }) {
