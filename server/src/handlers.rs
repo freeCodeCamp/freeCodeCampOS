@@ -138,8 +138,10 @@ pub async fn reset_lesson(
     // 3. Run seed if it exists
     if let Some(seed) = &lesson.seed {
         tracing::debug!("running seed for lesson {}", lesson_id);
-        crate::utils::perform_seed(seed).await
-            .map_err(|e| {
+        state.is_seeding.store(true, std::sync::atomic::Ordering::Relaxed);
+        let seed_result = crate::utils::perform_seed(seed, &project.meta.dashed_name).await;
+        state.is_seeding.store(false, std::sync::atomic::Ordering::Relaxed);
+        seed_result.map_err(|e| {
                 tracing::error!("failed to run seed for lesson {}: {}", lesson_id, e);
                 (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to run seed: {}", e))
             })?;

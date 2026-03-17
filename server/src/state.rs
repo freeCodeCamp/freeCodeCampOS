@@ -1,6 +1,7 @@
 use config::{AppConfig, CourseState, ProjectSummary};
 use tokio::sync::{broadcast, RwLock};
 use uuid::Uuid;
+use std::sync::atomic::AtomicBool;
 
 #[derive(Debug)]
 pub struct AppState {
@@ -8,6 +9,7 @@ pub struct AppState {
     pub tx: broadcast::Sender<String>,
     pub course_state: RwLock<CourseState>,
     pub projects: RwLock<Vec<ProjectSummary>>,
+    pub is_seeding: AtomicBool,
 }
 
 impl AppState {
@@ -25,6 +27,7 @@ impl AppState {
                 ..Default::default()
             }),
             projects: RwLock::new(Vec::new()),
+            is_seeding: AtomicBool::new(false),
         }
     }
 

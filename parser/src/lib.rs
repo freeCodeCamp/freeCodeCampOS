@@ -171,9 +171,18 @@ impl CurriculumParser {
                     current = node.next_sibling();
                     continue;
                 }
+                if h.level == 4 && current_section == "--seed--" {
+                    let text = node_to_text(node);
+                    seed_raw.push_str(&format!("#### {}\n", text.trim()));
+                    current = node.next_sibling();
+                    continue;
+                }
             }
 
             match &data.value {
+                NodeValue::CodeBlock(_) if current_section == "--description--" || current_section.is_empty() => {
+                    description_nodes.push(node);
+                }
                 NodeValue::CodeBlock(c) => {
                     let runner = extract_runner(&c.info);
                     let span = source_pos_to_span(markdown, data.sourcepos);
@@ -245,7 +254,7 @@ impl CurriculumParser {
                     }
                 }
                 NodeValue::Paragraph if current_section == "--tests--" => {
-                    current_test_text.push_str(&node_to_text(node));
+                    current_test_text.push_str(&node_to_markdown(node));
                     current_test_text.push('\n');
                 }
                 _ if current_section == "--description--" || current_section.is_empty() => {
@@ -273,8 +282,7 @@ impl CurriculumParser {
                 let target = &first_line[7..first_line.len() - 2].trim();
                 let code = lines[1..].join("\n");
                 if *target == "cmd" {
-                    let runner = tests.first().map(|t| t.runner.clone()).unwrap_or_else(|| "bash".to_string());
-                    Some(config::Seed::Command { runner, code })
+                    Some(config::Seed::Command { runner: "bash".to_string(), code })
                 } else {
                     Some(config::Seed::File { path: target.trim_matches('"').to_string(), code })
                 }
@@ -355,7 +363,6 @@ mod tests {
     fn create_test_meta() -> ProjectMeta {
         ProjectMeta {
             id: Uuid::new_v4(),
-            title: "Test Project".to_string(),
             dashed_name: "test-project".to_string(),
             order: 0,
             is_integrated: false,
@@ -425,6 +432,143 @@ assert(true);
         let lesson = &project.lessons[0];
         assert!(lesson.description.contains("Lesson paragraph one."), "Should contain lesson paragraph one");
         assert!(lesson.description.contains("Lesson paragraph two."), "Should contain lesson paragraph two");
+    }
+
+    #[test]
+    fn test_code_block_in_description() {
+        let markdown = r#"# Project
+
+## 1
+
+### --description--
+
+Here is some code:
+
+```js
+const x = 42;
+```
+
+More text.
+
+### --tests--
+
+```js
+assert(true);
+```
+"#;
+        let project = CurriculumParser::parse_project_from_str(markdown, create_test_meta()).unwrap();
+        let desc = &project.lessons[0].description;
+        assert!(desc.contains("const x = 42;"), "Code block should be in description, got: {desc}");
+        assert!(desc.contains("More text."), "Text after code block should be in description");
+    }
+
+    #[test]
+    fn test_seed_file_parsed_as_file_not_command() {
+        let markdown = r#"# Project
+
+## 1
+
+### --description--
+
+Do the thing.
+
+### --seed--
+
+#### --"src/index.js"--
+
+```js
+const x = 42;
+```
+
+### --tests--
+
+```js
+assert(true);
+```
+"#;
+        let project = CurriculumParser::parse_project_from_str(markdown, create_test_meta()).unwrap();
+        let seed = project.lessons[0].seed.as_ref().expect("should have seed");
+        match seed {
+            config::Seed::File { path, code } => {
+                assert_eq!(path, "src/index.js");
+                assert!(code.contains("const x = 42;"), "code should contain file content");
+            }
+            config::Seed::Command { .. } => panic!("seed should be File, not Command"),
+        }
+    }
+
+    #[test]
+    fn test_seed_cmd_parsed_as_command() {
+        let markdown = r#"# Project
+
+## 1
+
+### --description--
+
+Do the thing.
+
+### --seed--
+
+#### --cmd--
+
+```bash
+mkdir src
+```
+
+### --tests--
+
+```js
+assert(true);
+```
+"#;
+        let project = CurriculumParser::parse_project_from_str(markdown, create_test_meta()).unwrap();
+        let seed = project.lessons[0].seed.as_ref().expect("should have seed");
+        match seed {
+            config::Seed::Command { runner, code } => {
+                assert_eq!(runner, "bash");
+                assert!(code.contains("mkdir src"), "code should contain the command");
+            }
+            config::Seed::File { .. } => panic!("seed should be Command, not File"),
+        }
+    }
+
+    #[test]
+    fn test_cmd_seed_runner_from_code_block_not_tests() {
+        // Regression: --cmd-- seed was inheriting runner from tests.first(),
+        // so a bash seed in a lesson with js tests was run through node.
+        let markdown = r#"# Project
+
+## 1
+
+### --description--
+
+Do the thing.
+
+### --tests--
+
+You should do X.
+
+```js
+assert(true);
+```
+
+### --seed--
+
+#### --cmd--
+
+```bash
+touch server.js
+```
+"#;
+        let project = CurriculumParser::parse_project_from_str(markdown, create_test_meta()).unwrap();
+        let seed = project.lessons[0].seed.as_ref().expect("should have seed");
+        match seed {
+            config::Seed::Command { runner, code } => {
+                assert_eq!(runner, "bash", "runner should be bash, not inherited from js test");
+                assert!(code.contains("touch server.js"));
+            }
+            config::Seed::File { .. } => panic!("seed should be Command"),
+        }
     }
 
     #[test]

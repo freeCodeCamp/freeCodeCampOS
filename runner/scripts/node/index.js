@@ -1,6 +1,9 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { Worker } from 'node:worker_threads';
-import path from 'node:path';
+import { join } from 'node:path';
+import { assert, AssertionError, expect, config as chaiConfig } from 'chai';
+
+global.ROOT = process.cwd();
 
 const MANIFEST_PATH = process.env.MANIFEST_PATH;
 const TEST_WORKER_PATH = process.env.TEST_WORKER_PATH;

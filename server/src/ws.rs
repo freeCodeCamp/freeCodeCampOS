@@ -392,7 +392,10 @@ async fn handle_reset_project(state: &Arc<AppState>, tx: &mpsc::Sender<Message>)
         if let Some(project) = state.get_project(project_id).await {
             if let Some(lesson) = project.lessons.iter().find(|l| l.id == current_lesson) {
                 if let Some(seed) = &lesson.seed {
-                    if let Err(e) = crate::utils::perform_seed(seed).await {
+                    state.is_seeding.store(true, std::sync::atomic::Ordering::Relaxed);
+                    let seed_result = crate::utils::perform_seed(seed, &project.meta.dashed_name).await;
+                    state.is_seeding.store(false, std::sync::atomic::Ordering::Relaxed);
+                    if let Err(e) = seed_result {
                         tracing::error!("failed to run seed for lesson reset: {}", e);
                         send_message(tx, "update_error", serde_json::json!({ "error": e.to_string() })).await;
                     } else {
@@ -444,7 +447,10 @@ async fn handle_change_lesson(state: &Arc<AppState>, tx: &mpsc::Sender<Message>,
                         if project.meta.seed_every_lesson && !already_seeded {
                             tracing::info!("seeding lesson {} because seed_every_lesson is enabled and it was not yet seeded", new_lesson);
                             if let Some(seed) = &lesson.seed {
-                                if let Err(e) = crate::utils::perform_seed(seed).await {
+                                state.is_seeding.store(true, std::sync::atomic::Ordering::Relaxed);
+                                let seed_result = crate::utils::perform_seed(seed, &project.meta.dashed_name).await;
+                                state.is_seeding.store(false, std::sync::atomic::Ordering::Relaxed);
+                                if let Err(e) = seed_result {
                                     tracing::error!("failed to run seed for lesson change: {}", e);
                                     send_message(tx, "update_error", serde_json::json!({ "error": e.to_string() })).await;
                                 } else {

@@ -120,7 +120,7 @@ async fn main() -> anyhow::Result<()> {
     let mut watcher = notify::recommended_watcher(move |res: notify::Result<notify::Event>| {
         match res {
             Ok(event) => {
-                if event.kind.is_modify() {
+                if event.kind.is_modify() && !state_for_watcher.is_seeding.load(std::sync::atomic::Ordering::Relaxed) {
                     let should_reload = if let Some(hr) = &hot_reload_config {
                         event.paths.iter().any(|p| {
                             let is_projects_config = config_paths.contains(p);
