@@ -55,6 +55,38 @@ jobs:
           name: bin-linux
           path: target/x86_64-unknown-linux-gnu/release/server
 
+  build-linux-arm64:
+    needs: build-client
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Download client dist
+        uses: actions/download-artifact@v8
+        with:
+          name: client-dist
+          path: client/dist/
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-unknown-linux-gnu
+
+      - name: Install cross-compilation toolchain
+        run: sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Build server binary
+        run: cargo build --release --bin server --target aarch64-unknown-linux-gnu
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: bin-linux-arm64
+          path: target/aarch64-unknown-linux-gnu/release/server
+
   build-mac:
     needs: build-client
     runs-on: macos-14
@@ -88,7 +120,7 @@ jobs:
             target/x86_64-apple-darwin/release/server
 
   publish:
-    needs: [build-linux, build-mac]
+    needs: [build-linux, build-linux-arm64, build-mac]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -100,6 +132,12 @@ jobs:
           name: bin-linux
           path: bin-linux/
 
+      - name: Download Linux arm64 binary
+        uses: actions/download-artifact@v8
+        with:
+          name: bin-linux-arm64
+          path: bin-linux-arm64/
+
       - name: Download Mac binaries
         uses: actions/download-artifact@v8
         with:
@@ -110,6 +148,7 @@ jobs:
         run: |
           mkdir -p bin
           cp bin-linux/server bin/freecodecamp-server-x86_64-unknown-linux-gnu
+          cp bin-linux-arm64/server bin/freecodecamp-server-aarch64-unknown-linux-gnu
           cp bin-mac/aarch64-apple-darwin/release/server bin/freecodecamp-server-aarch64-apple-darwin
           cp bin-mac/x86_64-apple-darwin/release/server bin/freecodecamp-server-x86_64-apple-darwin
           chmod +x bin/freecodecamp-server-*
@@ -121,6 +160,7 @@ jobs:
         run: |
           gh release upload "${{ github.ref_name }}" \
             bin/freecodecamp-server-x86_64-unknown-linux-gnu \
+            bin/freecodecamp-server-aarch64-unknown-linux-gnu \
             bin/freecodecamp-server-aarch64-apple-darwin \
             bin/freecodecamp-server-x86_64-apple-darwin \
             --clobber

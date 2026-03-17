@@ -13,6 +13,7 @@ if (!__dirname.includes('node_modules')) {
 
 const PLATFORM_MAP = {
   'linux-x64': 'x86_64-unknown-linux-gnu',
+  'linux-arm64': 'aarch64-unknown-linux-gnu',
   'darwin-x64': 'x86_64-apple-darwin',
   'darwin-arm64': 'aarch64-apple-darwin',
 };
