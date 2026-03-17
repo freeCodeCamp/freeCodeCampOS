@@ -1,7 +1,7 @@
 {
   "name": "@freecodecamp/freecodecamp-os",
   "author": "freeCodeCamp",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Open Source platform for creating and maintaining interactive coding curricula",
   "bin": {
     "freecodecamp-server": "bin/freecodecamp-server"
