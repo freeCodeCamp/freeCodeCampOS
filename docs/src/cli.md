@@ -1,10 +1,16 @@
 # CLI
 
+The `create-freecodecamp-os-app` CLI helps you scaffold and manage freeCodeCampOS courses.
+
 ## Installation
 
-### Releases
+### `npx` (recommended)
 
-Locate your platform in the [releases](https://github.com/freeCodeCamp/freeCodeCampOS/releases) section and download the latest version.
+No installation required — run directly with `npx`:
+
+```bash
+npx create-freecodecamp-os-app <command>
+```
 
 ### `cargo`
 
@@ -16,30 +22,36 @@ Requires Rust to be installed: https://www.rust-lang.org/tools/install
 cargo install create-freecodecamp-os-app
 ```
 
+### Releases
+
+Locate your platform in the [releases](https://github.com/freeCodeCamp/freeCodeCampOS/releases) section and download the latest version.
+
 ## Usage
 
-To create a new course with some boilerplate:
+### Create a new course
 
 ```bash
-create-freecodecamp-os-app create
+npx create-freecodecamp-os-app create
 ```
 
-To add a project to an existing course:
+### Add a project to an existing course
 
 ```bash
-create-freecodecamp-os-app add-project
+npx create-freecodecamp-os-app add-project
 ```
 
-To rename a project in an existing course:
+### Rename a project in an existing course
 
 ```bash
-create-freecodecamp-os-app rename-project
+npx create-freecodecamp-os-app rename-project
 ```
 
-To validate the course configuration files:
+### Validate the course configuration files
 
 ```bash
-create-freecodecamp-os-app validate
+npx create-freecodecamp-os-app validate
 ```
 
-The version of the CLI is tied to the version of `freecodecamp-os`. Some options may not be available if the version of the CLI is not compatible with the version of `freecodecamp-os` that is installed.
+```admonish note
+The version of the CLI is tied to the version of `freecodecamp-os`. Some options may not be available if the CLI version is not compatible with the installed version of `freecodecamp-os`.
+```

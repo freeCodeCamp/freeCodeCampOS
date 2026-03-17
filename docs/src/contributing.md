@@ -1,25 +1,80 @@
 # Contributing
 
+## System Requirements
+
+- **Rust 1.93.1+** — [Install Rust](https://rustup.rs/)
+- **Bun 1.3.10+** — [Install Bun](https://bun.sh/)
+- **Node.js 20+**
+
 ## Local Development
 
-1. Open `freeCodeCampOS/example` as a new workspace in VSCode
+1. Clone the repository and open `freeCodeCampOS/example` as a new workspace in VSCode.
+
 2. Install dependencies and build the project:
+
    ```bash
    bun install
    bun run build
    ```
+
 3. Run the development server:
+
    ```bash
-   cargo run --bin server
+   cargo run --bin freecodecamp-server
    ```
+
 4. In a separate terminal, run the client in development mode:
+
    ```bash
    cd client && bun run dev
    ```
 
-## Gitpod
+   The client will be available at `http://localhost:5173`.
 
-1. Open the project in Gitpod:
+### Common Tasks
+
+```bash
+# Run all tests
+cargo test --all
+
+# Check formatting
+cargo fmt --all -- --check
+
+# Fix formatting
+cargo fmt --all
+
+# Run linter
+cargo clippy --all -- -D warnings
+
+# Build optimized binaries
+cargo build --release --all
+
+# Build client assets
+cd client && bun run build
+```
+
+### Environment Variables
+
+```bash
+RUST_LOG=info               # Log level (debug, info, warn, error)
+PORT=8080                   # Server port (default: 8080)
+CONFIG_PATH=./conf.json     # Path to configuration file
+```
+
+## Repository Layout
+
+```
+cli/          # create-freecodecamp-os-app CLI tool
+client/       # React frontend
+config/       # Shared types and configuration
+docs/         # Documentation (this site)
+example/      # Example curriculum used for development
+parser/       # Curriculum markdown parser
+runner/       # Test execution engine
+server/       # Axum HTTP server
+```
+
+## Gitpod
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/freeCodeCamp/freecodecampOS)
 
@@ -72,7 +127,7 @@ Any top-level directory or config file. Changing a package should have a scope o
 
 ## Documentation
 
-This documention is built using [mdBook](https://rust-lang.github.io/mdBook/). Read their documentation to install the latest version.
+This documentation is built using [mdBook](https://rust-lang.github.io/mdBook/). Read their documentation to install the latest version.
 
 Also, the documentation uses `mdbook-admonish`:
 
@@ -87,7 +142,7 @@ cd docs
 mdbook serve
 ```
 
-This will spin up a local server at `http://localhost:3000`. Also, this has hot-reloading, so any changes you make will be reflected in the browser.
+This will spin up a local server at `http://localhost:3000` with hot-reloading.
 
 ### Build the Documentation
 
@@ -98,13 +153,13 @@ mdbook build
 
 ## CLI (`create-freecodecamp-os-app`)
 
-The CLI is written in Rust, and is located in the `cli` directory.
+The CLI is written in Rust and is located in the `cli` directory.
 
 ### Development
 
 ```bash
-$ cd cli
-cli$ cargo run
+cd cli
+cargo run
 ```
 
 ---

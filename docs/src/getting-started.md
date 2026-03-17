@@ -1,249 +1,54 @@
 # Getting Started
 
-Welcome to freeCodeCampOS - a platform for creating and hosting interactive coding curricula.
+Welcome to freeCodeCampOS — a platform for creating and hosting interactive coding curricula.
 
-## System Requirements
+This guide is for **course creators**: people who want to build a course using freeCodeCampOS.
 
-- **Rust 1.93.1+** - [Install Rust](https://rustup.rs/)
-- **Bun 1.3.10+** - [Install Bun](https://bun.sh/)
-- **Node.js 20+** (for running example projects)
-
-## Installation
-
-### Option 1: From Source
-
-```bash
-# Clone the repository
-git clone https://github.com/freeCodeCamp/freeCodeCampOS.git
-cd freeCodeCampOS
-
-# Install Rust (if not already installed)
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
-# Install Bun (if not already installed)
-curl -fsSL https://bun.sh/install | bash
-
-# Build everything
-bun run build
-
-# Run the server
-./target/release/freecodecamp-server
+```admonish note
+If you want to contribute to freeCodeCampOS itself, see the [Contributing](./contributing.md) guide instead.
 ```
 
-### Option 2: Using Docker
+## Prerequisites
+
+- **Node.js 20+** — [Install Node.js](https://nodejs.org/)
+
+That's it. The `freecodecamp-server` binary is downloaded automatically when you run the server.
+
+## Create a New Course
+
+Use the CLI to scaffold a new course:
 
 ```bash
-docker build -f Dockerfile.migration -t freecodecamp-os:latest .
-docker run -p 8080:8080 freecodecamp-os:latest
+npx create-freecodecamp-os-app create
 ```
 
-## Quick Start
-
-### 1. Start the Development Server
-
-```bash
-# Terminal 1: Start the Rust backend
-cargo run --bin freecodecamp-server
-
-# Server will listen on http://localhost:8080
-```
-
-### 2. Start the Client
-
-```bash
-# Terminal 2: Start the React development server
-cd client && bun run dev
-
-# Client will be available at http://localhost:5173
-```
-
-### 3. Access the Application
-
-Open your browser and navigate to `http://localhost:5173` to see the freeCodeCampOS interface.
-
-## Creating Your First Curriculum
-
-### Method 1: Using the CLI
-
-```bash
-# Create a new curriculum project
-./target/release/create-freecodecamp-os-app
-
-# Follow the interactive prompts to configure your course
-```
-
-### Method 2: Manual Setup
-
-Create a directory structure:
+Follow the interactive prompts. This creates a directory with:
 
 ```
 my-course/
-├── freecodecamp.conf.json
+├── freecodecamp.conf.json   # Course configuration
+├── config/
+│   ├── projects.json        # Project metadata
+│   └── state.json           # Learner state (auto-managed)
 └── curriculum/
     └── locales/
         └── english/
-            └── my-course.md
+            └── my-course.md # Curriculum content
 ```
 
-Example `freecodecamp.conf.json`:
+## Run the Server
 
-```json
-{
-  "version": "4.0.0",
-  "port": 8080,
-  "client": {
-    "assets": {
-      "header": "./client/assets/logo.svg",
-      "favicon": "./client/assets/favicon.svg"
-    },
-    "landing": {
-      "english": {
-        "title": "My Course",
-        "description": "Learn amazing things",
-        "faq_link": "https://example.com",
-        "faq_text": "Frequently Asked Questions"
-      }
-    }
-  },
-  "curriculum": {
-    "locales": {
-      "english": "./curriculum/locales/english"
-    }
-  }
-}
-```
-
-Example curriculum file (`my-course.md`):
-
-````markdown
-# Learn Amazing Things
-
-Welcome to this course!
-
-## 0
-
-### --description--
-
-The first lesson introduces basic concepts.
-
-### --tests--
-
-```js,runner=node
-console.log("Testing");
-assert(1 + 1 === 2);
-```
-
-### --seed--
-
-#### --"add.js"--
-
-```js
-function add(a, b) {
-  return a + b;
-}
-```
-
-## 1
-
-### --description--
-
-The second lesson builds on the first.
-
-### --tests--
-
-```js,runner=node
-assert(typeof add === 'function');
-```
-````
-
-## Project Layout
-
-freeCodeCampOS is organized into several components:
-
-```
-cli/          # Command-line tool
-client/       # React frontend
-config/       # Shared types and configuration
-docs/         # User documentation
-example/      # Example curriculum
-parser/       # Curriculum markdown parser
-runner/       # Test execution engine
-server/       # HTTP API and server
-```
-
-## Common Tasks
-
-### Run Tests
+From your course root directory:
 
 ```bash
-cargo test --all
+npx freecodecamp-server
 ```
 
-### Lint and Format Code
-
-```bash
-# Check formatting
-cargo fmt --all -- --check
-
-# Fix formatting
-cargo fmt --all
-
-# Run linter
-cargo clippy --all -- -D warnings
-```
-
-### Build for Production
-
-```bash
-# Build optimized binaries
-cargo build --release --all
-
-# Build client assets
-cd client && bun run build
-```
-
-### View Documentation
-
-```bash
-# Build and serve mdbook documentation
-cd docs && mdbook serve
-```
-
-## Architecture Overview
-
-### Backend (Rust)
-
-- **`config`** - Type definitions for app configuration
-- **`parser`** - Parses curriculum markdown files into structured data
-- **`runner`** - Executes tests using various language runtimes
-- **`server`** - Axum web server with REST API and WebSocket support
-
-### Frontend (React + TypeScript)
-
-- Modern React 19 + TypeScript
-- Vite 7 for fast builds
-- TanStack Query for data fetching
-- Marked 17 for markdown rendering
-- Prism.js for syntax highlighting
-
-## Environment Variables
-
-When running the server, you can configure via environment variables:
-
-```bash
-RUST_LOG=info          # Set log level (debug, info, warn, error)
-PORT=8080              # Server port (default: 8080)
-CONFIG_PATH=./conf.json # Path to configuration file
-```
+Open your browser to `http://localhost:8080`.
 
 ## Next Steps
 
-- Read the [Project Syntax](./project-syntax.md) guide to learn how to write curriculum files
-- Explore the [example/](../example/) directory for a complete example course
-- Check out the [Testing Guide](./testing/test.md) to learn about test structure
-- Review [Contributing](./contributing.md) guidelines to contribute to the project
-
-## Getting Help
-
-Report issues on [GitHub Issues](https://github.com/freeCodeCamp/freeCodeCampOS/issues)
-
+- [Configuration](./configuration.md) — configure your course, projects, and client branding
+- [Project Syntax](./project-syntax.md) — write lessons, tests, and seeds in the curriculum markdown format
+- [CLI](./cli.md) — add projects, rename projects, and validate your course configuration
+- [Testing Guide](./testing/lifecycle.md) — understand the test lifecycle

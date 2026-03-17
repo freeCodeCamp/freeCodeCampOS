@@ -1,12 +1,13 @@
 # Summary
 
 - [Introduction](./introduction.md)
+
+# Course Creator Guide
+
 - [Getting Started](./getting-started.md)
 - [CLI](./cli.md)
-- [Examples](./examples.md)
 - [Configuration](./configuration.md)
 - [Project Syntax](./project-syntax.md)
-- [freeCodeCamp - Courses](./freecodecamp-courses.md)
 - [Lessoning]()
   - [Lifecycle](./lessoning/lifecycle.md)
   - [Lesson](./lessoning/lesson.md)
@@ -20,6 +21,11 @@
   - [Reset](./resetting/reset.md)
 - [Plugin System](./plugin-system.md)
 - [Client Injection](./client-injection.md)
+- [Examples](./examples.md)
+- [freeCodeCamp - Courses](./freecodecamp-courses.md)
+
+# Contributing
+
 - [Contributing](./contributing.md)
-- [CHANGELOG](./CHANGELOG.md)
 - [Roadmap](./roadmap.md)
+- [CHANGELOG](./CHANGELOG.md)
