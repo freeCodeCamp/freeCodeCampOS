@@ -1,9 +1,28 @@
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, rename, writeFile } from 'fs/promises';
+import { randomUUID } from 'crypto';
 import { join } from 'path';
 import { logover } from './logger.js';
 import { pluginEvents } from '../plugin/index.js';
 
 export const ROOT = process.env.INIT_CWD || process.cwd();
+
+// Minimal in-process FIFO lock: chains every operation for a given resource
+// onto the tail of the previous one, so read-modify-write cycles on the
+// same file can never interleave within this process.
+const locks = new Map(); // resource key -> tail promise
+
+export function withLock(key, fn) {
+  const tail = locks.get(key) ?? Promise.resolve();
+  const result = tail.then(fn, fn);
+  locks.set(key, result.catch(() => {}));
+  return result;
+}
+
+async function writeJSONAtomic(filePath, data) {
+  const tmpPath = `${filePath}.${process.pid}.${randomUUID()}.tmp`;
+  await writeFile(tmpPath, JSON.stringify(data, null, 2));
+  await rename(tmpPath, filePath); // same dir => same filesystem => atomic rename
+}
 
 export async function getConfig() {
   const config = await readFile(join(ROOT, 'freecodecamp.conf.json'), 'utf-8');
@@ -24,7 +43,7 @@ export async function getConfig() {
 
 export const freeCodeCampConfig = await getConfig();
 
-export async function getState() {
+async function readStateFileUnlocked() {
   let defaultState = {
     currentProject: null,
     locale: 'english',
@@ -53,17 +72,23 @@ export async function getState() {
   return defaultState;
 }
 
-export async function setState(obj) {
-  const state = await getState();
-  const updatedState = {
-    ...state,
-    ...obj
-  };
+export function getState() {
+  return withLock('state', readStateFileUnlocked);
+}
 
-  await writeFile(
-    join(ROOT, freeCodeCampConfig.config['state.json']),
-    JSON.stringify(updatedState, null, 2)
-  );
+export function setState(obj) {
+  return withLock('state', async () => {
+    const state = await readStateFileUnlocked();
+    const updatedState = {
+      ...state,
+      ...obj
+    };
+
+    await writeJSONAtomic(
+      join(ROOT, freeCodeCampConfig.config['state.json']),
+      updatedState
+    );
+  });
 }
 
 /**

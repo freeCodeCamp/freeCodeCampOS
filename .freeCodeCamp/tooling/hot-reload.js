@@ -37,10 +37,13 @@ export function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
   watcher.removeAllListeners('all');
 
   watcher.on('all', async (event, name) => {
-    if (name && !pathsToIgnore.find(p => name.includes(p))) {
-      if (isWait) return;
+    if (!name || pathsToIgnore.find(p => name.includes(p))) return;
+    if (isWait) return;
+    isWait = true; // set synchronously, before any await, to close the race window
+    try {
       const { currentProject } = await getState();
       if (!currentProject) {
+        isWait = false;
         return;
       }
 
@@ -62,6 +65,9 @@ export function hotReload(ws, pathsToIgnore = defaultPathsToIgnore) {
         await runTests(ws, currentProject);
         testsRunning = false;
       }
+    } catch (err) {
+      isWait = false;
+      logover.error(err);
     }
   });
 }
